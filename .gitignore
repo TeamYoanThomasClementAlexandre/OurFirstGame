@@ -1,0 +1,47 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+#Visual C++ cashe files
+ipch/
+*.aps
+*.ncb
+*.opendb
+*.opensdf
+*.sdf
+*.cachefile
+/Debug/
+/ConsoleApplication2.VC.db
+/ConsoleApplication2/Debug
+/ConsoleApplication2/x64/Debug/
+/.vs
+/Debug
+*.db
+*.sln
+/ConsoleApplication2/ConsoleApplication2.*
