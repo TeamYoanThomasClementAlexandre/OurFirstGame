@@ -12,12 +12,18 @@ class FenetreYoan : public sf::RenderWindow
 private:
 	std::string titre;
 	sf::VideoMode Mode;
+	int max_x; // nombre max de case en x
+	int max_y; //nombre max de case en y
+	int dimension_x;// dimmension fenetre x
+	int dimension_y;// dimmension fenetre y
+	double scaleMenuBasX;
+	double scaleMenuBasY;
 
 	// TODO : faire un gestionnaire des resources
 	sf::Sprite sprite;
 
 public:
-	FenetreYoan();
+	FenetreYoan(sf::Vector2u dimension);
 	~FenetreYoan();
 
 	// Chargement des resources

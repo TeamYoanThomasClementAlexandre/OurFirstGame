@@ -228,7 +228,7 @@ void Fenetre::affichageMenu() {
 			for (i = 0; i < 3; i++) {
 				if (boundRectangle[i].contains(event.mouseButton.x, event.mouseButton.y)) {
 					if (i == 0) {
-						FenetreYoan* game = new FenetreYoan();
+						FenetreYoan* game = new FenetreYoan(taille); // donner ici les coordonnées
 						Carte* map = game->load();
 						game->idle(map);
 					}

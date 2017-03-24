@@ -45,3 +45,4 @@ ipch/
 *.db
 *.sln
 /ConsoleApplication2/ConsoleApplication2.*
+enc_temp_folder/*

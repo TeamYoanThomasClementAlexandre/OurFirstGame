@@ -7,10 +7,11 @@
 class Case
 {
 private:
-
+	
 
 public:	Case(sf::Sprite s);
 	~Case();
+	int who;
 	Terrain* terrain;
 	sf::Sprite sprite;
 

@@ -7,6 +7,7 @@ class Carte
 {	
 public:
 	Carte();
+	sf::Vector2u getCasebyCoord(int x, int y,int max_x,int max_y,int dimx,int dimy);
 	~Carte();
 
 	Case*** caseJeu;

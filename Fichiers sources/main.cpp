@@ -31,9 +31,9 @@ int main()
 		printf("non");
 	}
 	char * utilisateur;
-	utilisateur = "clément";
+	utilisateur = "clément";*/
 
-*/
+
 	Fenetre test(960,540);
 	return 0;
 }
