@@ -13,6 +13,7 @@ Carte::Carte()
 
 sf::Vector2u Carte::getCasebyCoord(int x, int y, int max_x,int max_y,int dimx,int dimy)
 {
+	sf::Vector2u vec;
 	double tailleSpriteX = floor((double)dimx / ((double)max_x + 1));
 	double tailleSpriteX2 = floor(tailleSpriteX / 2);
 	double tailleSpriteY =floor((double) dimy / ((double)max_y + 1));
@@ -21,7 +22,9 @@ sf::Vector2u Carte::getCasebyCoord(int x, int y, int max_x,int max_y,int dimx,in
 	int max_map = tailleSpriteY*((max_x + 1) / 2);
 	if (y > max_map) {
 		printf("error\n");
-		return;
+		vec.x = -1;
+		vec.y = -1;
+		return vec;
 	}
 	//printf("%d", max_map);
 	//printf("(x = %d,y = %d)\n", max_x, max_y);
@@ -72,7 +75,9 @@ sf::Vector2u Carte::getCasebyCoord(int x, int y, int max_x,int max_y,int dimx,in
 			real_j = j - 2;
 			
 			if (j == 0) {
-				printf("error\n");
+				vec.x = -1;
+				vec.y = -1;
+				return vec;
 			}
 		}else {
 			real_i = i - 1;
@@ -83,7 +88,9 @@ sf::Vector2u Carte::getCasebyCoord(int x, int y, int max_x,int max_y,int dimx,in
 	}
 	else if (calcul_haut_droit>=0) {
 		if (j == 0) {
-			printf("error\n");
+			vec.x = -1;
+			vec.y = -1;
+			return vec;
 		}
 		else {
 			real_i = i;
@@ -131,7 +138,7 @@ sf::Vector2u Carte::getCasebyCoord(int x, int y, int max_x,int max_y,int dimx,in
 */
 
 	printf("(%d,%d)\n", real_j, real_i);
-	sf::Vector2u vec;
+	
 	vec.x = real_i;
 	vec.y = real_j;
 	return vec;

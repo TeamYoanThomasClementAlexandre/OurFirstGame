@@ -1,5 +1,7 @@
 #include <winsock.h>
 #include <mysql/mysql.h>
+#include <cstdlib>
+#include <iostream>
 #include "..\\Fichiers header\Fenetre.h"
 int main()
 {
@@ -34,6 +36,8 @@ int main()
 	utilisateur = "clément";*/
 
 
-	Fenetre test(960,540);
+	int i = system("java Freq");
+	std::cout << i;
+	Fenetre test(960, 540);
 	return 0;
 }
