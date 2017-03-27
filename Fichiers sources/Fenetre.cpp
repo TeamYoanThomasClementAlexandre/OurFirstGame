@@ -233,16 +233,18 @@ void Fenetre::affichageMenu() {
 						String map_taille = "petite";
 						
 						// RECUPERATION DANS LA BASE DE DONNEE ICI
-						Personnage* personnages[4];
-						personnages[0] = new Personnage("archer");
-						personnages[1] = new Personnage("archer");
-						personnages[2] = new Personnage("archer");
-						personnages[3] = new Personnage("archer");
+						Personnage* p = new Personnage[4];
+						Personnage* p1 = new Personnage("archer");
+						Personnage* p2 = new Personnage("paladin");
+						Personnage* p3 = new Personnage("epeiste");
+						Personnage* p4 = new Personnage("lancier");
 
-						printf("DEGAT %d",personnages[2]->degat);
+						p[0] = *p1;
+						p[1] = *p2;
+						p[2] = *p3;
+						p[3] = *p4;
 
-
-						FenetreYoan* game = new FenetreYoan(taille,*personnages); // donner ici les coordonnées
+						FenetreYoan* game = new FenetreYoan(taille,p); // donner ici les coordonnées
 						game->load();
 						game->idle();
 					}

@@ -42,6 +42,16 @@ Personnage::Personnage(std::string typeConstr){
 
 	}
 }
+std::string Personnage::afficher() {
+	std::string s = this->type +
+		"        " + std::to_string(this->vieRestante) + "/" + std::to_string(this->vie) +
+		"    " + std::to_string(this->deplacementRestante) + "/" + std::to_string(this->deplacement) +
+		"  " + std::to_string(this->degat) +
+		"   " + std::to_string(this->armure) +
+		"         " + std::to_string(this->range);
+
+	return s;
+}
 Personnage::Personnage() {
 
 }

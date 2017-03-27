@@ -28,7 +28,7 @@
 using namespace std;
 using namespace sf;
 
-FenetreYoan::FenetreYoan(sf::Vector2u dimension,Personnage* personnagesConstr)
+FenetreYoan::FenetreYoan(sf::Vector2u dimension,Personnage* p)
 {
 	this->create(VideoMode(dimension.x, dimension.y), "Ages of Strategies");
 	this->dimension_x = dimension.x;
@@ -46,8 +46,21 @@ FenetreYoan::FenetreYoan(sf::Vector2u dimension,Personnage* personnagesConstr)
 	this->scaleMenuBasX = (double)this->dimension_x / TAILLEMENU_X;
 	this->scaleMenuBasY= ((double)this->dimension_y/(TAILLEDEBASEY/ TAILLEMENU_Y))/TAILLEMENU_Y;
 
-	this->personnages = new Personnage[4];
-	this->personnages = personnagesConstr;
+	/*
+	Personnage* p1 = new Personnage("archer");
+	Personnage* p2 = new Personnage("archer");
+	Personnage* p3 = new Personnage("archer");
+	Personnage* p4 = new Personnage("archer");
+
+	Personnage* p = new Personnage[4]; 
+	p[0] = *p1;
+	p[1] = *p2;
+	p[2] = *p3;
+	p[3] = *p4;*/
+
+	this->personnages = p;
+	//this->personnages = new Personnage[4];
+	//this->personnages = personnagesConstr;
 	//printf("%f,%f", scaleMenuBasX, scaleMenuBasY);
 }
 
@@ -250,7 +263,7 @@ void FenetreYoan::render() {
 	}
 
 	Sprite *sMenuBas = new Sprite(*pMenuBas);
-	sMenuBas->setPosition(0, this->dimension_y - ECRAN_BAS + (2 * 45));
+	sMenuBas->setPosition(0,360);
 	this->draw(*sMenuBas);
 	sMenuBas->scale(this->scaleMenuBasX, this->scaleMenuBasY);
 
@@ -261,16 +274,57 @@ void FenetreYoan::render() {
 		printf("Error load text :%s", font);
 	}
 	for (int i = 0; i < 4; i++) {
-		sf::Text text;
-		text.setFont(font);
-		text.setPosition(20,370+(i*30));
-		text.setString(std::to_string(this->personnages[2].degat));
-		//text.setString(this->personnages[i].type + "   PV " + std::to_string(this->personnages[i].vieRestante) + "/" + std::to_string(this->personnages[i].vie) + "  PM " + std::to_string(this->personnages[i].deplacementRestante) + "/" + std::to_string(this->personnages[i].deplacement) + " ");
-		text.setCharacterSize(20);
+		sf::Text type;
+		type.setFont(font);
+		type.setCharacterSize(15);
+		type.setString(this->personnages[i].type);
+		type.setPosition(20, 375 + (i * 30));
+		sf::Text pv;
+		pv.setFont(font);
+		pv.setCharacterSize(12);
+		pv.setString(std::to_string(this->personnages[i].vieRestante) + "/" + std::to_string(this->personnages[i].vie));
+		pv.setPosition(125, 375 + (i * 30));
+		sf::Text pm;
+		pm.setFont(font);
+		pm.setCharacterSize(15);
+		pm.setString(std::to_string(this->personnages[i].deplacementRestante) + "/" + std::to_string(this->personnages[i].deplacement));
+		pm.setPosition(220, 375 + (i * 30));
+		sf::Text degat;
+		degat.setFont(font);
+		degat.setCharacterSize(15);
+		degat.setString(std::to_string(this->personnages[i].degat));
+		degat.setPosition(300, 375 + (i * 30));
+		sf::Text armor;
+		armor.setFont(font);
+		armor.setCharacterSize(15);
+		armor.setString(std::to_string(this->personnages[i].armure));
+		armor.setPosition(400, 375 + (i * 30));
+		sf::Text range;
+		range.setFont(font);
+		range.setCharacterSize(15);
+		range.setString(std::to_string(this->personnages[i].range));
+		range.setPosition(550, 375 + (i * 30));
+
+		
+
+		
+		std::string s = this->personnages[i].afficher();
+		
 		//	text.setColor(sf::Color::Red);
-		this->draw(text);
+		this->draw(type);
+		this->draw(pv);
+		this->draw(pm);
+		this->draw(degat);
+		this->draw(armor);
+		this->draw(range);
+		
 	}
-	
+	sf::Text name;
+	name.setFont(font);
+	name.setCharacterSize(15);
+	name.setString("Joueur 1");
+	name.setPosition(10, 520);
+	this->draw(name);
 
 	this->display();
 }

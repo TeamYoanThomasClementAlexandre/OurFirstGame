@@ -26,7 +26,7 @@ private:
 	sf::Sprite sprite;
 
 public:
-	FenetreYoan(sf::Vector2u dimension,Personnage* personnages);
+	FenetreYoan(sf::Vector2u dimension,Personnage* p);
 	~FenetreYoan();
 
 	// Chargement des resources

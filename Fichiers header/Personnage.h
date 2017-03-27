@@ -13,9 +13,12 @@ class Personnage
 private:
 	
 
-
 public:
-	std::string type;
+	
+	Personnage(std::string type);
+	std::string afficher();
+	Personnage();
+	void setCarac();
 	int vie;
 	int range;
 	int degat;
@@ -23,10 +26,7 @@ public:
 	int deplacement;
 	int deplacementRestante;
 	int vieRestante;
-	Personnage(std::string type);
-	Personnage();
-	void setCarac();
-
+	std::string type;
 
 
 };
