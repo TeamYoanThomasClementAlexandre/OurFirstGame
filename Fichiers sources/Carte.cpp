@@ -1,8 +1,8 @@
 #include "..\Fichiers header\Carte.h"
 #define TAILLESPRITE_X 78
-#define TAILLESPRITE_X_2 23
+#define TAILLESPRITE_X_2 49
 #define TAILLESPRITE_Y 45
-#define TAILLESPRITE_Y_2 49
+#define TAILLESPRITE_Y_2 23
 
 Carte::Carte()
 {
@@ -13,14 +13,25 @@ Carte::Carte()
 
 sf::Vector2u Carte::getCasebyCoord(int x, int y, int max_x,int max_y,int dimx,int dimy)
 {
+
+	
 	sf::Vector2u vec;
-	double tailleSpriteX = floor((double)dimx / ((double)max_x + 1));
+	double tailleSpriteX = floor((double)dimx / ((double)max_x+2))-2;
 	double tailleSpriteX2 = floor(tailleSpriteX / 2);
 	double tailleSpriteY =floor((double) dimy / ((double)max_y + 1));
 	double tailleSpriteY2 = ceil(tailleSpriteY / 2);
-	
-	int max_map = tailleSpriteY*((max_x + 1) / 2);
-	if (y > max_map) {
+	//printf("(%f,%f,%f,%f)\n", tailleSpriteX, tailleSpriteY,tailleSpriteX2,tailleSpriteY2);
+	//printf("%d\n",max_x);
+	int max_map_y = tailleSpriteY*((max_y + 1) / 2);
+	if (y > max_map_y) {
+		printf("error\n");
+		vec.x = -1;
+		vec.y = -1;
+		return vec;
+	}
+
+	int max_map_x = tailleSpriteX*(max_x+1)+ tailleSpriteX2;
+	if (x > max_map_x) {
 		printf("error\n");
 		vec.x = -1;
 		vec.y = -1;
@@ -28,16 +39,17 @@ sf::Vector2u Carte::getCasebyCoord(int x, int y, int max_x,int max_y,int dimx,in
 	}
 	//printf("%d", max_map);
 	//printf("(x = %d,y = %d)\n", max_x, max_y);
-	int i = floor((double)x / tailleSpriteX);
+	double i = floor((double)x / tailleSpriteX);
 	int j = 2*floor( (double)y / tailleSpriteY);
-	int faux_j = floor((double)y / tailleSpriteY);
+	double faux_j = floor((double)y / tailleSpriteY);
 
-
+	//printf("i,j (%f,%f)\n",i, j);
 	/*trouver la coordonée de x et y dans le contexte du rectangle */
 
-	int x_context_rectangle = y - (faux_j * tailleSpriteY);
-	int y_context_rectangle = x - (i * tailleSpriteX);
+	double x_context_rectangle = floor((double)y - (faux_j * tailleSpriteY));
+	double y_context_rectangle = floor((double)x - (i * tailleSpriteX));
 
+	printf("x,y (%f,%f)\n", y_context_rectangle, x_context_rectangle);
 	/* chercher sur quel rectangle on es*/
 	sf::Vector2u point_x1;
 	point_x1.y = 0;
@@ -66,6 +78,7 @@ sf::Vector2u Carte::getCasebyCoord(int x, int y, int max_x,int max_y,int dimx,in
 	int real_j = 0;
 
 	if (calcul_haut_gauche < 0 && calcul_haut_droit < 0 && calcul_bas_droit < 0 && calcul_bas_gauche < 0) {
+		printf("in");
 		real_i = i;
 		real_j = j;
 	}

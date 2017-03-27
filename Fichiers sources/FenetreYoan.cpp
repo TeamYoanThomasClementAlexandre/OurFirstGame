@@ -28,12 +28,12 @@
 using namespace std;
 using namespace sf;
 
-FenetreYoan::FenetreYoan(sf::Vector2u dimension)
+FenetreYoan::FenetreYoan(sf::Vector2u dimension,Personnage* personnagesConstr)
 {
 	this->create(VideoMode(dimension.x, dimension.y), "Ages of Strategies");
 	this->dimension_x = dimension.x;
 	this->dimension_y = dimension.y;
-	this->max_x = dimension.x / TAILLESPRITE_X;
+	this->max_x = (dimension.x / TAILLESPRITE_X)-1;
 	this->max_y = ((dimension.y - ECRAN_BAS)/ TAILLESPRITE_Y)*2;
 
 	if (this->max_x > MAXI) {
@@ -45,14 +45,17 @@ FenetreYoan::FenetreYoan(sf::Vector2u dimension)
 
 	this->scaleMenuBasX = (double)this->dimension_x / TAILLEMENU_X;
 	this->scaleMenuBasY= ((double)this->dimension_y/(TAILLEDEBASEY/ TAILLEMENU_Y))/TAILLEMENU_Y;
-	printf("%f,%f", scaleMenuBasX, scaleMenuBasY);
+
+	this->personnages = new Personnage[4];
+	this->personnages = personnagesConstr;
+	//printf("%f,%f", scaleMenuBasX, scaleMenuBasY);
 }
 
 FenetreYoan::~FenetreYoan()
 {
 }
 
-Carte* FenetreYoan::load() {
+void FenetreYoan::load() {
 	// 1) Chargement des resources (texture -> sprite)
 	// 2) Chargement des fichiers de "niveau"
 
@@ -153,13 +156,16 @@ Carte* FenetreYoan::load() {
 	}
 
 	pMap->caseJeu = pTableau;
-	return pMap;
+	this->map = pMap;
+
 	// Chargement des resources
 	
 }
 
-void FenetreYoan::idle(Carte* map) {
+void FenetreYoan::idle() {
 	Event event;
+	this->clear(Color(100, 100, 100));
+	this->render();
 	while (this->isOpen())
 	{
 		while (this->pollEvent(event))
@@ -190,8 +196,9 @@ void FenetreYoan::idle(Carte* map) {
 					}*/
 					
 					sf::Vector2u vec;
-					vec=map->getCasebyCoord(event.mouseButton.x, event.mouseButton.y, this->max_x - 1, this->max_y - 1,this->dimension_x,this->dimension_y);
-					map->caseJeu[vec.y][vec.x];
+					this->map;
+					vec=this->map->getCasebyCoord(event.mouseButton.x, event.mouseButton.y, this->max_x - 1, this->max_y - 1,this->dimension_x,this->dimension_y);
+					this->map->caseJeu[vec.y][vec.x];
 				}
 				if (!event.mouseButton.button == sf::Mouse::Left)
 				{
@@ -203,15 +210,39 @@ void FenetreYoan::idle(Carte* map) {
 			default:
 				break;
 			}
-			this->clear();
-			this->render(map);
+			this->clear(Color(100,100,100));
+			this->render();
 		}
 		
 	}
 }
 
-void FenetreYoan::render(Carte* map) {
+void FenetreYoan::render() {
 
+	Image * img;
+
+	float offsetX = 0; //25;
+	float offsetY = 0; //25;
+
+	const float tileWidth = 78.0;
+	const float tileWidth2 = tileWidth / 2.0;
+	const float tileHeight = 23.0;
+	
+	// rendu case de la map 
+
+	for (int j = 0; j <this->max_y; j++) {
+		float offsetPosX = j % 2 == 0 ? offsetX : offsetX + tileWidth2;
+		float offsetPosY = offsetY;
+		
+		for (int i = 0; i < this->max_x; i++) {
+			this->map->caseJeu[j][i]->sprite.setPosition(offsetPosX + i * tileWidth, offsetPosY + j * tileHeight);
+			this->map->caseJeu[j][i]->who = 0;
+			this->draw(this->map->caseJeu[j][i]->sprite);
+			
+
+		}
+	}
+	// rendu du menu du bas
 	Texture* pMenuBas = new Texture();
 	const char* szResourceMenuBas = "../Fichiers externe/img/menu_bas.png";
 	if (!pMenuBas->loadFromFile(szResourceMenuBas)) {
@@ -222,28 +253,24 @@ void FenetreYoan::render(Carte* map) {
 	sMenuBas->setPosition(0, this->dimension_y - ECRAN_BAS + (2 * 45));
 	this->draw(*sMenuBas);
 	sMenuBas->scale(this->scaleMenuBasX, this->scaleMenuBasY);
-	
-	
 
-	float offsetX = 0; //25;
-	float offsetY = 0; //25;
-
-	const float tileWidth = 78.0;
-	const float tileWidth2 = tileWidth / 2.0;
-	const float tileHeight = 23.0;
-	
-	
-
-	for (int j = 0; j <this->max_y; j++) {
-		float offsetPosX = j % 2 == 0 ? offsetX : offsetX + tileWidth2;
-		float offsetPosY = offsetY;
-		
-		for (int i = 0; i < this->max_x; i++) {
-			map->caseJeu[j][i]->sprite.setPosition(offsetPosX + i * tileWidth, offsetPosY + j * tileHeight);
-			map->caseJeu[j][i]->who = 0;
-			this->draw(map->caseJeu[j][i]->sprite);
-
-		}
+	// rendu du text
+	sf::Font font;
+	if (!font.loadFromFile("../Fichiers externe/arial.ttf"))
+	{
+		printf("Error load text :%s", font);
 	}
+	for (int i = 0; i < 4; i++) {
+		sf::Text text;
+		text.setFont(font);
+		text.setPosition(20,370+(i*30));
+		text.setString(std::to_string(this->personnages[2].degat));
+		//text.setString(this->personnages[i].type + "   PV " + std::to_string(this->personnages[i].vieRestante) + "/" + std::to_string(this->personnages[i].vie) + "  PM " + std::to_string(this->personnages[i].deplacementRestante) + "/" + std::to_string(this->personnages[i].deplacement) + " ");
+		text.setCharacterSize(20);
+		//	text.setColor(sf::Color::Red);
+		this->draw(text);
+	}
+	
+
 	this->display();
 }

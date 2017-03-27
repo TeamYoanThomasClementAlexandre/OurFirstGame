@@ -5,6 +5,7 @@
 #include <SFML\Window\VideoMode.hpp>
 #include <SFML/Graphics.hpp>
 #include "Carte.h"
+#include "..\\Fichiers header\Personnage.h"
 
 
 class FenetreYoan : public sf::RenderWindow
@@ -18,22 +19,24 @@ private:
 	int dimension_y;// dimmension fenetre y
 	double scaleMenuBasX;
 	double scaleMenuBasY;
+	Carte* map;
+	Personnage* personnages;
 
 	// TODO : faire un gestionnaire des resources
 	sf::Sprite sprite;
 
 public:
-	FenetreYoan(sf::Vector2u dimension);
+	FenetreYoan(sf::Vector2u dimension,Personnage* personnages);
 	~FenetreYoan();
 
 	// Chargement des resources
-	Carte* load();
+	void load();
 
 	// Boucle d'oisiveté
-	void idle(Carte* map);
+	void idle();
 
 	// Fonction de rendu
-	void render(Carte* map);
+	void render();
 };
 
 #endif

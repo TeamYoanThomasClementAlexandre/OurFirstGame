@@ -4,6 +4,7 @@
 #include"..\\Fichiers header\FenetreYoan.h"
 #include <SFML\Window\Event.hpp>
 #include <iostream>
+#include "..\\Fichiers header\Personnage.h"
 
 #define option_x 930
 #define option_y 0
@@ -228,9 +229,22 @@ void Fenetre::affichageMenu() {
 			for (i = 0; i < 3; i++) {
 				if (boundRectangle[i].contains(event.mouseButton.x, event.mouseButton.y)) {
 					if (i == 0) {
-						FenetreYoan* game = new FenetreYoan(taille); // donner ici les coordonnées
-						Carte* map = game->load();
-						game->idle(map);
+						this->close();
+						String map_taille = "petite";
+						
+						// RECUPERATION DANS LA BASE DE DONNEE ICI
+						Personnage* personnages[4];
+						personnages[0] = new Personnage("archer");
+						personnages[1] = new Personnage("archer");
+						personnages[2] = new Personnage("archer");
+						personnages[3] = new Personnage("archer");
+
+						printf("DEGAT %d",personnages[2]->degat);
+
+
+						FenetreYoan* game = new FenetreYoan(taille,*personnages); // donner ici les coordonnées
+						game->load();
+						game->idle();
 					}
 					if (i == 1) {}
 					if (i == 2) {}
