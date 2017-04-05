@@ -233,18 +233,38 @@ void Fenetre::affichageMenu() {
 						String map_taille = "petite";
 						
 						// RECUPERATION DANS LA BASE DE DONNEE ICI
-						Personnage* p = new Personnage[4];
+						Personnage* pj1 = new Personnage[4];
 						Personnage* p1 = new Personnage("archer");
 						Personnage* p2 = new Personnage("paladin");
 						Personnage* p3 = new Personnage("epeiste");
 						Personnage* p4 = new Personnage("lancier");
 
-						p[0] = *p1;
-						p[1] = *p2;
-						p[2] = *p3;
-						p[3] = *p4;
+						pj1[0] = *p1;
+						pj1[1] = *p2;
+						pj1[2] = *p3;
+						pj1[3] = *p4;
 
-						FenetreYoan* game = new FenetreYoan(taille,p); // donner ici les coordonnées
+						Personnage* pj2 = new Personnage[4];
+						Personnage* p10 = new Personnage("archer");
+						Personnage* p20 = new Personnage("archer");
+						Personnage* p30 = new Personnage("archer");
+						Personnage* p40 = new Personnage("archer");
+
+						pj2[0] = *p10;
+						pj2[1] = *p20;
+						pj2[2] = *p30;
+						pj2[3] = *p40;
+						Joueur * players = new Joueur[2];
+						Joueur *joueur1 = new Joueur();
+						Joueur *joueur2 = new Joueur();
+						joueur1->pseudo = "Yoan";
+						joueur2->pseudo = "Yoan2";
+						joueur1->p = pj1;
+						joueur2->p = pj2;
+						players[0] = *joueur1;
+						players[1] = *joueur2;
+
+						FenetreYoan* game = new FenetreYoan(taille,players); // donner ici les coordonnées
 						game->load();
 						game->idle();
 					}

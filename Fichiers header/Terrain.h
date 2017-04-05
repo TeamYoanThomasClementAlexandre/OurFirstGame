@@ -6,10 +6,11 @@
 class Terrain
 {
 private:
-	std::string types;
+	
 
 public:
 	Terrain(std::string s);
+	std::string types;
 	~Terrain();
 
 	static std::string getRealString(char c);	

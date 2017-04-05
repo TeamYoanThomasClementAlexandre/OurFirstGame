@@ -14,7 +14,7 @@ private:
 	
 
 public:
-	
+	// ajouter un id;
 	Personnage(std::string type);
 	std::string afficher();
 	Personnage();
@@ -27,6 +27,7 @@ public:
 	int deplacementRestante;
 	int vieRestante;
 	std::string type;
+	sf::Vector2i position;
 
 
 };
