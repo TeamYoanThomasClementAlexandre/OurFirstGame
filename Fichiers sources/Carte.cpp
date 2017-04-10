@@ -12,7 +12,7 @@ Carte::Carte()
 
 // fix bug en hut a droite click
 
-// METHODE INUTILE MAINTENANT
+// 
 sf::Vector2u Carte::getCasebyCoord(int x, int y, int max_x,int max_y,int dimx,int dimy)
 {
 

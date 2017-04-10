@@ -24,11 +24,12 @@ private:
 	double scaleMenuBasY; // % menu haut y
 	Carte* map; // map du jeu
 	int joueur; // tour de quelle joueur
-	Vector2u selected; // quelle perso est selectionné
 	Event event; // evenement
 	Joueur* players; // tableau de joueur
 	sf::RenderWindow *debug; // debug blendmode
 	BlendModee bm; // blendmode 
+	Sprite* sPersonnage; // contient les 4 sprites de personnages
+	bool flag;
 	
 
 
@@ -38,6 +39,8 @@ public:
 	void controleur_placement(Event event);
 	FenetreYoan(sf::Vector2u dimension,Joueur* players);
 	~FenetreYoan();
+	bool verifContrainte(int x,int y);
+	Sprite getSpritebyname(std::string str);
 
 	// Chargement des resources
 	void load();
@@ -46,6 +49,8 @@ public:
 
 	// Boucle d'oisiveté
 	void idle();
+
+	void player_choice();
 
 	// Fonction de rendu
 	void render(int joueur);

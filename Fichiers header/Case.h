@@ -9,10 +9,12 @@ class Case
 private:
 	
 
-public:	Case(sf::Sprite s);
+public:	
+	Case(sf::Sprite s);
+	static std::string getRealString(char c);
 	~Case();
 	int who;
-	Terrain* terrain;
+	std::string types;
 	sf::Sprite sprite;
 
 };

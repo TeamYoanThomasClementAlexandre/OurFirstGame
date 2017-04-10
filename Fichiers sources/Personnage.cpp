@@ -1,6 +1,24 @@
 #include "..\\Fichiers header\Personnage.h"
 Personnage::Personnage(std::string typeConstr){
 	this->type = typeConstr;
+
+	char* s = new char[10];
+	memset(s, 0, 10);
+	sprintf_s(s, 10, "%00d%00d%00d\0", 0, 0, 0);
+	this->position.x = -1;
+	this->position.y = -1;
+	this->id = s;
+	if (type == "constr") {
+		this->degat = -1;
+		this->armure = -1;
+		this->deplacement = -1;
+		this->deplacementRestante = this->deplacement;
+		this->range = -1;
+		this->vie = -1;
+		this->vieRestante = -1;
+
+	}
+
 	if (type == "archer") {
 		this->degat = 40;
 		this->armure = 0;

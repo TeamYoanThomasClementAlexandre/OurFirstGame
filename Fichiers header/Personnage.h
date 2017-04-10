@@ -18,6 +18,7 @@ public:
 	Personnage(std::string type);
 	std::string afficher();
 	Personnage();
+	char* id;
 	void setCarac();
 	int vie;
 	int range;
@@ -28,6 +29,7 @@ public:
 	int vieRestante;
 	std::string type;
 	sf::Vector2i position;
+	sf::Vector2i appartenance;
 
 
 };
