@@ -22,35 +22,7 @@ Terrain::Terrain(std::string s)
 			this->types = s;
 		}*/
 
-std::string Terrain::getRealString(char c) {
-	switch (c)
-	{
-	case 'p': { //plaine
-		return "plaine";
-	}
-	case 'm': //montagne
-	{
-		return "montagne";
-	}
-	case 'e': //eau
-	{
-		return "eau";
-	}
-	case 'c': //chemin
-	{
-		return "chemin";
-	}
-	case 'd': //desert
-	{
-		return "desert";
-	}
-	case 'f': //foret
-	{
-		return "foret";
-	}
-	}
-	return "";
-}
+
 	Terrain::~Terrain()
 	{
 	}

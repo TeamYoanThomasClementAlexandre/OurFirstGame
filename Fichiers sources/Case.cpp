@@ -5,8 +5,39 @@
 Case::Case(sf::Sprite s)
 {
 	this->sprite = s;
+	this->who = -1;
 }
 
+
+std::string Case::getRealString(char c) {
+	switch (c)
+	{
+	case 'p': { //plaine
+		return "plaine";
+	}
+	case 'm': //montagne
+	{
+		return "montagne";
+	}
+	case 'e': //eau
+	{
+		return "eau";
+	}
+	case 'c': //chemin
+	{
+		return "chemin";
+	}
+	case 'd': //desert
+	{
+		return "desert";
+	}
+	case 'f': //foret
+	{
+		return "foret";
+	}
+	}
+	return "";
+}
 
 Case::~Case()
 {

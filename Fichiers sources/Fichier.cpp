@@ -1,5 +1,5 @@
 #include "..\Fichiers header\Fichier.h"
-#include "..\Fichiers header\Terrain.h"
+#include "..\Fichiers header\Case.h"
 #include <iostream>
 #include <fstream>
 
@@ -31,7 +31,7 @@ int Fichier::read(std::string fichier_name,std::string texture[MAXJ][MAXI]) {
 		{
 			getline(fichier, ligne);
 			for (i = 0; i< MAXI; i++) {
-				texture[j][i] = Terrain::getRealString(ligne[i]);
+				texture[j][i] = Case::getRealString(ligne[i]);
 			}
 			j++;
 		}

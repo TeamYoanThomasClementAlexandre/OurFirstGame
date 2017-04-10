@@ -36,8 +36,8 @@ int main()
 	utilisateur = "clément";*/
 
 
-	int i = system("java Freq");
-	std::cout << i;
+	//int i = system("java Freq");
+	//std::cout << i;
 	Fenetre test(960, 540);
 	return 0;
 }
