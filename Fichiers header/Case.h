@@ -16,6 +16,7 @@ public:
 	int who;
 	std::string types;
 	sf::Sprite sprite;
+	sf::Texture texture;
 
 };
 

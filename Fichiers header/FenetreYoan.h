@@ -29,9 +29,9 @@ private:
 	sf::RenderWindow *debug; // debug blendmode
 	BlendModee bm; // blendmode 
 	Sprite* sPersonnage; // contient les 4 sprites de personnages
-	bool flag;
-	
-
+	sf::Text* tablo_text; // contient les Texts de la vue
+	int nbr_tour;
+	bool brouillard_de_guerre;
 
 	// TODO : faire un gestionnaire des resources
 	sf::Sprite sprite;
@@ -41,6 +41,7 @@ public:
 	~FenetreYoan();
 	bool verifContrainte(int x,int y);
 	Sprite getSpritebyname(std::string str);
+	void Game();
 
 	// Chargement des resources
 	void load();
@@ -53,7 +54,9 @@ public:
 	void player_choice();
 
 	// Fonction de rendu
-	void render(int joueur);
+	void render();
+	void renderView(); // affiche vue in game
+	void renderTexte();
 };
 
 #endif

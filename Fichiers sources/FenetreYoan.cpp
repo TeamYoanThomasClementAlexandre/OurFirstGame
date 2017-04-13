@@ -1,7 +1,4 @@
 #include "..\Fichiers header\FenetreYoan.h"
-/*Fenetre* game = new Fenetre();
-	Carte* map=game->load();
-	game->idle(map);*/
 #include <SFML\Window\Event.hpp>
 
 #include <iostream>
@@ -29,6 +26,26 @@ using namespace sf;
 
 FenetreYoan::FenetreYoan(sf::Vector2u dimension,Joueur* playerss)
 {
+	// ini brouillard placement
+	this->brouillard_de_guerre = true;
+
+	//ini compte a rebour nbr tour
+	this->nbr_tour = 0;
+	// ini text
+	sf::Font *font= new Font();
+	if (!font->loadFromFile("../Fichiers externe/arial.ttf"))
+	{
+		printf("Error load text :%s", font);
+	}
+	//
+	sf::Text* tablo_texte= new sf::Text[4];
+	this->tablo_text = tablo_texte;
+	for (int i = 0; i < 4; i++) {
+		tablo_text[i].setCharacterSize(20);
+		tablo_text[i].setFont(*font);
+		tablo_text[i].setString("");
+	}
+
 	// DEBUG
 	sf::RenderWindow *window = new RenderWindow(sf::VideoMode(960, 540), "Debug Window", sf::Style::Titlebar);
 	this->debug = window;
@@ -75,9 +92,8 @@ FenetreYoan::FenetreYoan(sf::Vector2u dimension,Joueur* playerss)
 
 	//Initialisation de la map virtuel
 		std::map<char*, sf::Vector2u*,char_cmp> *dicoo = new std::map<char*, sf::Vector2u*,char_cmp>;
-		std::map<char*, sf::Vector2u*, char_cmp> *dicooIJ = new std::map<char*, sf::Vector2u*, char_cmp>;
-		std::map<char*, sf::Vector2u*, char_cmp> *dicooXY = new std::map<char*, sf::Vector2u*, char_cmp>;
-		BlendModee *bmm = new BlendModee(dicoo, dicooIJ, dicooXY);
+		std::map<char*, Personnage*, char_cmp> *dicooIJ = new std::map<char*, Personnage*, char_cmp>;
+		BlendModee *bmm = new BlendModee(dicoo, dicooIJ);
 		this->bm = *bmm;
 
 		//Initialisation des personnages 
@@ -116,32 +132,37 @@ bool FenetreYoan::verifContrainte(int x,int y) {
 }
 
 void FenetreYoan::controleur_placement(Event event) {
-	// on regarde le type de l'évènement...
-/*	switch (event.type)
-	{
-	case Event::KeyPressed:
-		return;
-			break;
-	case  Event::Closed:
-		this->close();
-		break;
-	case sf::Event::Resized:
-		this->dimension_x = this->getSize().x;
-		this->dimension_y = this->getSize().y;
-	case sf::Event::MouseButtonPressed:*/
 
 		if (event.mouseButton.button == sf::Mouse::Left) //
 		{
+
 			Color c=this->bm.image.getPixel(event.mouseButton.x, 540-event.mouseButton.y);
 			char* s = new char[10];
 			memset(s, 0, 10);
 			sprintf_s(s, 10, "%00d%00d%00d\0",c.r, c.g, c.b);
-
-
-			sf::Vector2u* vec = (*(this->bm.dico))[s];
 			
-			//vec = this->map->getCasebyCoord(event.mouseButton.x, event.mouseButton.y, this->max_x - 1, this->max_y - 1, this->dimension_x, this->dimension_y);
-			if (this->players[this->joueur].selected != -1 && this->verifContrainte(vec->x,vec->y) && vec != NULL) {
+
+
+
+			bool flag=true;
+			sf::Vector2u* vec = (*(this->bm.dico))[s];
+			if (vec == NULL) {
+				Personnage* perso = (*(this->bm.dicoPersonnagesIJ))[s];
+				flag == false;
+				if (perso != NULL) {
+					this->tablo_text[1].setString("Action Impossible, Unité déjà présente !");
+				}
+				else {
+					this->tablo_text[1].setString("Action Impossible, Hors map !");
+				}
+				this->clear(Color(100, 100, 100));
+				this->render();
+				return;
+			}
+
+			
+			if (this->players[this->joueur].selected != -1 && this->verifContrainte(vec->x,vec->y)  && flag==true && vec !=NULL ) {
+				this->tablo_text[1].setString("");
 			//	printf("joueur %d personnage %d sur la case (%d,%d)", this->joueur, this->players[this->joueur].selected, vec->y, vec->x);
 				this->players[this->joueur].p_placer[this->players[this->joueur].personnage_placer] = this->players[this->joueur].p[this->players[this->joueur].selected]; //placer le personnage dans le tab de perso placer;
 				this->map->caseJeu[vec->y][vec->x]->who = this->joueur;
@@ -150,16 +171,13 @@ void FenetreYoan::controleur_placement(Event event) {
 				printf("( %d,%d )\n",vec->x,vec->y);
 				this->players[this->joueur].p_placer[this->players[this->joueur].personnage_placer].appartenance.x = this->joueur;
 				this->players[this->joueur].p_placer[this->players[this->joueur].personnage_placer].appartenance.y = this->players[this->joueur].personnage_placer;
-//				printf("%s\n", this->players[this->joueur].p_placer[this->players[this->joueur].personnage_placer].afficher);
-
-
 
 				this->players[this->joueur].personnage_placer++;
 			}
 			this->players[this->joueur].selected = -1;
 			this->players[this->joueur].selected = -1;
 			this->clear(Color(100, 100, 100));
-			this->render(this->joueur);
+			this->render();
 
 		}
 		if (event.mouseButton.button == sf::Mouse::Right)
@@ -187,13 +205,9 @@ void FenetreYoan::controleur_placement(Event event) {
 			}
 			*/
 			this->clear(Color(100, 100, 100));
-			this->render(this->joueur);
+			this->render();
 			}
-		/*
-		break;
-	default:
-		break;
-	}*/
+	
 	
 }
 
@@ -261,11 +275,13 @@ void FenetreYoan::load() {
 				if (i == 0 && j % 2 == 0 || j == this->max_y -1 || i == this->max_x-1) {
 					Sprite *plaine = new Sprite(*pPlaineTexture);
 					pCase = new Case(*plaine);
+					pCase->texture = *pPlaineTexture;
 				}
 				else {
 					
 					Sprite *plaineMin = new Sprite(*pPlaineTextureMin);
 					pCase = new Case(*plaineMin);
+					pCase->texture = *pPlaineTextureMin;
 				}
 			
 			}
@@ -273,10 +289,12 @@ void FenetreYoan::load() {
 				if (i == 0 && j % 2 == 0 || j == this->max_y - 1 || i == this->max_x - 1) {
 					Sprite *eau = new Sprite(*pEauTexture);
 					pCase = new Case(*eau);
+					pCase->texture = *pEauTexture;
 				}
 				else {
 					Sprite *EauMin = new Sprite(*pEauTextureMin);
 					pCase = new Case(*EauMin);
+					pCase->texture = *pPlaineTextureMin;
 				}
 			}
 				
@@ -286,10 +304,12 @@ void FenetreYoan::load() {
 					
 					Sprite *desert = new Sprite(*pDesertTexture);
 				pCase = new Case(*desert);
+				pCase->texture = *pDesertTexture;
 				}
 				else {
 					Sprite *DesertMin = new Sprite(*pDesertTextureMin);
 					pCase = new Case(*DesertMin);
+					pCase->texture = *pDesertTextureMin;
 				}
 			
 
@@ -337,32 +357,14 @@ void FenetreYoan::load() {
 	this->sPersonnage[2] = *sPaladin;
 	this->sPersonnage[3] = *sLancier;
 }
-// choix 1er joueur choisie
 
-void FenetreYoan::PlacementPersonnage() {
-	this->clear(Color(100, 100, 100));
-	this->render(this->joueur);
-	//Personnage** persos = new Personnage*[2]; // tableau de perso a remplir 
-	while (1) {
 
-		while (this->pollEvent(this->event))
-		{
-			this->controleur_placement(this->event);
-		}
-
-		if (this->players[this->joueur].personnage_placer == 4) {
-			printf("Joueur %d, a terminer de placer !",this->joueur+1);
-			return;
-		}
-	}
-	
-	return;
-}
 
 void FenetreYoan::idle() {	
 	this->PlacementPersonnage();
 	this->joueur = (this->joueur == 0) ? 1 : 0;
 	this->PlacementPersonnage();
+	this->Game();
 
 	/* game ( methode ou on verifie click et recupere i,j =>
 	si c'est une unité =>
@@ -374,6 +376,37 @@ void FenetreYoan::idle() {
 	- on affiche la case dans le carre
 	- si auparavant on a cliquer sur une unité elle se deplacera 
 	*/
+}
+void FenetreYoan::PlacementPersonnage() {
+	this->clear(Color(100, 100, 100));
+	this->render();
+	//Personnage** persos = new Personnage*[2]; // tableau de perso a remplir 
+	while (1) {
+
+		while (this->pollEvent(this->event))
+		{
+			this->controleur_placement(this->event);
+		}
+
+		if (this->players[this->joueur].personnage_placer == 4) {
+			printf("Joueur %d, a terminer de placer !", this->joueur + 1);
+			return;
+		}
+	}
+
+	return;
+}
+
+void FenetreYoan::Game() {
+	this->joueur = (this->joueur == 0) ? 1 : 0;
+	this->nbr_tour++;
+	//this->spriteClearColor();
+	this->clear(Color(150, 150, 150));
+	this->renderView();
+	while (1) {
+		printf("in-game"); // ne pas oublier , retirer le droit de positioner partout !!
+		
+	}
 }
 
 void FenetreYoan::player_choice() {
@@ -388,7 +421,8 @@ void FenetreYoan::player_choice() {
 	}
 }
 
-void FenetreYoan::render(int quellejoueur) {
+
+void FenetreYoan::render() {
 	
 	/* SHADER */
 	sf::Shader shader;
@@ -439,19 +473,27 @@ void FenetreYoan::render(int quellejoueur) {
 
 		for (int i = 0; i < this->max_x; i++) {
 			this->map->caseJeu[j][i]->sprite.setPosition(offsetPosX + i * tileWidth, offsetPosY + j * tileHeight);
+			
+				if (this->joueur == 0 && i > 4) {
+					this->map->caseJeu[j][i]->sprite.setColor(Color::Black);
+				}
+				else if(this->joueur == 0 && i < 5) {
+					this->map->caseJeu[j][i]->sprite.setColor(Color::White);
+				}
+				if (this->joueur == 1 && i < 6) {
+					this->map->caseJeu[j][i]->sprite.setColor(Color::Black);
+				}
+				else if (this->joueur == 1 && i > 5) {
+					this->map->caseJeu[j][i]->sprite.setColor(Color::White);
+				}
 
+			
 			Sprite* a = &this->map->caseJeu[j][i]->sprite;
-			/*    */
-			//float nombre = 0;
-			//srand(time(NULL));
-			//nombre = (float)rand() / (float)RAND_MAX;
-			//printf("%f", nombre);
+		
 			unsigned int r = i*23;
 			unsigned int g = j*12;
 			unsigned int b = 100;
 			
-			//std::string a = std::to_string(r) + std::to_string(g) + std::to_string(b);
-				//String *s = new String(std::to_string(r) + std::to_string(g) + std::to_string(b));
 				char* s = new char[10];
 				memset(s, 0, 10);
 				sprintf_s(s,10,"%00u%00u%00u\0", r, g, b);
@@ -487,7 +529,131 @@ void FenetreYoan::render(int quellejoueur) {
 	this->draw(*sMenuBas);
 	sMenuBas->scale(this->scaleMenuBasX, this->scaleMenuBasY);
 
-	// rendu du text
+	this->player_choice();
+
+	// affichage des perso des joueurs
+	//for(int j = 0;j<2;j++) {
+		for (int i = 0; i < 4; i++) {
+
+			// initialisation du cercle des joueur
+			sf::CircleShape cerclejoueur(10);
+			if (this->joueur == 1) {
+				cerclejoueur.setFillColor(sf::Color(255, 0, 0, 0));
+				cerclejoueur.setOutlineThickness(2);
+				cerclejoueur.setOutlineColor(sf::Color(255, 0, 0));
+			}
+			else {
+				cerclejoueur.setFillColor(sf::Color(0, 0, 255, 0));
+				cerclejoueur.setOutlineThickness(2);
+				cerclejoueur.setOutlineColor(sf::Color(0, 0, 255));
+
+			}
+			
+
+			char* s = new char[10];
+			memset(s, 0, 10);
+			sprintf_s(s, 10, "%00d%00d%00d\0", 0, 0, 0);
+
+			int position_x_tmp = this->players[this->joueur].p_placer[i].position.x;
+			if (position_x_tmp != -1) {
+				std::string name = this->players[this->joueur].p_placer[i].type;
+				sf::Shader shader2;
+				Sprite spriteperso = getSpritebyname(name);
+
+				unsigned int r = 10;
+				unsigned int g = 63 * (this->joueur +1);
+				unsigned int b = i * (127+1);
+
+				char* couleurname = new char[10];
+				memset(couleurname, 0, 10);
+				sprintf_s(couleurname, 10, "%00d%00d%00d\0", r, g, b);
+
+
+				Vector2u *v = new Vector2u();
+				v->x = this->players[this->joueur].p_placer[i].position.x;
+				v->y = this->players[this->joueur].p_placer[i].position.y;
+				Personnage * p_tmp = &(this->players[this->joueur].p_placer[i]);
+				this->bm.dicoPersonnagesIJ->insert(std::pair<char*, Personnage*>(couleurname, p_tmp));
+
+				//char* id = new char[10];
+				//id = this->players[j].p_placer[i].id;
+				//sf::Vector2u* res1 = (*.(this->bm.dicoPersonnagesIJ))[id];
+
+				float offsetPosX = this->players[this->joueur].p_placer[i].position.x % 2 == 0 ? offsetX : offsetX + tileWidth2;
+				
+				float offsetPosY = offsetY;
+				int decalage_y_cercle = 22;
+				cerclejoueur.setPosition((this->players[this->joueur].p_placer[i].position.x * 80) + 27, decalage_y_cercle + this->players[this->joueur].p_placer[i].position.y * 45);
+				spriteperso.setPosition((this->players[this->joueur].p_placer[i].position.x *80)+20, this->players[this->joueur].p_placer[i].position.y *45);
+				if (this->players[this->joueur].p_placer[i].position.y % 2 == 1) {
+					cerclejoueur.setPosition((this->players[this->joueur].p_placer[i].position.x * 80 + 67), decalage_y_cercle + this->players[this->joueur].p_placer[i].position.y * 45 / 2);
+					spriteperso.setPosition((this->players[this->joueur].p_placer[i].position.x * 80+60), this->players[this->joueur].p_placer[i].position.y * 45/2);
+				}
+				if (this->players[this->joueur].p_placer[i].position.y % 2 == 0) {
+					cerclejoueur.setPosition((this->players[this->joueur].p_placer[i].position.x * 80) + 27, decalage_y_cercle +(this->players[this->joueur].p_placer[i].position.y / 2) * 45);
+					spriteperso.setPosition((this->players[this->joueur].p_placer[i].position.x * 80) + 20, (this->players[this->joueur].p_placer[i].position.y / 2) * 45);
+				}
+
+				float fr = (float)r / 255.0; // ici arriver a trouver les 3 r g b a partir du char;
+				float fg = (float)g / 255.0;
+				float fb = (float)b / 255.0;
+				shader.setUniform("color", Glsl::Vec3(fr, fg, fb));
+				RenderStates rs(&shader);
+
+				
+				this->draw(cerclejoueur);
+				this->draw(spriteperso);
+				renderTexture.draw(spriteperso, rs); // rendu dans une texture shader
+		//	}
+		}
+	}
+
+
+	/*if (this->brouillard_de_guerre) {
+		sf::RectangleShape brouillard(sf::Vector2f(120, 50));
+		brouillard.setFillColor(Color::Black);
+		if (this->joueur == 0) {
+			brouillard.setPosition(470, 0);
+
+		}
+		else {
+			brouillard.setPosition(0, 0);
+
+		}
+		brouillard.setSize(sf::Vector2f(430, 350));
+		this->draw(brouillard);
+
+	}*/
+	this->renderTexte();
+
+	//DEBUG	
+	const sf::Texture& texture = renderTexture.getTexture();
+	sf::Sprite sprite(texture);
+	Image *image;
+	this->debug->draw(sprite);
+	this->debug->display();
+	this->bm.image = texture.copyToImage();
+	this->display();
+	
+}
+
+void FenetreYoan::renderTexte() {
+	// Quell joueur
+	this->tablo_text[0].setString(this->players[this->joueur].pseudo);
+	this->tablo_text[0].setPosition(10, 515);
+	// erreur
+	this->tablo_text[1].setPosition(100, 515);
+	//info supp 
+	this->tablo_text[2].setPosition(300, 515);
+	//nbr tour
+	this->tablo_text[3].setPosition(870, 5);
+	this->tablo_text[3].setString("Tour :"+std::to_string(this->nbr_tour));
+
+	for (int i = 0; i < 4; i++) {
+		this->draw(this->tablo_text[i]);
+	}
+	
+	// rendu des infos personnages
 	sf::Font font;
 	if (!font.loadFromFile("../Fichiers externe/arial.ttf"))
 	{
@@ -525,11 +691,8 @@ void FenetreYoan::render(int quellejoueur) {
 		range.setString(std::to_string(this->players[this->joueur].p[i].range));
 		range.setPosition(550, 375 + (i * 30));
 
-		
-
-		
 		//std::string s = this->personnagesJ1[i].afficher();
-		
+
 		//	text.setColor(sf::Color::Red);
 		this->draw(type);
 		this->draw(pv);
@@ -537,71 +700,181 @@ void FenetreYoan::render(int quellejoueur) {
 		this->draw(degat);
 		this->draw(armor);
 		this->draw(range);
-		
+
 	}
-	sf::Text name;
-	name.setFont(font);
-	name.setCharacterSize(20);
-	name.setString(this->players[this->joueur].pseudo);
-	name.setPosition(10, 520);
-	this->draw(name);
+	//
+}
+
+
+void FenetreYoan::renderView() {
+
+	/* SHADER */
+	sf::Shader shader;
+
+	/* if transparence return transparence else return color param*/
+
+	const std::string fragmentShader = \
+		"uniform sampler2D texture;" \
+		"uniform vec3 color;" \
+		"void main()" \
+		"{" \
+		" vec4 pixel = texture2D(texture, gl_TexCoord[0].xy);" \
+		"if(pixel.a!=0.0) { gl_FragColor = vec4(color.rgb, 1.0);  return ;  } " \
+		"gl_FragColor = pixel;" \
+		"}";
+
+	// load only the fragment shader
+
+	if (!shader.loadFromMemory(fragmentShader, sf::Shader::Fragment))
+	{
+		// error...
+	}
+	shader.setUniform("texture", sf::Shader::CurrentTexture);
+
+	//
+
+	// RENDU SPRITE MENU HAUT
+
+	float offsetX = 0; //25;
+	float offsetY = 0; //25;
+
+	const float tileWidth = 78.0;
+	const float tileWidth2 = tileWidth / 2.0;
+	const float tileHeight = 23.0;
+
+	// rendu case de la map 
+	sf::RenderTexture renderTexture;
+	if (!renderTexture.create(960, 540))
+	{
+		// erreur...
+	}
+	renderTexture.clear();
+
+
+	for (int j = 0; j < this->max_y; j++) {
+		float offsetPosX = j % 2 == 0 ? offsetX : offsetX + tileWidth2;
+		float offsetPosY = offsetY;
+
+		for (int i = 0; i < this->max_x; i++) {
+			this->map->caseJeu[j][i]->sprite.setPosition(offsetPosX + i * tileWidth, offsetPosY + j * tileHeight);
+			this->map->caseJeu[j][i]->sprite.setColor(Color::White);
+			Sprite* a = &this->map->caseJeu[j][i]->sprite;
+
+			unsigned int r = i * 23;
+			unsigned int g = j * 12;
+			unsigned int b = 100;
+
+			char* s = new char[10];
+			memset(s, 0, 10);
+			sprintf_s(s, 10, "%00u%00u%00u\0", r, g, b);
+			Vector2u *v = new Vector2u();
+			v->x = i;
+			v->y = j;
+
+			this->bm.dico->insert(std::pair<char*, sf::Vector2u*>(s, v));
+
+			float fr = (float)r / 255.0;
+			float fg = (float)g / 255.0;
+			float fb = (float)b / 255.0;
+			shader.setUniform("color", Glsl::Vec3(fr, fg, fb));
+			RenderStates rs(&shader);
+			renderTexture.draw(*a, rs); // rendu dans une texture shader
+			this->draw(*a); // rendu dans une fenetre
+
+
+		}
+	}
+
+
+
+	// rendu du menu du bas
+	Texture* pMenuBas = new Texture();
+	const char* szResourceMenuBas = "../Fichiers externe/img/menu_bas.png";
+	if (!pMenuBas->loadFromFile(szResourceMenuBas)) {
+		printf("Error load sprite %s", szResourceMenuBas);
+	}
+
+	Sprite *sMenuBas = new Sprite(*pMenuBas);
+	sMenuBas->setPosition(0, 360);
+	this->draw(*sMenuBas);
+	sMenuBas->scale(this->scaleMenuBasX, this->scaleMenuBasY);
+
 	this->player_choice();
 
 	// affichage des perso des joueurs
 	for(int j = 0;j<2;j++) {
-		for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 4; i++) {
 
-			char* s = new char[10];
-			memset(s, 0, 10);
-			sprintf_s(s, 10, "%00d%00d%00d\0", 0, 0, 0);
+		// initialisation du cercle des joueur
+		sf::CircleShape cerclejoueur(10);
+		if (j == 1) {
+			cerclejoueur.setFillColor(sf::Color(255, 0, 0, 0));
+			cerclejoueur.setOutlineThickness(2);
+			cerclejoueur.setOutlineColor(sf::Color(255, 0, 0));
+		}
+		else {
+			cerclejoueur.setFillColor(sf::Color(0, 0, 255, 0));
+			cerclejoueur.setOutlineThickness(2);
+			cerclejoueur.setOutlineColor(sf::Color(0, 0, 255));
 
-			int position_x_tmp = this->players[j].p_placer[i].position.x;
-			if (position_x_tmp != -1) {
-				std::string name = this->players[j].p_placer[i].type;
-				sf::Shader shader2;
-				Sprite spriteperso = getSpritebyname(name);
-
-				unsigned int r = 10;
-				unsigned int g = 63 * (j+1);
-				unsigned int b = i * (127+1);
-
-				char* couleurname = new char[10];
-				memset(couleurname, 0, 10);
-				sprintf_s(couleurname, 10, "%00d%00d%00d\0", r, g, b);
+		}
 
 
-				Vector2u *v = new Vector2u();
-				v->x = this->players[j].p_placer[i].position.x;
-				v->y = this->players[j].p_placer[i].position.y;
-				this->bm.dicoPersonnagesIJ->insert(std::pair<char*, sf::Vector2u*>(couleurname, v));
+		char* s = new char[10];
+		memset(s, 0, 10);
+		sprintf_s(s, 10, "%00d%00d%00d\0", 0, 0, 0);
 
-				//char* id = new char[10];
-				//id = this->players[j].p_placer[i].id;
-				//sf::Vector2u* res1 = (*.(this->bm.dicoPersonnagesIJ))[id];
+		int position_x_tmp = this->players[j].p_placer[i].position.x;
+		if (position_x_tmp != -1) {
+			std::string name = this->players[j].p_placer[i].type;
+			sf::Shader shader2;
+			Sprite spriteperso = getSpritebyname(name);
 
-				float offsetPosX = this->players[j].p_placer[i].position.x % 2 == 0 ? offsetX : offsetX + tileWidth2;
-				
-				float offsetPosY = offsetY;
+			unsigned int r = 10;
+			unsigned int g = 63 * (j+ 1);
+			unsigned int b = i * (127 + 1);
 
-				spriteperso.setPosition((this->players[j].p_placer[i].position.x *80)+20, this->players[j].p_placer[i].position.y *45);
-				if (this->players[j].p_placer[i].position.y % 2 == 1) {
-					spriteperso.setPosition((this->players[j].p_placer[i].position.x * 80+60), this->players[j].p_placer[i].position.y * 45/2);
-				}
-				if (this->players[j].p_placer[i].position.y % 2 == 0) {
-					spriteperso.setPosition((this->players[j].p_placer[i].position.x * 80)+20, (this->players[j].p_placer[i].position.y/2) * 45 );
-				}
+			char* couleurname = new char[10];
+			memset(couleurname, 0, 10);
+			sprintf_s(couleurname, 10, "%00d%00d%00d\0", r, g, b);
 
-				float fr = (float)r / 255.0; // ici arriver a trouver les 3 r g b a partir du char;
-				float fg = (float)g / 255.0;
-				float fb = (float)b / 255.0;
-				shader.setUniform("color", Glsl::Vec3(fr, fg, fb));
-				RenderStates rs(&shader);
-				this->draw(spriteperso);
-				renderTexture.draw(spriteperso, rs); // rendu dans une texture shader
+
+			Vector2u *v = new Vector2u();
+			v->x = this->players[j].p_placer[i].position.x;
+			v->y = this->players[j].p_placer[i].position.y;
+			Personnage * p_tmp = &(this->players[j].p_placer[i]);
+			this->bm.dicoPersonnagesIJ->insert(std::pair<char*, Personnage*>(couleurname, p_tmp));
+
+			float offsetPosX = this->players[j].p_placer[i].position.x % 2 == 0 ? offsetX : offsetX + tileWidth2;
+
+			float offsetPosY = offsetY;
+			int decalage_y_cercle = 22;
+			cerclejoueur.setPosition((this->players[j].p_placer[i].position.x * 80) + 27, decalage_y_cercle + this->players[j].p_placer[i].position.y * 45);
+			spriteperso.setPosition((this->players[j].p_placer[i].position.x * 80) + 20, this->players[j].p_placer[i].position.y * 45);
+			if (this->players[j].p_placer[i].position.y % 2 == 1) {
+				cerclejoueur.setPosition((this->players[j].p_placer[i].position.x * 80 + 67), decalage_y_cercle + this->players[j].p_placer[i].position.y * 45 / 2);
+				spriteperso.setPosition((this->players[j].p_placer[i].position.x * 80 + 60), this->players[j].p_placer[i].position.y * 45 / 2);
 			}
+			if (this->players[j].p_placer[i].position.y % 2 == 0) {
+				cerclejoueur.setPosition((this->players[j].p_placer[i].position.x * 80) + 27, decalage_y_cercle + (this->players[j].p_placer[i].position.y / 2) * 45);
+				spriteperso.setPosition((this->players[j].p_placer[i].position.x * 80) + 20, (this->players[j].p_placer[i].position.y / 2) * 45);
+			}
+
+			float fr = (float)r / 255.0; // ici arriver a trouver les 3 r g b a partir du char;
+			float fg = (float)g / 255.0;
+			float fb = (float)b / 255.0;
+			shader.setUniform("color", Glsl::Vec3(fr, fg, fb));
+			RenderStates rs(&shader);
+
+
+			this->draw(cerclejoueur);
+			this->draw(spriteperso);
+			renderTexture.draw(spriteperso, rs); // rendu dans une texture shader
+		}								 
 		}
 	}
 
+	this->renderTexte();
 
 	//DEBUG	
 	const sf::Texture& texture = renderTexture.getTexture();
@@ -611,6 +884,5 @@ void FenetreYoan::render(int quellejoueur) {
 	this->debug->display();
 	this->bm.image = texture.copyToImage();
 	this->display();
-	
-}
 
+}
