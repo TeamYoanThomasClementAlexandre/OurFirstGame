@@ -36,27 +36,30 @@ private:
 	// TODO : faire un gestionnaire des resources
 	sf::Sprite sprite;
 public:
-	void controleur_placement(Event event);
-	FenetreYoan(sf::Vector2u dimension,Joueur* players);
+	FenetreYoan(sf::Vector2u dimension, Joueur* players);
 	~FenetreYoan();
-	bool verifContrainte(int x,int y);
-	Sprite getSpritebyname(std::string str);
-	void Game();
 
-	// Chargement des resources
-	void load();
+	void controleur_placement(Event event);
+	void controleur_game(Event event);
+
+
 	
-	void PlacementPersonnage();
+	bool verifContrainte(sf::Vector2u* vec,char* s); // verif contrainte de positionnement perso
+	Sprite getSpritebyname(std::string str);
 
-	// Boucle d'oisiveté
-	void idle();
+	void load(); // charge les sprites
+	void idle(); // instructions principales
+	void PlacementPersonnage(); // boucle de placement
+	void Game(); // boucle de jeu
+	bool isWin(); // c'est gagné ?
 
-	void player_choice();
+	void player_choice(); // affiche cercle de choix perso
 
-	// Fonction de rendu
-	void render();
+	void render(); // affiche vue placement
 	void renderView(); // affiche vue in game
-	void renderTexte();
+	void renderTexte(); // affiche les textes
+	
+	
 };
 
 #endif

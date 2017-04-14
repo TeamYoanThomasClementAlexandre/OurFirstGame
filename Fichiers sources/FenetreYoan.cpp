@@ -26,6 +26,8 @@ using namespace sf;
 
 FenetreYoan::FenetreYoan(sf::Vector2u dimension,Joueur* playerss)
 {
+
+	this->setFramerateLimit(30); // limit framerate
 	// ini brouillard placement
 	this->brouillard_de_guerre = true;
 
@@ -117,17 +119,49 @@ Sprite FenetreYoan::getSpritebyname(std::string str) {
 	}
 
 }
-bool FenetreYoan::verifContrainte(int x,int y) {
-	if (this->map->caseJeu[y][x]->who != -1) {
-		printf("impossible\n");
+bool FenetreYoan::verifContrainte(sf::Vector2u *vec, char* s) {
+	
+	if (vec == NULL) {
+		Personnage* perso = (*(this->bm.dicoPersonnagesIJ))[s];
+		if (perso != NULL) {
+			this->tablo_text[1].setString("Action Impossible, Unité déjà présente !");
+		}
+		else {
+			this->tablo_text[1].setString("Action Impossible, Hors map !");
+		}
+		this->clear(Color(100, 100, 100));
+		this->render();
 		return false;
 	}
-	std::string s = this->map->caseJeu[y][x]->types;
-	printf("%s", s);
-	if (s == "eau") {
-		printf("impossible\n");
+
+	if (this->joueur == 0 && vec->x > 4) {
+		this->tablo_text[1].setString("Action Impossible, Spawn ennemi !");
+		this->clear(Color(100, 100, 100));
+		this->render();
 		return false;
 	}
+	if (this->joueur == 1 && vec->x < 6) {
+		this->tablo_text[1].setString("Action Impossible, Spawn ennemi !");
+		this->clear(Color(100, 100, 100));
+		this->render();
+		return false;
+	}
+
+		if (this->map->caseJeu[vec->y][vec->x]->who != -1) {
+			this->tablo_text[1].setString("Action Impossible,Unité déjà présente!");
+			this->clear(Color(100, 100, 100));
+			this->render();
+			return false;
+		}
+		std::string str = this->map->caseJeu[vec->y][vec->x]->types;
+		if (str == "eau") {
+			this->tablo_text[1].setString("Action Impossible, Case eau selectionné !");
+			this->clear(Color(100, 100, 100));
+			this->render();
+			return false;
+		
+	}
+	
 	return true;
 }
 
@@ -140,28 +174,9 @@ void FenetreYoan::controleur_placement(Event event) {
 			char* s = new char[10];
 			memset(s, 0, 10);
 			sprintf_s(s, 10, "%00d%00d%00d\0",c.r, c.g, c.b);
-			
-
-
-
-			bool flag=true;
 			sf::Vector2u* vec = (*(this->bm.dico))[s];
-			if (vec == NULL) {
-				Personnage* perso = (*(this->bm.dicoPersonnagesIJ))[s];
-				flag == false;
-				if (perso != NULL) {
-					this->tablo_text[1].setString("Action Impossible, Unité déjà présente !");
-				}
-				else {
-					this->tablo_text[1].setString("Action Impossible, Hors map !");
-				}
-				this->clear(Color(100, 100, 100));
-				this->render();
-				return;
-			}
-
 			
-			if (this->players[this->joueur].selected != -1 && this->verifContrainte(vec->x,vec->y)  && flag==true && vec !=NULL ) {
+			if (this->players[this->joueur].selected != -1 && this->verifContrainte(vec,s) ) {
 				this->tablo_text[1].setString("");
 			//	printf("joueur %d personnage %d sur la case (%d,%d)", this->joueur, this->players[this->joueur].selected, vec->y, vec->x);
 				this->players[this->joueur].p_placer[this->players[this->joueur].personnage_placer] = this->players[this->joueur].p[this->players[this->joueur].selected]; //placer le personnage dans le tab de perso placer;
@@ -210,6 +225,8 @@ void FenetreYoan::controleur_placement(Event event) {
 	
 	
 }
+
+
 
 FenetreYoan::~FenetreYoan()
 {
@@ -404,16 +421,40 @@ void FenetreYoan::Game() {
 	this->clear(Color(150, 150, 150));
 	this->renderView();
 	while (1) {
-		printf("in-game"); // ne pas oublier , retirer le droit de positioner partout !!
+		while (this->pollEvent(this->event))
+		{
+			this->controleur_game(this->event);
+		}
+
+		if (this->isWin()) {
+			printf("Joueur %d, a gagné !", this->joueur);
+			return;
+		}
+	}
+}
+
+
+void FenetreYoan::controleur_game(Event event)
+{
+	if (event.mouseButton.button == sf::Mouse::Left) //
+	{
 		
 	}
+	if (event.mouseButton.button == sf::Mouse::Right) //
+	{
+	}
+}
+
+bool FenetreYoan::isWin()
+{
+	return false;
 }
 
 void FenetreYoan::player_choice() {
 	if (this->players[this->joueur].selected != -1) {
 		sf::CircleShape shape(8);
 		shape.setFillColor(sf::Color(74, 167, 250));
-		// définit un contour orange de 10 pixels d'épaisseur
+		// définit un contour orange de  10 pixels d'épaisseur
 		shape.setOutlineThickness(1);
 		shape.setOutlineColor(sf::Color(250, 150, 100));
 		shape.setPosition(650, 377+ this->players[this->joueur].selected*30);
