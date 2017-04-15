@@ -26,6 +26,19 @@ using namespace sf;
 
 FenetreYoan::FenetreYoan(sf::Vector2u dimension,Joueur* playerss)
 {
+	// ini case map cliqued
+	Vector2u *vec1 = new Vector2u();
+	vec1->x = 0;
+	vec1->x = 0;
+	this->map_clicked_ij = *vec1;
+
+	// ini tableau de coordonné de surbrillance pour se deplacer
+	Vector2u* vec = new Vector2u[50];
+	this->tabDeplacement = vec;
+	for (int i = 0; i < 50; i++) {
+		vec[i].x = 100;
+		vec[i].y = 100;
+	}
 
 	this->setFramerateLimit(30); // limit framerate
 	// ini brouillard placement
@@ -40,9 +53,9 @@ FenetreYoan::FenetreYoan(sf::Vector2u dimension,Joueur* playerss)
 		printf("Error load text :%s", font);
 	}
 	//
-	sf::Text* tablo_texte= new sf::Text[4];
+	sf::Text* tablo_texte= new sf::Text[5];
 	this->tablo_text = tablo_texte;
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 5; i++) {
 		tablo_text[i].setCharacterSize(20);
 		tablo_text[i].setFont(*font);
 		tablo_text[i].setString("");
@@ -183,13 +196,11 @@ void FenetreYoan::controleur_placement(Event event) {
 				this->map->caseJeu[vec->y][vec->x]->who = this->joueur;
 				this->players[this->joueur].p_placer[this->players[this->joueur].personnage_placer].position.x = vec->x;
 				this->players[this->joueur].p_placer[this->players[this->joueur].personnage_placer].position.y = vec->y;
-				printf("( %d,%d )\n",vec->x,vec->y);
 				this->players[this->joueur].p_placer[this->players[this->joueur].personnage_placer].appartenance.x = this->joueur;
 				this->players[this->joueur].p_placer[this->players[this->joueur].personnage_placer].appartenance.y = this->players[this->joueur].personnage_placer;
 
 				this->players[this->joueur].personnage_placer++;
 			}
-			this->players[this->joueur].selected = -1;
 			this->players[this->joueur].selected = -1;
 			this->clear(Color(100, 100, 100));
 			this->render();
@@ -233,12 +244,21 @@ FenetreYoan::~FenetreYoan()
 }
 
 void FenetreYoan::load() {
-	// 1) Chargement des resources (texture -> sprite)
-	// 2) Chargement des fichiers de "niveau"
+	//initialisation des autres sprites utiles
 
+	Sprite* tabSprite = new Sprite[10];
+	this->autre = tabSprite;
+	Texture* pFindutourTexture = new Texture();
 
+	const char* szResourceFindutour = "../Fichiers externe/img/findutour.png";
+	if (!pFindutourTexture->loadFromFile(szResourceFindutour)) {
+		printf("Error load sprite %s", szResourceFindutour);
+	}
+	Sprite *findutour = new Sprite(*pFindutourTexture);
+	this->autre[0] = *findutour;
 
-	// Todo : Recuperer tableau a 1 dimensions contenant les lettres => NOP!
+	// recuperation map
+
 	Fichier* pFichier = new Fichier();
 	string textureId[MAXJ][MAXI];
 	pFichier->read("../Fichiers externe/maps/map.txt", textureId);
@@ -381,7 +401,22 @@ void FenetreYoan::idle() {
 	this->PlacementPersonnage();
 	this->joueur = (this->joueur == 0) ? 1 : 0;
 	this->PlacementPersonnage();
-	this->Game();
+	this->nbr_tour++;
+	this->players[0].selected = -1;
+	this->players[1].selected = -1;
+	while (1) {
+		this->joueur = (this->joueur == 0) ? 1 : 0;
+		this->Game();
+		this->joueur = (this->joueur == 0) ? 1 : 0;
+		this->Game();
+		if (this->isWin()) {
+			printf("Un joueur à gagné");
+			return;
+		}
+		this->nbr_tour++;
+
+
+	}
 
 	/* game ( methode ou on verifie click et recupere i,j =>
 	si c'est une unité =>
@@ -415,10 +450,9 @@ void FenetreYoan::PlacementPersonnage() {
 }
 
 void FenetreYoan::Game() {
-	this->joueur = (this->joueur == 0) ? 1 : 0;
-	this->nbr_tour++;
-	//this->spriteClearColor();
-	this->clear(Color(150, 150, 150));
+	this->map_clicked = false;
+	this->findutour = false;
+	this->clear(Color(50, 50, 50));
 	this->renderView();
 	while (1) {
 		while (this->pollEvent(this->event))
@@ -426,8 +460,9 @@ void FenetreYoan::Game() {
 			this->controleur_game(this->event);
 		}
 
-		if (this->isWin()) {
-			printf("Joueur %d, a gagné !", this->joueur);
+		if (this->findutour) {
+			printf("Fin du tour de joueur %d !\n", this->joueur);
+			this->findutour = false;
 			return;
 		}
 	}
@@ -438,11 +473,68 @@ void FenetreYoan::controleur_game(Event event)
 {
 	if (event.mouseButton.button == sf::Mouse::Left) //
 	{
-		
+		if (event.mouseButton.x > 870 && event.mouseButton.x < 960 && event.mouseButton.y >= 515 && event.mouseButton.y < 535) {
+			this->findutour = true;
+		}
+		Color c = this->bm.image.getPixel(event.mouseButton.x, 540 - event.mouseButton.y);
+		char* s = new char[10];
+		memset(s, 0, 10);
+		sprintf_s(s, 10, "%00d%00d%00d\0", c.r, c.g, c.b);
+		sf::Vector2u* vec = (*(this->bm.dico))[s];
+		Personnage* perso = (*(this->bm.dicoPersonnagesIJ))[s];
+		if (vec != NULL) {
+			if (this->players[this->joueur].selected != -1) {
+				int k = 0;
+				while (this->tabDeplacement[k].x != 100) {
+					if (this->tabDeplacement[k].x == vec->x && this->tabDeplacement[k].y == vec->y) {
+						if (this->players[this->joueur].p_placer[this->players[this->joueur].selected].deplacementRestante != 0) {
+							this->players[this->joueur].p_placer[this->players[this->joueur].selected].position.x = vec->x;
+							this->players[this->joueur].p_placer[this->players[this->joueur].selected].position.y = vec->y;
+							//savoir de combien de case il c'est deplacer ,metre dans x;
+							int x = 1;
+							this->players[this->joueur].p_placer[this->players[this->joueur].selected].deplacementRestante = this->players[this->joueur].p_placer[this->players[this->joueur].selected].deplacementRestante - x;
+						}						
+						break;
+					}
+					k++;
+				}
+			}
+			else {
+
+				this->players[this->joueur].selected = -1;
+				this->map_clicked = true;
+				this->map_clicked_ij.x = vec->x;
+				this->map_clicked_ij.y = vec->y;
+				//afficher_recap();
+				printf("map\n");
+			}
+		}
+		else if (perso != NULL) {
+			if (perso->appartenance.x == this->joueur) {
+				this->players[this->joueur].selected = perso->appartenance.y;
+				Vector2u *v = new Vector2u();
+				v->x = perso->position.x;
+				v->y = perso->position.y;
+				this->map->getCasesForDeplacement(this->tabDeplacement, *v, perso->deplacementRestante);
+				/*for (int i = 0; i < 50; i++) {
+					printf("%d => ( %d,%d )\n", i, tabDeplacement[i].x, tabDeplacement[i].y);
+				}*/
+			}
+			printf("perso %d du joueur %d \n", perso->appartenance.y, perso->appartenance.x);
+		}
+		else if (vec == NULL  && perso == NULL) {
+			this->map_clicked = false;
+			printf("ni perso ni map\n");
+			this->players[this->joueur].selected = -1;
+		}
 	}
 	if (event.mouseButton.button == sf::Mouse::Right) //
 	{
+		
 	}
+
+	this->clear(Color(50, 50, 50));
+	this->renderView();
 }
 
 bool FenetreYoan::isWin()
@@ -602,8 +694,8 @@ void FenetreYoan::render() {
 				Sprite spriteperso = getSpritebyname(name);
 
 				unsigned int r = 10;
-				unsigned int g = 63 * (this->joueur +1);
-				unsigned int b = i * (127+1);
+				unsigned int g = 63 * ( i+1);
+				unsigned int b = this->joueur * (127+1);
 
 				char* couleurname = new char[10];
 				memset(couleurname, 0, 10);
@@ -650,21 +742,6 @@ void FenetreYoan::render() {
 	}
 
 
-	/*if (this->brouillard_de_guerre) {
-		sf::RectangleShape brouillard(sf::Vector2f(120, 50));
-		brouillard.setFillColor(Color::Black);
-		if (this->joueur == 0) {
-			brouillard.setPosition(470, 0);
-
-		}
-		else {
-			brouillard.setPosition(0, 0);
-
-		}
-		brouillard.setSize(sf::Vector2f(430, 350));
-		this->draw(brouillard);
-
-	}*/
 	this->renderTexte();
 
 	//DEBUG	
@@ -746,9 +823,75 @@ void FenetreYoan::renderTexte() {
 	//
 }
 
+void FenetreYoan::renderTexteView() {
+	// Quell joueur
+	this->tablo_text[0].setString(this->players[this->joueur].pseudo);
+	this->tablo_text[0].setPosition(10, 515);
+	// erreur
+	this->tablo_text[1].setPosition(100, 515);
+	//info supp 
+	this->tablo_text[2].setPosition(300, 515);
+	//nbr tour
+	this->tablo_text[3].setPosition(870, 5);
+	this->tablo_text[3].setString("Tour :" + std::to_string(this->nbr_tour));
 
+	for (int i = 0; i < 4; i++) {
+		this->draw(this->tablo_text[i]);
+	}
+
+	// rendu des infos personnages
+	sf::Font font;
+	if (!font.loadFromFile("../Fichiers externe/arial.ttf"))
+	{
+		printf("Error load text :%s", font);
+	}
+	for (int i = 0; i < 4; i++) {
+		sf::Text type;
+		type.setFont(font);
+		type.setCharacterSize(15);
+		type.setString(this->players[this->joueur].p_placer[i].type);
+		type.setPosition(20, 375 + (i * 30));
+		sf::Text pv;
+		pv.setFont(font);
+		pv.setCharacterSize(12);
+		pv.setString(std::to_string(this->players[this->joueur].p_placer[i].vieRestante) + "/" + std::to_string(this->players[this->joueur].p_placer[i].vie));
+		pv.setPosition(125, 375 + (i * 30));
+		sf::Text pm;
+		pm.setFont(font);
+		pm.setCharacterSize(15);
+		pm.setString(std::to_string(this->players[this->joueur].p_placer[i].deplacementRestante) + "/" + std::to_string(this->players[this->joueur].p_placer[i].deplacement));
+		pm.setPosition(220, 375 + (i * 30));
+		sf::Text degat;
+		degat.setFont(font);
+		degat.setCharacterSize(15);
+		degat.setString(std::to_string(this->players[this->joueur].p_placer[i].degat));
+		degat.setPosition(300, 375 + (i * 30));
+		sf::Text armor;
+		armor.setFont(font);
+		armor.setCharacterSize(15);
+		armor.setString(std::to_string(this->players[this->joueur].p_placer[i].armure));
+		armor.setPosition(400, 375 + (i * 30));
+		sf::Text range;
+		range.setFont(font);
+		range.setCharacterSize(15);
+		range.setString(std::to_string(this->players[this->joueur].p_placer[i].range));
+		range.setPosition(550, 375 + (i * 30));
+
+		//std::string s = this->personnagesJ1[i].afficher();
+
+		//	text.setColor(sf::Color::Red);
+		this->draw(type);
+		this->draw(pv);
+		this->draw(pm);
+		this->draw(degat);
+		this->draw(armor);
+		this->draw(range);
+
+	}
+	//
+}
 void FenetreYoan::renderView() {
-
+	Color *c = new Color(231, 62, 1);
 	/* SHADER */
 	sf::Shader shader;
 
@@ -799,6 +942,17 @@ void FenetreYoan::renderView() {
 		for (int i = 0; i < this->max_x; i++) {
 			this->map->caseJeu[j][i]->sprite.setPosition(offsetPosX + i * tileWidth, offsetPosY + j * tileHeight);
 			this->map->caseJeu[j][i]->sprite.setColor(Color::White);
+			if (this->players[this->joueur].selected != -1) {
+				int k = 0;
+				while (this->tabDeplacement[k].x != 100) {
+					if (this->tabDeplacement[k].x == i && this->tabDeplacement[k].y == j) {
+						this->map->caseJeu[j][i]->sprite.setColor(*c);
+						break;
+					}
+					k++;
+				}
+			}
+			
 			Sprite* a = &this->map->caseJeu[j][i]->sprite;
 
 			unsigned int r = i * 23;
@@ -872,8 +1026,8 @@ void FenetreYoan::renderView() {
 			Sprite spriteperso = getSpritebyname(name);
 
 			unsigned int r = 10;
-			unsigned int g = 63 * (j+ 1);
-			unsigned int b = i * (127 + 1);
+			unsigned int g = 63 * (i+ 1);
+			unsigned int b = j * (127 + 1);
 
 			char* couleurname = new char[10];
 			memset(couleurname, 0, 10);
@@ -915,7 +1069,20 @@ void FenetreYoan::renderView() {
 		}
 	}
 
-	this->renderTexte();
+	this->renderTexteView();
+	this->autre[0].setPosition(870, 515);
+	this->draw(autre[0]);
+
+	if (this->map_clicked) {
+		Case *c = this->map->caseJeu[this->map_clicked_ij.y][this->map_clicked_ij.x];
+		Sprite *s = new Sprite(c->texture);
+		s->setPosition(800, 380);
+
+		this->tablo_text[4].setString(c->types);
+		this->tablo_text[4].setPosition(800, 360);
+		this->draw(this->tablo_text[4]);
+		this->draw(*s);
+	}
 
 	//DEBUG	
 	const sf::Texture& texture = renderTexture.getTexture();

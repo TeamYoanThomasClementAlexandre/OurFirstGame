@@ -163,3 +163,71 @@ Carte::~Carte()
 {
 }
 
+// x->i
+// y->j
+void Carte::getCasesForDeplacement(sf::Vector2u * tab, sf::Vector2u caseDepart,int mobi)
+{
+	if (caseDepart.y % 2 == 0) {
+		for (int i = 0; i < 8; i++) {
+			sf::Vector2u *tmp=NULL;
+			if (i == 0) { //SUD
+				tmp = new sf::Vector2u(caseDepart.x, caseDepart.y + 2);
+			}
+			else if (i == 1) { // SUD-EST
+				tmp = new sf::Vector2u(caseDepart.x, caseDepart.y + 1);
+			}
+			else if (i == 2) { // EST
+			    tmp = new sf::Vector2u(caseDepart.x+1, caseDepart.y);
+			}
+			else if (i == 3) { // NORD-EST
+				tmp = new sf::Vector2u(caseDepart.x, caseDepart.y -1);
+			}
+			else if (i == 4) { // NORD
+				tmp = new sf::Vector2u(caseDepart.x, caseDepart.y - 2);
+			}
+			else if (i == 5) { // NORD-OUEST
+				tmp = new sf::Vector2u(caseDepart.x - 1, caseDepart.y - 1);
+			}
+			else if (i == 6) { // OUEST
+				tmp = new sf::Vector2u(caseDepart.x - 1, caseDepart.y);
+			}
+			else if (i == 7) { // SUD-OUEST
+				tmp = new sf::Vector2u(caseDepart.x - 1, caseDepart.y + 1);
+			}		
+			tab[i] = *tmp;
+		}
+	}
+	else {
+		for (int i = 0; i < 8; i++) {
+			sf::Vector2u *tmp = NULL;
+			if (i == 0) { //SUD
+				tmp = new sf::Vector2u(caseDepart.x, caseDepart.y + 2);
+			}
+			else if (i == 1) { // SUD-EST
+				tmp = new sf::Vector2u(caseDepart.x+1, caseDepart.y + 1);
+			}
+			else if (i == 2) { // EST
+				tmp = new sf::Vector2u(caseDepart.x + 1, caseDepart.y);
+			}
+			else if (i == 3) { // NORD-EST
+				tmp = new sf::Vector2u(caseDepart.x+1, caseDepart.y - 1);
+			}
+			else if (i == 4) { // NORD
+				tmp = new sf::Vector2u(caseDepart.x, caseDepart.y - 2);
+			}
+			else if (i == 5) { // NORD-OUEST
+				tmp = new sf::Vector2u(caseDepart.x - 1, caseDepart.y);
+			}
+			else if (i == 6) { // OUEST
+				tmp = new sf::Vector2u(caseDepart.x - 1, caseDepart.y);
+			}
+			else if (i == 7) { // SUD-OUEST
+				tmp = new sf::Vector2u(caseDepart.x, caseDepart.y + 1);
+			}
+			tab[i] = *tmp;
+		}
+	}
+		
+			
+}
+

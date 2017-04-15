@@ -31,7 +31,11 @@ private:
 	Sprite* sPersonnage; // contient les 4 sprites de personnages
 	sf::Text* tablo_text; // contient les Texts de la vue
 	int nbr_tour;
+	bool findutour;
 	bool brouillard_de_guerre;
+	sf::Vector2u* tabDeplacement;
+	bool map_clicked;
+	Vector2u map_clicked_ij;
 
 	// TODO : faire un gestionnaire des resources
 	sf::Sprite sprite;
@@ -58,6 +62,8 @@ public:
 	void render(); // affiche vue placement
 	void renderView(); // affiche vue in game
 	void renderTexte(); // affiche les textes
+	void renderTexteView(); // affiche les textes
+	Sprite* autre;
 	
 	
 };

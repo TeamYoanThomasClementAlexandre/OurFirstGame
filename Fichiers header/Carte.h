@@ -11,6 +11,8 @@ public:
 	~Carte();
 
 	Case*** caseJeu;
+
+	void getCasesForDeplacement(sf::Vector2u* vec,sf::Vector2u caseDepart,int mobi);
 };
 
 #endif
