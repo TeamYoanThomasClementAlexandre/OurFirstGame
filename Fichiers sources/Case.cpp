@@ -2,10 +2,11 @@
 #include "..\Fichiers header\Terrain.h"
 #include <SFML/Graphics.hpp>
 
-Case::Case(sf::Sprite s)
+Case::Case(sf::Sprite s,int cost)
 {
 	this->sprite = s;
 	this->who = -1;
+	this->pmCost = cost;
 }
 
 

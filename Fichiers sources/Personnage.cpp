@@ -22,7 +22,7 @@ Personnage::Personnage(std::string typeConstr){
 	if (type == "archer") {
 		this->degat = 40;
 		this->armure = 0;
-		this->deplacement = 1;
+		this->deplacement = 2;
 		this->deplacementRestante = this->deplacement;
 		this->range = 3;
 		this->vie = 80;

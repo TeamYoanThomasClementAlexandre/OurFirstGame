@@ -32,13 +32,29 @@ FenetreYoan::FenetreYoan(sf::Vector2u dimension,Joueur* playerss)
 	vec1->x = 0;
 	this->map_clicked_ij = *vec1;
 
-	// ini tableau de coordonné de surbrillance pour se deplacer
-	Vector2u* vec = new Vector2u[50];
-	this->tabDeplacement = vec;
-	for (int i = 0; i < 50; i++) {
-		vec[i].x = 100;
-		vec[i].y = 100;
+	// ini tableau de coordonné de surbrillance pour se deplacer + tab info
+	int**tabCostt = new int*[8];
+	for (int i = 0; i < 8; i++) {
+		int* tab = new int[10];
+		tabCostt[i] = tab;
+		for (int j = 0; j < 10; j++) {
+			tabCostt[i][j] = 100 ;
+		}
+		
 	}
+	this->tabCost = tabCostt;
+	Vector2u** vecc = new Vector2u*[8];
+	for (int i = 0; i < 8; i++) {
+		Vector2u* vec = new Vector2u[10];
+		vecc[i] = vec;
+		for (int j = 0; j < 10; j++) {
+			vecc[i][j].x = 100;
+			vecc[i][j].y = 100;
+		}
+
+	}
+	this->tabDeplacement = vecc;
+
 
 	this->setFramerateLimit(30); // limit framerate
 	// ini brouillard placement
@@ -67,7 +83,7 @@ FenetreYoan::FenetreYoan(sf::Vector2u dimension,Joueur* playerss)
 	this->debug->setPosition(sf::Vector2i(0, 0));
 	//
 
-	// choix joueur aleatoirement 
+	// choix joueur aleatoirement  // FIX EN FONCTION DE LA VITESSE DATTAQUE DES DEUX JOUEUR
 	srand(time(NULL));
 	this->joueur= rand() % 2;
 	//
@@ -182,8 +198,11 @@ void FenetreYoan::controleur_placement(Event event) {
 
 		if (event.mouseButton.button == sf::Mouse::Left) //
 		{
-
-			Color c=this->bm.image.getPixel(event.mouseButton.x, 540-event.mouseButton.y);
+			Color c;
+			if (event.mouseButton.x != NULL && event.mouseButton.y != NULL) {
+				c = this->bm.image.getPixel(event.mouseButton.x, 540 - event.mouseButton.y);
+			}
+			
 			char* s = new char[10];
 			memset(s, 0, 10);
 			sprintf_s(s, 10, "%00d%00d%00d\0",c.r, c.g, c.b);
@@ -311,13 +330,13 @@ void FenetreYoan::load() {
 			if (s=="plaine") {
 				if (i == 0 && j % 2 == 0 || j == this->max_y -1 || i == this->max_x-1) {
 					Sprite *plaine = new Sprite(*pPlaineTexture);
-					pCase = new Case(*plaine);
+					pCase = new Case(*plaine,1);
 					pCase->texture = *pPlaineTexture;
 				}
 				else {
 					
 					Sprite *plaineMin = new Sprite(*pPlaineTextureMin);
-					pCase = new Case(*plaineMin);
+					pCase = new Case(*plaineMin,1);
 					pCase->texture = *pPlaineTextureMin;
 				}
 			
@@ -325,12 +344,12 @@ void FenetreYoan::load() {
 			if (s == "eau") {
 				if (i == 0 && j % 2 == 0 || j == this->max_y - 1 || i == this->max_x - 1) {
 					Sprite *eau = new Sprite(*pEauTexture);
-					pCase = new Case(*eau);
+					pCase = new Case(*eau,100);
 					pCase->texture = *pEauTexture;
 				}
 				else {
 					Sprite *EauMin = new Sprite(*pEauTextureMin);
-					pCase = new Case(*EauMin);
+					pCase = new Case(*EauMin,100);
 					pCase->texture = *pPlaineTextureMin;
 				}
 			}
@@ -340,12 +359,12 @@ void FenetreYoan::load() {
 				if (i == 0 && j % 2 == 0 || j == this->max_y - 1 || i== this->max_x - 1) {
 					
 					Sprite *desert = new Sprite(*pDesertTexture);
-				pCase = new Case(*desert);
+				pCase = new Case(*desert,1.5);
 				pCase->texture = *pDesertTexture;
 				}
 				else {
 					Sprite *DesertMin = new Sprite(*pDesertTextureMin);
-					pCase = new Case(*DesertMin);
+					pCase = new Case(*DesertMin,1.5);
 					pCase->texture = *pDesertTextureMin;
 				}
 			
@@ -395,8 +414,6 @@ void FenetreYoan::load() {
 	this->sPersonnage[3] = *sLancier;
 }
 
-
-
 void FenetreYoan::idle() {	
 	this->PlacementPersonnage();
 	this->joueur = (this->joueur == 0) ? 1 : 0;
@@ -406,8 +423,19 @@ void FenetreYoan::idle() {
 	this->players[1].selected = -1;
 	while (1) {
 		this->joueur = (this->joueur == 0) ? 1 : 0;
+
+		for (int i = 0; i < 4; i++) {
+			this->players[this->joueur].p_placer[i].deplacementRestante = this->players[this->joueur].p_placer[i].deplacement; // reinitialisation pm des persos du joueur
+		}
+
 		this->Game();
+
 		this->joueur = (this->joueur == 0) ? 1 : 0;
+
+		for (int i = 0; i < 4; i++) {
+			this->players[this->joueur].p_placer[i].deplacementRestante = this->players[this->joueur].p_placer[i].deplacement; // reinitialisation pm des persos du joueur
+		}
+
 		this->Game();
 		if (this->isWin()) {
 			printf("Un joueur à gagné");
@@ -429,6 +457,7 @@ void FenetreYoan::idle() {
 	- si auparavant on a cliquer sur une unité elle se deplacera 
 	*/
 }
+
 void FenetreYoan::PlacementPersonnage() {
 	this->clear(Color(100, 100, 100));
 	this->render();
@@ -476,7 +505,11 @@ void FenetreYoan::controleur_game(Event event)
 		if (event.mouseButton.x > 870 && event.mouseButton.x < 960 && event.mouseButton.y >= 515 && event.mouseButton.y < 535) {
 			this->findutour = true;
 		}
-		Color c = this->bm.image.getPixel(event.mouseButton.x, 540 - event.mouseButton.y);
+		Color c;
+		if (event.mouseButton.x != NULL && event.mouseButton.y != NULL) {
+			c = this->bm.image.getPixel(event.mouseButton.x, 540 - event.mouseButton.y);
+
+		}
 		char* s = new char[10];
 		memset(s, 0, 10);
 		sprintf_s(s, 10, "%00d%00d%00d\0", c.r, c.g, c.b);
@@ -484,21 +517,21 @@ void FenetreYoan::controleur_game(Event event)
 		Personnage* perso = (*(this->bm.dicoPersonnagesIJ))[s];
 		if (vec != NULL) {
 			if (this->players[this->joueur].selected != -1) {
-				int k = 0;
-				while (this->tabDeplacement[k].x != 100) {
-					if (this->tabDeplacement[k].x == vec->x && this->tabDeplacement[k].y == vec->y) {
-						if (this->players[this->joueur].p_placer[this->players[this->joueur].selected].deplacementRestante != 0) {
-							this->players[this->joueur].p_placer[this->players[this->joueur].selected].position.x = vec->x;
-							this->players[this->joueur].p_placer[this->players[this->joueur].selected].position.y = vec->y;
-							//savoir de combien de case il c'est deplacer ,metre dans x;
-							int x = 1;
-							this->players[this->joueur].p_placer[this->players[this->joueur].selected].deplacementRestante = this->players[this->joueur].p_placer[this->players[this->joueur].selected].deplacementRestante - x;
-						}						
-						break;
+				for (int l=0; l < 8; l++) {
+					for (int k=0; k < 10; k++) {
+						if (this->tabDeplacement[l][k].x == vec->x && this->tabDeplacement[l][k].y == vec->y) {
+							if (this->players[this->joueur].p_placer[this->players[this->joueur].selected].deplacementRestante != 0) {
+								this->players[this->joueur].p_placer[this->players[this->joueur].selected].position.x = vec->x;
+								this->players[this->joueur].p_placer[this->players[this->joueur].selected].position.y = vec->y;
+								//savoir de combien de case il c'est deplacer ,metre dans x;
+								int x = this->tabCost[l][k];
+								this->players[this->joueur].p_placer[this->players[this->joueur].selected].deplacementRestante = this->players[this->joueur].p_placer[this->players[this->joueur].selected].deplacementRestante - x;
+								this->map->caseJeu[vec->y][vec->x]->who = this->joueur;
+								}
+							}
+						}
 					}
-					k++;
 				}
-			}
 			else {
 
 				this->players[this->joueur].selected = -1;
@@ -506,25 +539,54 @@ void FenetreYoan::controleur_game(Event event)
 				this->map_clicked_ij.x = vec->x;
 				this->map_clicked_ij.y = vec->y;
 				//afficher_recap();
-				printf("map\n");
+				//printf("map\n");
 			}
 		}
 		else if (perso != NULL) {
 			if (perso->appartenance.x == this->joueur) {
 				this->players[this->joueur].selected = perso->appartenance.y;
-				Vector2u *v = new Vector2u();
+				Vector2u *v= new Vector2u;
 				v->x = perso->position.x;
 				v->y = perso->position.y;
-				this->map->getCasesForDeplacement(this->tabDeplacement, *v, perso->deplacementRestante);
-				/*for (int i = 0; i < 50; i++) {
-					printf("%d => ( %d,%d )\n", i, tabDeplacement[i].x, tabDeplacement[i].y);
+
+				for (int i = 0; i < 8; i++) {
+					for (int j = 0; j < 10; j++) {
+						this->tabDeplacement[i][j].x = 100;
+						this->tabDeplacement[i][j].y = 100;
+					}
+
+				}
+				//printf("position perso (%d,%d)\n", v.x, v.y);
+				this->map->getCasesForDeplacementRecursifNord(this->tabDeplacement[0], this->tabCost[0], *v, perso->deplacementRestante, perso->deplacementRestante, 0);
+				this->map->getCasesForDeplacementRecursifSud(this->tabDeplacement[1], this->tabCost[1], *v, perso->deplacementRestante, perso->deplacementRestante, 0);
+				this->map->getCasesForDeplacementRecursifEst(this->tabDeplacement[2], this->tabCost[2], *v, perso->deplacementRestante, perso->deplacementRestante, 0);
+				this->map->getCasesForDeplacementRecursifOuest(this->tabDeplacement[3], this->tabCost[3], *v, perso->deplacementRestante, perso->deplacementRestante, 0);
+
+				this->map->getCasesForDeplacementRecursifNordOuest(this->tabDeplacement[4], this->tabCost[4], *v, perso->deplacementRestante, perso->deplacementRestante, 0);
+				this->map->getCasesForDeplacementRecursifNordEst(this->tabDeplacement[5], this->tabCost[5], *v, perso->deplacementRestante, perso->deplacementRestante, 0);
+				this->map->getCasesForDeplacementRecursifSudOuest(this->tabDeplacement[6], this->tabCost[6], *v, perso->deplacementRestante, perso->deplacementRestante, 0);
+				this->map->getCasesForDeplacementRecursifSudEst(this->tabDeplacement[7], this->tabCost[7], *v, perso->deplacementRestante, perso->deplacementRestante, 0);
+
+				
+					
+				//this->map->getCasesForDeplacement(this->tabDeplacement, *v, perso->deplacementRestante);
+
+				/*printf("position perso (%d,%d)\n", v.x, v.y);
+				for (int j = 0; j < 2; j++) {
+					for (int i = 0; i < 10; i++) {
+						if (tabDeplacement[j][i].x != 100) {
+							printf("(%d,%d) => ( %d,%d ) , %d \n", j, i, tabDeplacement[j][i].x, tabDeplacement[j][i].y, tabCost[j][i]);
+						}
+					}
 				}*/
+
+
+				//printf("perso %d du joueur %d \n", perso->appartenance.y, perso->appartenance.x);
 			}
-			printf("perso %d du joueur %d \n", perso->appartenance.y, perso->appartenance.x);
 		}
 		else if (vec == NULL  && perso == NULL) {
 			this->map_clicked = false;
-			printf("ni perso ni map\n");
+			//printf("ni perso ni map\n");
 			this->players[this->joueur].selected = -1;
 		}
 	}
@@ -890,6 +952,7 @@ void FenetreYoan::renderTexteView() {
 	}
 	//
 }
+
 void FenetreYoan::renderView() {
 	Color *c = new Color(231, 62, 1);
 	/* SHADER */
@@ -942,14 +1005,17 @@ void FenetreYoan::renderView() {
 		for (int i = 0; i < this->max_x; i++) {
 			this->map->caseJeu[j][i]->sprite.setPosition(offsetPosX + i * tileWidth, offsetPosY + j * tileHeight);
 			this->map->caseJeu[j][i]->sprite.setColor(Color::White);
+
 			if (this->players[this->joueur].selected != -1) {
 				int k = 0;
-				while (this->tabDeplacement[k].x != 100) {
-					if (this->tabDeplacement[k].x == i && this->tabDeplacement[k].y == j) {
-						this->map->caseJeu[j][i]->sprite.setColor(*c);
-						break;
+				int l = 0;
+				for (int l=0; l < 8; l++) {
+					for (int k=0; k < 10; k++) {
+						if (this->tabDeplacement[l][k].x == i && this->tabDeplacement[l][k].y == j) {
+							this->map->caseJeu[j][i]->sprite.setColor(*c);
+							//printf("view = %d,%d\n", tabDeplacement[l][k].x, tabDeplacement[l][k].y);
+						}
 					}
-					k++;
 				}
 			}
 			

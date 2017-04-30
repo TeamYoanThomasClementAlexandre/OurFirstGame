@@ -12,6 +12,16 @@ public:
 
 	Case*** caseJeu;
 
+	void getCasesForDeplacementRecursifNord(sf::Vector2u * tab, int* tabCost, sf::Vector2u case_tmp, int mobi_tmp,int mobi_de_base, int indice);
+	void getCasesForDeplacementRecursifSud(sf::Vector2u * tab, int* tabCost, sf::Vector2u case_tmp, int mobi_tmp, int mobi_de_base, int indice);
+	void getCasesForDeplacementRecursifEst(sf::Vector2u * tab, int* tabCost, sf::Vector2u case_tmp, int mobi_tmp, int mobi_de_base, int indice);
+	void getCasesForDeplacementRecursifOuest(sf::Vector2u * tab, int* tabCost, sf::Vector2u case_tmp, int mobi_tmp, int mobi_de_base, int indice);
+
+	void getCasesForDeplacementRecursifNordOuest(sf::Vector2u * tab, int* tabCost, sf::Vector2u case_tmp, int mobi_tmp, int mobi_de_base, int indice);
+	void getCasesForDeplacementRecursifNordEst(sf::Vector2u * tab, int* tabCost, sf::Vector2u case_tmp, int mobi_tmp, int mobi_de_base, int indice);
+	void getCasesForDeplacementRecursifSudOuest(sf::Vector2u * tab, int* tabCost, sf::Vector2u case_tmp, int mobi_tmp, int mobi_de_base, int indice);
+	void getCasesForDeplacementRecursifSudEst(sf::Vector2u * tab, int* tabCost, sf::Vector2u case_tmp, int mobi_tmp, int mobi_de_base, int indice);
+
 	void getCasesForDeplacement(sf::Vector2u* vec,sf::Vector2u caseDepart,int mobi);
 };
 

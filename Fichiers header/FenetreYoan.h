@@ -33,7 +33,8 @@ private:
 	int nbr_tour;
 	bool findutour;
 	bool brouillard_de_guerre;
-	sf::Vector2u* tabDeplacement;
+	sf::Vector2u** tabDeplacement;
+	int** tabCost;
 	bool map_clicked;
 	Vector2u map_clicked_ij;
 

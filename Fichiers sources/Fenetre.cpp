@@ -246,9 +246,9 @@ void Fenetre::affichageMenu() {
 
 						Personnage* pj2 = new Personnage[4];
 						Personnage* p10 = new Personnage("archer");
-						Personnage* p20 = new Personnage("archer");
-						Personnage* p30 = new Personnage("archer");
-						Personnage* p40 = new Personnage("archer");
+						Personnage* p20 = new Personnage("paladin");
+						Personnage* p30 = new Personnage("epeiste");
+						Personnage* p40 = new Personnage("lancier");
 
 						pj2[0] = *p10;
 						pj2[1] = *p20;

@@ -10,10 +10,11 @@ private:
 	
 
 public:	
-	Case(sf::Sprite s);
+	Case(sf::Sprite s,int pmCostc);
 	static std::string getRealString(char c);
 	~Case();
 	int who;
+	int pmCost;
 	std::string types;
 	sf::Sprite sprite;
 	sf::Texture texture;
