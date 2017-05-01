@@ -43,6 +43,7 @@ FenetreYoan::FenetreYoan(sf::Vector2u dimension,Joueur* playerss)
 		
 	}
 	this->tabCost = tabCostt;
+
 	Vector2u** vecc = new Vector2u*[8];
 	for (int i = 0; i < 8; i++) {
 		Vector2u* vec = new Vector2u[10];
@@ -54,6 +55,20 @@ FenetreYoan::FenetreYoan(sf::Vector2u dimension,Joueur* playerss)
 
 	}
 	this->tabDeplacement = vecc;
+
+
+	// ini tableau de coordoné de surbrillance rouge pour attaquer
+	Vector2u** comb = new Vector2u*[8];
+	for (int i = 0; i < 8; i++) {
+		Vector2u* com = new Vector2u[10];
+		comb[i] = com;
+		for (int j = 0; j < 10; j++) {
+			comb[i][j].x = 100;
+			comb[i][j].y = 100;
+		}
+
+	}
+	this->tabCombat = comb;
 
 
 	this->setFramerateLimit(30); // limit framerate
@@ -550,6 +565,14 @@ void FenetreYoan::controleur_game(Event event)
 
 				for (int i = 0; i < 8; i++) {
 					for (int j = 0; j < 10; j++) {
+						this->tabCombat[i][j].x = 100;
+						this->tabCombat[i][j].y = 100;
+					}
+
+				}
+
+				for (int i = 0; i < 8; i++) {
+					for (int j = 0; j < 10; j++) {
 						this->tabDeplacement[i][j].x = 100;
 						this->tabDeplacement[i][j].y = 100;
 					}
@@ -576,7 +599,70 @@ void FenetreYoan::controleur_game(Event event)
 	}
 	if (event.mouseButton.button == sf::Mouse::Right) //
 	{
+
+		Color c;
+		if (event.mouseButton.x != NULL && event.mouseButton.y != NULL) {
+			c = this->bm.image.getPixel(event.mouseButton.x, 540 - event.mouseButton.y);
+
+		}
+		char* s = new char[10];
+		memset(s, 0, 10);
+		sprintf_s(s, 10, "%00d%00d%00d\0", c.r, c.g, c.b);
+		//sf::Vector2u* vec = (*(this->bm.dico))[s];
+		Personnage* perso = (*(this->bm.dicoPersonnagesIJ))[s];
+		if (perso != NULL) {
+			if (this->players[this->joueur].selected != -1) {
+				for (int l = 0; l < 8; l++) {
+					for (int k = 0; k < 10; k++) { 
+						if (this->tabCombat[l][k].x == perso->position.x && this->tabCombat[l][k].y == perso->position.y) {
+							if (this->joueur != perso->appartenance.x) {
+								printf("\n COMBAT :  Joueur %d , perso %d\n VS\n Joueur %d, perso %d \n", this->joueur, this->players[this->joueur].selected, perso->appartenance.x, perso->appartenance.y);
+							}
+
+						}
+					}
+				}
+			}
+
 		
+			if (perso->appartenance.x == this->joueur) {
+				this->players[this->joueur].selected = perso->appartenance.y;
+				Vector2u v;
+				v.x = perso->position.x;
+				v.y = perso->position.y;
+
+				for (int i = 0; i < 8; i++) {
+					for (int j = 0; j < 10; j++) {
+						this->tabCombat[i][j].x = 100;
+						this->tabCombat[i][j].y = 100;
+					}
+
+				}
+
+				for (int i = 0; i < 8; i++) {
+					for (int j = 0; j < 10; j++) {
+						this->tabDeplacement[i][j].x = 100;
+						this->tabDeplacement[i][j].y = 100;
+					}
+
+				}
+				//printf("position perso (%d,%d)\n", v.x, v.y);
+				this->map->getCasesForCombatRecursifNord(this->tabCombat[0], v, perso->range, 0);
+				this->map->getCasesForCombatRecursifSud(this->tabCombat[1], v, perso->range, 0);
+				this->map->getCasesForCombatRecursifEst(this->tabCombat[2], v, perso->range, 0);
+				this->map->getCasesForCombatRecursifOuest(this->tabCombat[3], v, perso->range ,0);
+
+				this->map->getCasesForCombatRecursifNordOuest(this->tabCombat[4], v, perso->range,0);
+				this->map->getCasesForCombatRecursifNordEst(this->tabCombat[5], v, perso->range, 0);
+				this->map->getCasesForCombatRecursifSudOuest(this->tabCombat[6], v, perso->range, 0);
+				this->map->getCasesForCombatRecursifSudEst(this->tabCombat[7], v, perso->range,0);
+
+			}
+		}
+		else if (perso == NULL) {
+			this->players[this->joueur].selected = -1;
+		}
+	
 	}
 
 	this->clear(Color(50, 50, 50));
@@ -938,7 +1024,8 @@ void FenetreYoan::renderTexteView() {
 }
 
 void FenetreYoan::renderView() {
-	Color *c = new Color(231, 62, 1);
+	Color *c = new Color(251, 190, 16);
+	Color *c2 = new Color(165, 21, 25);
 	/* SHADER */
 	sf::Shader shader;
 
@@ -997,7 +1084,14 @@ void FenetreYoan::renderView() {
 					for (int k=0; k < 10; k++) {
 						if (this->tabDeplacement[l][k].x == i && this->tabDeplacement[l][k].y == j) {
 							this->map->caseJeu[j][i]->sprite.setColor(*c);
-							//printf("view = %d,%d\n", tabDeplacement[l][k].x, tabDeplacement[l][k].y);
+						}
+					}
+				}
+
+				for (int l = 0; l < 8; l++) {
+					for (int k = 0; k < 10; k++) {
+						if (this->tabCombat[l][k].x == i && this->tabCombat[l][k].y == j) {
+							this->map->caseJeu[j][i]->sprite.setColor(*c2);
 						}
 					}
 				}

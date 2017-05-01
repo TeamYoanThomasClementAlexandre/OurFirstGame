@@ -35,6 +35,7 @@ private:
 	bool brouillard_de_guerre;
 	sf::Vector2u** tabDeplacement;
 	int** tabCost;
+	sf::Vector2u** tabCombat;
 	bool map_clicked;
 	Vector2u map_clicked_ij;
 

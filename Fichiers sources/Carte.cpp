@@ -163,8 +163,6 @@ Carte::~Carte()
 {
 }
 
-// x->i
-// y->j
 
 void Carte::getCasesForDeplacementRecursifNord(sf::Vector2u * tab,int* tabCost,sf::Vector2u case_tmp,int mobi_tmp,int mobi_de_base,int indice) {
 	// N 
@@ -449,69 +447,205 @@ void Carte::getCasesForDeplacementRecursifSudEst(sf::Vector2u * tab, int* tabCos
 	}
 }
 
-void Carte::getCasesForDeplacement(sf::Vector2u * tab, sf::Vector2u caseDepart,int mobi)
-{
-	if (caseDepart.y % 2 == 0) {
-		for (int i = 0; i < 8; i++) {
-			sf::Vector2u *tmp=NULL;
-			if (i == 0) { //SUD
-				tmp = new sf::Vector2u(caseDepart.x, caseDepart.y + 2);
-			}
-			else if (i == 1) { // SUD-EST
-				tmp = new sf::Vector2u(caseDepart.x, caseDepart.y + 1);
-			}
-			else if (i == 2) { // EST
-			    tmp = new sf::Vector2u(caseDepart.x+1, caseDepart.y);
-			}
-			else if (i == 3) { // NORD-EST
-				tmp = new sf::Vector2u(caseDepart.x, caseDepart.y -1);
-			}
-			else if (i == 4) { // NORD
-				tmp = new sf::Vector2u(caseDepart.x, caseDepart.y - 2);
-			}
-			else if (i == 5) { // NORD-OUEST
-				tmp = new sf::Vector2u(caseDepart.x - 1, caseDepart.y - 1);
-			}
-			else if (i == 6) { // OUEST
-				tmp = new sf::Vector2u(caseDepart.x - 1, caseDepart.y);
-			}
-			else if (i == 7) { // SUD-OUEST
-				tmp = new sf::Vector2u(caseDepart.x - 1, caseDepart.y + 1);
-			}		
-			tab[i] = *tmp;
-		}
+
+
+
+void Carte::getCasesForCombatRecursifNord(sf::Vector2u * tab, sf::Vector2u case_tmp, int range, int indice) {
+
+	if (range == 0) {
+		return;
 	}
 	else {
-		for (int i = 0; i < 8; i++) {
-			sf::Vector2u *tmp = NULL;
-			if (i == 0) { //SUD
-				tmp = new sf::Vector2u(caseDepart.x, caseDepart.y + 2);
-			}
-			else if (i == 1) { // SUD-EST
-				tmp = new sf::Vector2u(caseDepart.x+1, caseDepart.y + 1);
-			}
-			else if (i == 2) { // EST
-				tmp = new sf::Vector2u(caseDepart.x + 1, caseDepart.y);
-			}
-			else if (i == 3) { // NORD-EST
-				tmp = new sf::Vector2u(caseDepart.x+1, caseDepart.y - 1);
-			}
-			else if (i == 4) { // NORD
-				tmp = new sf::Vector2u(caseDepart.x, caseDepart.y - 2);
-			}
-			else if (i == 5) { // NORD-OUEST
-				tmp = new sf::Vector2u(caseDepart.x , caseDepart.y-1);//lol
-			}
-			else if (i == 6) { // OUEST
-				tmp = new sf::Vector2u(caseDepart.x - 1, caseDepart.y);
-			}
-			else if (i == 7) { // SUD-OUEST
-				tmp = new sf::Vector2u(caseDepart.x, caseDepart.y + 1);
-			}
-			tab[i] = *tmp;
+		sf::Vector2u *tmp = NULL;
+		if (case_tmp.y % 2 == 0) {
+			tmp = new sf::Vector2u(case_tmp.x, case_tmp.y - 2);
 		}
-	}
+		else {
+			tmp = new sf::Vector2u(case_tmp.x, case_tmp.y - 2);
+		}
+
+		if (tmp->y < 0 || tmp->y >11 || tmp->x <0 || tmp->x > 10) {
+			return;
+		}
+		tab[indice] = *tmp;
+		indice++;
+		range--;
 		
-			
+		this->getCasesForCombatRecursifNord(tab, *tmp, range, indice);
+	}
+
 }
+void Carte::getCasesForCombatRecursifSud(sf::Vector2u * tab, sf::Vector2u case_tmp, int range, int indice) {
+	if (range == 0) {
+		return;
+	}
+	else {
+		sf::Vector2u *tmp = NULL;
+		if (case_tmp.y % 2 == 0) {
+			tmp = new sf::Vector2u(case_tmp.x, case_tmp.y + 2);
+		}
+		else {
+			tmp = new sf::Vector2u(case_tmp.x, case_tmp.y + 2);
+		}
+
+		if (tmp->y < 0 || tmp->y >11 || tmp->x <0 || tmp->x > 10) {
+			return;
+		}
+		tab[indice] = *tmp;
+		indice++;
+		range--;
+
+		this->getCasesForCombatRecursifSud(tab, *tmp, range, indice);
+	}
+
+}
+void Carte::getCasesForCombatRecursifEst(sf::Vector2u * tab, sf::Vector2u case_tmp, int range, int indice) {
+	if (range == 0) {
+		return;
+	}
+	else {
+		sf::Vector2u *tmp = NULL;
+		if (case_tmp.y % 2 == 0) {
+			tmp = new sf::Vector2u(case_tmp.x + 1, case_tmp.y);
+		}
+		else {
+			tmp = new sf::Vector2u(case_tmp.x + 1, case_tmp.y);
+		}
+
+		if (tmp->y < 0 || tmp->y >11 || tmp->x <0 || tmp->x > 10) {
+			return;
+		}
+		tab[indice] = *tmp;
+		indice++;
+		range--;
+
+		this->getCasesForCombatRecursifEst(tab, *tmp, range, indice);
+	}
+
+
+}
+void Carte::getCasesForCombatRecursifOuest(sf::Vector2u * tab, sf::Vector2u case_tmp, int range, int indice) {
+	if (range == 0) {
+		return;
+	}
+	else {
+		sf::Vector2u *tmp = NULL;
+		if (case_tmp.y % 2 == 0) {
+			tmp = new sf::Vector2u(case_tmp.x - 1, case_tmp.y);
+		}
+		else {
+			tmp = new sf::Vector2u(case_tmp.x - 1, case_tmp.y);
+		}
+
+		if (tmp->y < 0 || tmp->y >11 || tmp->x <0 || tmp->x > 10) {
+			return;
+		}
+		tab[indice] = *tmp;
+		indice++;
+		range--;
+
+		this->getCasesForCombatRecursifOuest(tab, *tmp, range, indice);
+	}
+
+}
+
+void Carte::getCasesForCombatRecursifNordOuest(sf::Vector2u * tab, sf::Vector2u case_tmp, int range, int indice) {
+	if (range == 0) {
+		return;
+	}
+	else {
+		sf::Vector2u *tmp = NULL;
+		if (case_tmp.y % 2 == 0) {
+			tmp = new sf::Vector2u(case_tmp.x - 1, case_tmp.y - 1);
+		}
+		else {
+			tmp = new sf::Vector2u(case_tmp.x, case_tmp.y - 1);
+		}
+
+		if (tmp->y < 0 || tmp->y >11 || tmp->x <0 || tmp->x > 10) {
+			return;
+		}
+		tab[indice] = *tmp;
+		indice++;
+		range--;
+
+		this->getCasesForCombatRecursifNordOuest(tab, *tmp, range, indice);
+	}
+
+}
+void Carte::getCasesForCombatRecursifNordEst(sf::Vector2u * tab, sf::Vector2u case_tmp, int range, int indice) {
+	if (range == 0) {
+		return;
+	}
+	else {
+		sf::Vector2u *tmp = NULL;
+		if (case_tmp.y % 2 == 0) {
+			tmp = new sf::Vector2u(case_tmp.x, case_tmp.y - 1);
+		}
+		else {
+			tmp = new sf::Vector2u(case_tmp.x + 1, case_tmp.y - 1);
+		}
+
+		if (tmp->y < 0 || tmp->y >11 || tmp->x <0 || tmp->x > 10) {
+			return;
+		}
+		tab[indice] = *tmp;
+		indice++;
+		range--;
+
+		this->getCasesForCombatRecursifNordEst(tab, *tmp, range, indice);
+	}
+
+}
+void Carte::getCasesForCombatRecursifSudOuest(sf::Vector2u * tab, sf::Vector2u case_tmp, int range, int indice) {
+	if (range == 0) {
+		return;
+	}
+	else {
+		sf::Vector2u *tmp = NULL;
+		if (case_tmp.y % 2 == 0) {
+			tmp = new sf::Vector2u(case_tmp.x - 1, case_tmp.y + 1);
+		}
+		else {
+			tmp = new sf::Vector2u(case_tmp.x, case_tmp.y + 1);
+		}
+
+		if (tmp->y < 0 || tmp->y >11 || tmp->x <0 || tmp->x > 10) {
+			return;
+		}
+		tab[indice] = *tmp;
+		indice++;
+		range--;
+
+		this->getCasesForCombatRecursifSudOuest(tab, *tmp, range, indice);
+	}
+
+}
+void Carte::getCasesForCombatRecursifSudEst(sf::Vector2u * tab, sf::Vector2u case_tmp, int range, int indice) {
+	if (range == 0) {
+		return;
+	}
+	else {
+		sf::Vector2u *tmp = NULL;
+		if (case_tmp.y % 2 == 0) {
+			tmp = new sf::Vector2u(case_tmp.x, case_tmp.y + 1);
+		}
+		else {
+			tmp = new sf::Vector2u(case_tmp.x + 1, case_tmp.y + 1);
+		}
+
+		if (tmp->y < 0 || tmp->y >11 || tmp->x <0 || tmp->x > 10) {
+			return;
+		}
+		tab[indice] = *tmp;
+		indice++;
+		range--;
+
+		this->getCasesForCombatRecursifSudEst(tab, *tmp, range, indice);
+	}
+
+}
+
+
+			
 
