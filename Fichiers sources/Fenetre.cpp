@@ -264,7 +264,7 @@ void Fenetre::affichageMenu() {
 						players[0] = *joueur1;
 						players[1] = *joueur2;
 
-						FenetreYoan* game = new FenetreYoan(taille,players); // donner ici les coordonnées
+						FenetreYoan* game = new FenetreYoan(taille,players); 
 						game->load();
 						game->idle();
 					}

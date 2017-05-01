@@ -32,6 +32,7 @@ private:
 	sf::Text* tablo_text; // contient les Texts de la vue
 	int nbr_tour;
 	bool findutour;
+	bool exit;
 	bool brouillard_de_guerre;
 	sf::Vector2u** tabDeplacement;
 	int** tabCost;
@@ -58,7 +59,7 @@ public:
 	void PlacementPersonnage(); // boucle de placement
 	void Game(); // boucle de jeu
 	bool isWin(); // c'est gagné ?
-
+	int ini_first_tour();
 	void player_choice(); // affiche cercle de choix perso
 
 	void render(); // affiche vue placement

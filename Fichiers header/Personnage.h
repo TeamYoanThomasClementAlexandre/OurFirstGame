@@ -27,6 +27,7 @@ public:
 	int deplacement;
 	int deplacementRestante;
 	int vieRestante;
+	int vitesse_dattaque;
 	std::string type;
 	sf::Vector2i position;
 	sf::Vector2i appartenance;

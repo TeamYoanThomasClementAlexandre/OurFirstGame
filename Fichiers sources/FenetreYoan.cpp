@@ -26,6 +26,8 @@ using namespace sf;
 
 FenetreYoan::FenetreYoan(sf::Vector2u dimension,Joueur* playerss)
 {
+	// ini fin du game
+	this->exit = false;
 	// ini case map cliqued
 	Vector2u *vec1 = new Vector2u();
 	vec1->x = 0;
@@ -99,9 +101,11 @@ FenetreYoan::FenetreYoan(sf::Vector2u dimension,Joueur* playerss)
 	//
 
 	// choix joueur aleatoirement  // FIX EN FONCTION DE LA VITESSE DATTAQUE DES DEUX JOUEUR
-	srand(time(NULL));
-	this->joueur= rand() % 2;
-	//
+
+		srand(time(NULL));
+		this->joueur = rand() % 2;
+	
+	
 
 	// parametrage fenetre de jeu
 	this->create(VideoMode(dimension.x, dimension.y), "Ages of Strategies",sf::Style::Titlebar);
@@ -287,6 +291,15 @@ void FenetreYoan::load() {
 	Sprite *findutour = new Sprite(*pFindutourTexture);
 	this->autre[0] = *findutour;
 
+	Texture* pExitTexture = new Texture();
+	const char* szResourceExit = "../Fichiers externe/img/exit.png";
+	if (!pExitTexture->loadFromFile(szResourceExit)) {
+		printf("Error load sprite %s", szResourceExit);
+	}
+	Sprite *exit = new Sprite(*pExitTexture);
+	this->autre[1] = *exit;
+
+
 	// recuperation map
 
 	Fichier* pFichier = new Fichier();
@@ -425,10 +438,37 @@ void FenetreYoan::load() {
 	this->sPersonnage[3] = *sLancier;
 }
 
+
+int FenetreYoan::ini_first_tour() {
+	int vitesse_dattaque_j1=0;
+	int vitesse_dattaque_j2=0;
+	for (int i = 0; i < 4; i++) {
+		vitesse_dattaque_j1 += this->players[0].p_placer[i].vitesse_dattaque;
+		vitesse_dattaque_j2 += this->players[1].p_placer[i].vitesse_dattaque;
+
+	}
+	if (vitesse_dattaque_j1 == vitesse_dattaque_j2) {
+		
+		srand(time(NULL));
+		int rando = rand() % 2;
+		printf("RANDOM.. J%d COMMENCE", rando);
+		return rando;
+	}
+	else if (vitesse_dattaque_j1>vitesse_dattaque_j2) {
+		printf("J1 COMMENCE");
+		return 0;
+	}
+	else if (vitesse_dattaque_j2 > vitesse_dattaque_j1) {
+		printf("J2 COMMENCE");
+		return 1;
+	}
+}
 void FenetreYoan::idle() {	
 	this->PlacementPersonnage();
 	this->joueur = (this->joueur == 0) ? 1 : 0;
 	this->PlacementPersonnage();
+
+	this->joueur = this->ini_first_tour();
 	this->nbr_tour++;
 	this->players[0].selected = -1;
 	this->players[1].selected = -1;
@@ -440,6 +480,10 @@ void FenetreYoan::idle() {
 		}
 
 		this->Game();
+		if (this->exit) {
+			printf("FIN DU GAME\n");
+			return;
+		}
 
 		this->joueur = (this->joueur == 0) ? 1 : 0;
 
@@ -448,6 +492,12 @@ void FenetreYoan::idle() {
 		}
 
 		this->Game();
+
+		if (this->exit) {
+			printf("FIN DU GAME\n");
+			return;
+		}
+
 		if (this->isWin()) {
 			printf("Un joueur à gagné");
 			return;
@@ -500,6 +550,9 @@ void FenetreYoan::Game() {
 			this->controleur_game(this->event);
 		}
 
+		if (this->exit) {
+			return;
+		}
 		if (this->findutour) {
 			printf("Fin du tour de joueur %d !\n", this->joueur);
 			this->findutour = false;
@@ -513,6 +566,9 @@ void FenetreYoan::controleur_game(Event event)
 {
 	if (event.mouseButton.button == sf::Mouse::Left) //
 	{
+		if (event.mouseButton.x > 900 && event.mouseButton.x < 950 && event.mouseButton.y >= 300 && event.mouseButton.y < 340) { // EXIT
+			this->exit = true;
+		}
 		if (event.mouseButton.x > 870 && event.mouseButton.x < 960 && event.mouseButton.y >= 515 && event.mouseButton.y < 535) {
 			this->findutour = true;
 		}
@@ -1216,6 +1272,8 @@ void FenetreYoan::renderView() {
 	this->renderTexteView();
 	this->autre[0].setPosition(870, 515);
 	this->draw(autre[0]);
+	this->autre[1].setPosition(900, 300);
+	this->draw(autre[1]);
 
 	if (this->map_clicked) {
 		Case *c = this->map->caseJeu[this->map_clicked_ij.y][this->map_clicked_ij.x];
