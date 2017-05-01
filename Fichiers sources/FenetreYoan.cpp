@@ -229,19 +229,15 @@ void FenetreYoan::controleur_placement(Event event) {
 		{
 			//printf("%d , %d\n", event.mouseButton.x, event.mouseButton.y);
 			if (event.mouseButton.x > 7 && event.mouseButton.x < 714 && event.mouseButton.y >= 370 && event.mouseButton.y<400) {
-				printf("perso 1\n");
 				this->players[this->joueur].selected = 0;
 			}
 			else if (event.mouseButton.x > 7 && event.mouseButton.x < 714 && event.mouseButton.y >= 400 && event.mouseButton.y < 430) {
 				this->players[this->joueur].selected = 1;
-				printf("perso 2\n");
 			}
 			else if (event.mouseButton.x > 7 && event.mouseButton.x < 714 && event.mouseButton.y >= 430 && event.mouseButton.y < 460) {
-				printf("perso 3\n");
 				this->players[this->joueur].selected = 2;
 			}
 			else if (event.mouseButton.x > 7 && event.mouseButton.x < 714 && event.mouseButton.y >= 460 && event.mouseButton.y < 490) {
-				printf("perso 4\n");
 				this->players[this->joueur].selected = 3;
 			}
 			/*
@@ -359,12 +355,12 @@ void FenetreYoan::load() {
 				if (i == 0 && j % 2 == 0 || j == this->max_y - 1 || i== this->max_x - 1) {
 					
 					Sprite *desert = new Sprite(*pDesertTexture);
-				pCase = new Case(*desert,1.5);
+				pCase = new Case(*desert,2);
 				pCase->texture = *pDesertTexture;
 				}
 				else {
 					Sprite *DesertMin = new Sprite(*pDesertTextureMin);
-					pCase = new Case(*DesertMin,1.5);
+					pCase = new Case(*DesertMin,2);
 					pCase->texture = *pDesertTextureMin;
 				}
 			
@@ -518,9 +514,14 @@ void FenetreYoan::controleur_game(Event event)
 		if (vec != NULL) {
 			if (this->players[this->joueur].selected != -1) {
 				for (int l=0; l < 8; l++) {
-					for (int k=0; k < 10; k++) {
+					for (int k=0; k < 10; k++) { // mettre -1 dans une ancinne case
 						if (this->tabDeplacement[l][k].x == vec->x && this->tabDeplacement[l][k].y == vec->y) {
 							if (this->players[this->joueur].p_placer[this->players[this->joueur].selected].deplacementRestante != 0) {
+
+								int bigx = this->players[this->joueur].p_placer[this->players[this->joueur].selected].position.x;
+								int bigy = this->players[this->joueur].p_placer[this->players[this->joueur].selected].position.y;
+								this->map->caseJeu[bigy][bigx]->who = -1; // permet de vider l'ancienne case
+
 								this->players[this->joueur].p_placer[this->players[this->joueur].selected].position.x = vec->x;
 								this->players[this->joueur].p_placer[this->players[this->joueur].selected].position.y = vec->y;
 								//savoir de combien de case il c'est deplacer ,metre dans x;
@@ -538,16 +539,14 @@ void FenetreYoan::controleur_game(Event event)
 				this->map_clicked = true;
 				this->map_clicked_ij.x = vec->x;
 				this->map_clicked_ij.y = vec->y;
-				//afficher_recap();
-				//printf("map\n");
 			}
 		}
 		else if (perso != NULL) {
 			if (perso->appartenance.x == this->joueur) {
 				this->players[this->joueur].selected = perso->appartenance.y;
-				Vector2u *v= new Vector2u;
-				v->x = perso->position.x;
-				v->y = perso->position.y;
+				Vector2u v;
+				v.x = perso->position.x;
+				v.y = perso->position.y;
 
 				for (int i = 0; i < 8; i++) {
 					for (int j = 0; j < 10; j++) {
@@ -557,31 +556,16 @@ void FenetreYoan::controleur_game(Event event)
 
 				}
 				//printf("position perso (%d,%d)\n", v.x, v.y);
-				this->map->getCasesForDeplacementRecursifNord(this->tabDeplacement[0], this->tabCost[0], *v, perso->deplacementRestante, perso->deplacementRestante, 0);
-				this->map->getCasesForDeplacementRecursifSud(this->tabDeplacement[1], this->tabCost[1], *v, perso->deplacementRestante, perso->deplacementRestante, 0);
-				this->map->getCasesForDeplacementRecursifEst(this->tabDeplacement[2], this->tabCost[2], *v, perso->deplacementRestante, perso->deplacementRestante, 0);
-				this->map->getCasesForDeplacementRecursifOuest(this->tabDeplacement[3], this->tabCost[3], *v, perso->deplacementRestante, perso->deplacementRestante, 0);
+				this->map->getCasesForDeplacementRecursifNord(this->tabDeplacement[0], this->tabCost[0], v, perso->deplacementRestante, perso->deplacementRestante, 0);
+				this->map->getCasesForDeplacementRecursifSud(this->tabDeplacement[1], this->tabCost[1], v, perso->deplacementRestante, perso->deplacementRestante, 0);
+				this->map->getCasesForDeplacementRecursifEst(this->tabDeplacement[2], this->tabCost[2], v, perso->deplacementRestante, perso->deplacementRestante, 0);
+				this->map->getCasesForDeplacementRecursifOuest(this->tabDeplacement[3], this->tabCost[3], v, perso->deplacementRestante, perso->deplacementRestante, 0);
 
-				this->map->getCasesForDeplacementRecursifNordOuest(this->tabDeplacement[4], this->tabCost[4], *v, perso->deplacementRestante, perso->deplacementRestante, 0);
-				this->map->getCasesForDeplacementRecursifNordEst(this->tabDeplacement[5], this->tabCost[5], *v, perso->deplacementRestante, perso->deplacementRestante, 0);
-				this->map->getCasesForDeplacementRecursifSudOuest(this->tabDeplacement[6], this->tabCost[6], *v, perso->deplacementRestante, perso->deplacementRestante, 0);
-				this->map->getCasesForDeplacementRecursifSudEst(this->tabDeplacement[7], this->tabCost[7], *v, perso->deplacementRestante, perso->deplacementRestante, 0);
+				this->map->getCasesForDeplacementRecursifNordOuest(this->tabDeplacement[4], this->tabCost[4], v, perso->deplacementRestante, perso->deplacementRestante, 0);
+				this->map->getCasesForDeplacementRecursifNordEst(this->tabDeplacement[5], this->tabCost[5], v, perso->deplacementRestante, perso->deplacementRestante, 0);
+				this->map->getCasesForDeplacementRecursifSudOuest(this->tabDeplacement[6], this->tabCost[6], v, perso->deplacementRestante, perso->deplacementRestante, 0);
+				this->map->getCasesForDeplacementRecursifSudEst(this->tabDeplacement[7], this->tabCost[7], v, perso->deplacementRestante, perso->deplacementRestante, 0);
 
-				
-					
-				//this->map->getCasesForDeplacement(this->tabDeplacement, *v, perso->deplacementRestante);
-
-				/*printf("position perso (%d,%d)\n", v.x, v.y);
-				for (int j = 0; j < 2; j++) {
-					for (int i = 0; i < 10; i++) {
-						if (tabDeplacement[j][i].x != 100) {
-							printf("(%d,%d) => ( %d,%d ) , %d \n", j, i, tabDeplacement[j][i].x, tabDeplacement[j][i].y, tabCost[j][i]);
-						}
-					}
-				}*/
-
-
-				//printf("perso %d du joueur %d \n", perso->appartenance.y, perso->appartenance.x);
 			}
 		}
 		else if (vec == NULL  && perso == NULL) {
