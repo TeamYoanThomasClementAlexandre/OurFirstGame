@@ -3,8 +3,8 @@
 #include <iostream>
 #include <fstream>
 
-#define MAXI 16
-#define MAXJ 34
+#define MAXI 11
+#define MAXJ 12
 
 Fichier::Fichier()
 {

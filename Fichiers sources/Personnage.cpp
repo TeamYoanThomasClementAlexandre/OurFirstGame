@@ -9,6 +9,7 @@ Personnage::Personnage(std::string typeConstr){
 	this->position.y = -1;
 	this->id = s;
 	this->vitesse_dattaque = 1;
+	this->arme = "epe.png";
 	if (type == "constr") {
 		this->degat = -1;
 		this->armure = -1;

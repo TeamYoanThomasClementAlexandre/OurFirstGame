@@ -7,8 +7,8 @@
 #include "..\Fichiers header\Case.h"
 #include "..\Fichiers header\Fichier.h"
 
-#define MAXI 16 //1280 1024
-#define MAXJ 34
+#define MAXI 11 //1280 1024
+#define MAXJ 12
 
 #define TAILLESPRITE_X 78
 #define TAILLESPRITE_Y 45
@@ -95,9 +95,9 @@ FenetreYoan::FenetreYoan(sf::Vector2u dimension,Joueur* playerss)
 	}
 
 	// DEBUG
-	sf::RenderWindow *window = new RenderWindow(sf::VideoMode(960, 540), "Debug Window", sf::Style::Titlebar);
+	/*sf::RenderWindow *window = new RenderWindow(sf::VideoMode(960, 540), "Debug Window", sf::Style::Titlebar);
 	this->debug = window;
-	this->debug->setPosition(sf::Vector2i(0, 0));
+	this->debug->setPosition(sf::Vector2i(0, 0));*/
 	//
 
 	// choix joueur aleatoirement  // FIX EN FONCTION DE LA VITESSE DATTAQUE DES DEUX JOUEUR
@@ -218,7 +218,7 @@ void FenetreYoan::controleur_placement(Event event) {
 		if (event.mouseButton.button == sf::Mouse::Left) //
 		{
 			Color c;
-			if (event.mouseButton.x != NULL && event.mouseButton.y != NULL) {
+			if (event.mouseButton.x != NULL && event.mouseButton.y != NULL && event.mouseButton.x>=0 && event.mouseButton.x<=960 && event.mouseButton.y>=0 && event.mouseButton.y<=540){
 				c = this->bm.image.getPixel(event.mouseButton.x, 540 - event.mouseButton.y);
 			}
 			
@@ -278,6 +278,24 @@ FenetreYoan::~FenetreYoan()
 }
 
 void FenetreYoan::load() {
+	//initialisation des sprites equipements
+	
+	for (int i = 0; i < 2; i++) {
+		for (int j = 0; j < 4; j++) {
+			Texture* parme = new Texture();
+			//snprintf(,);
+			char c[100];
+			sprintf_s(c, "../Fichiers externe/img/%s", this->players[i].p[j].arme.c_str());
+			if (!parme->loadFromFile(c)) {
+				printf("Error load sprite %s", c);
+			}
+			Sprite *arme = new Sprite(*parme);
+			arme->setScale(0.5, 0.5);
+
+			this->players[i].p[j].sarme = arme;
+		}
+	}
+
 	//initialisation des autres sprites utiles
 
 	Sprite* tabSprite = new Sprite[10];
@@ -411,7 +429,7 @@ void FenetreYoan::load() {
 	Texture* pPaladinTexture = new Texture();
 	Texture* pLancierTexture = new Texture();
 
-	const char* szResourceArcher = "../Fichiers externe/img/archer.png";
+	const char* szResourceArcher = "../Fichiers externe/img/test.png";
 	if (!pArcherTexture->loadFromFile(szResourceArcher)) {
 		printf("Error load sprite %s", szResourceArcher);
 	}
@@ -573,7 +591,7 @@ void FenetreYoan::controleur_game(Event event)
 			this->findutour = true;
 		}
 		Color c;
-		if (event.mouseButton.x != NULL && event.mouseButton.y != NULL) {
+		if (event.mouseButton.x != NULL && event.mouseButton.y != NULL && event.mouseButton.x >= 0 && event.mouseButton.x <= 960 && event.mouseButton.y >= 0 && event.mouseButton.y <= 540) {
 			c = this->bm.image.getPixel(event.mouseButton.x, 540 - event.mouseButton.y);
 
 		}
@@ -905,14 +923,18 @@ void FenetreYoan::render() {
 				float offsetPosY = offsetY;
 				int decalage_y_cercle = 22;
 				cerclejoueur.setPosition((this->players[this->joueur].p_placer[i].position.x * 80) + 27, decalage_y_cercle + this->players[this->joueur].p_placer[i].position.y * 45);
-				spriteperso.setPosition((this->players[this->joueur].p_placer[i].position.x *80)+20, this->players[this->joueur].p_placer[i].position.y *45);
+				spriteperso.setPosition((this->players[this->joueur].p_placer[i].position.x *80)+10, this->players[this->joueur].p_placer[i].position.y *45 -10);
+				this->players[this->joueur].p_placer[i].sarme->setPosition((this->players[this->joueur].p_placer[i].position.x * 80) + 10, this->players[this->joueur].p_placer[i].position.y * 45);
 				if (this->players[this->joueur].p_placer[i].position.y % 2 == 1) {
 					cerclejoueur.setPosition((this->players[this->joueur].p_placer[i].position.x * 80 + 67), decalage_y_cercle + this->players[this->joueur].p_placer[i].position.y * 45 / 2);
-					spriteperso.setPosition((this->players[this->joueur].p_placer[i].position.x * 80+60), this->players[this->joueur].p_placer[i].position.y * 45/2);
+					spriteperso.setPosition((this->players[this->joueur].p_placer[i].position.x * 80 + 50), this->players[this->joueur].p_placer[i].position.y * 45 / 2 - 10);
+					this->players[this->joueur].p_placer[i].sarme->setPosition((this->players[this->joueur].p_placer[i].position.x * 80 + 50), this->players[this->joueur].p_placer[i].position.y * 45 / 2);
+
 				}
 				if (this->players[this->joueur].p_placer[i].position.y % 2 == 0) {
 					cerclejoueur.setPosition((this->players[this->joueur].p_placer[i].position.x * 80) + 27, decalage_y_cercle +(this->players[this->joueur].p_placer[i].position.y / 2) * 45);
-					spriteperso.setPosition((this->players[this->joueur].p_placer[i].position.x * 80) + 20, (this->players[this->joueur].p_placer[i].position.y / 2) * 45);
+					spriteperso.setPosition((this->players[this->joueur].p_placer[i].position.x * 80) + 10, (this->players[this->joueur].p_placer[i].position.y / 2) * 45 -10);
+					this->players[this->joueur].p_placer[i].sarme->setPosition((this->players[this->joueur].p_placer[i].position.x * 80) + 10, (this->players[this->joueur].p_placer[i].position.y / 2) * 45);
 				}
 
 				float fr = (float)r / 255.0; // ici arriver a trouver les 3 r g b a partir du char;
@@ -924,6 +946,7 @@ void FenetreYoan::render() {
 				
 				this->draw(cerclejoueur);
 				this->draw(spriteperso);
+				this->draw(*this->players[this->joueur].p_placer[i].sarme);
 				renderTexture.draw(spriteperso, rs); // rendu dans une texture shader
 		//	}
 		}
@@ -936,8 +959,8 @@ void FenetreYoan::render() {
 	const sf::Texture& texture = renderTexture.getTexture();
 	sf::Sprite sprite(texture);
 	Image *image;
-	this->debug->draw(sprite);
-	this->debug->display();
+//	this->debug->draw(sprite);
+	//this->debug->display();
 	this->bm.image = texture.copyToImage();
 	this->display();
 	
@@ -1232,7 +1255,13 @@ void FenetreYoan::renderView() {
 			char* couleurname = new char[10];
 			memset(couleurname, 0, 10);
 			sprintf_s(couleurname, 10, "%00d%00d%00d\0", r, g, b);
-
+			//
+			Texture* pepe = new Texture();
+			const char* szResourceepe = "../Fichiers externe/img/epe.png";
+			if (!pepe->loadFromFile(szResourceepe)) {
+				printf("Error load sprite %s", szResourceepe);
+			}
+	
 
 			Vector2u *v = new Vector2u();
 			v->x = this->players[j].p_placer[i].position.x;
@@ -1245,15 +1274,19 @@ void FenetreYoan::renderView() {
 			float offsetPosY = offsetY;
 			int decalage_y_cercle = 22;
 			cerclejoueur.setPosition((this->players[j].p_placer[i].position.x * 80) + 27, decalage_y_cercle + this->players[j].p_placer[i].position.y * 45);
-			spriteperso.setPosition((this->players[j].p_placer[i].position.x * 80) + 20, this->players[j].p_placer[i].position.y * 45);
+			spriteperso.setPosition((this->players[j].p_placer[i].position.x * 80) + 10, this->players[j].p_placer[i].position.y * 45);
+			this->players[this->joueur].p_placer[i].sarme->setPosition((this->players[j].p_placer[i].position.x * 80) + 10, this->players[j].p_placer[i].position.y * 45);
 			if (this->players[j].p_placer[i].position.y % 2 == 1) {
 				cerclejoueur.setPosition((this->players[j].p_placer[i].position.x * 80 + 67), decalage_y_cercle + this->players[j].p_placer[i].position.y * 45 / 2);
-				spriteperso.setPosition((this->players[j].p_placer[i].position.x * 80 + 60), this->players[j].p_placer[i].position.y * 45 / 2);
+				spriteperso.setPosition((this->players[j].p_placer[i].position.x * 80 + 50), this->players[j].p_placer[i].position.y * 45 / 2 - 10);
+				this->players[this->joueur].p_placer[i].sarme->setPosition((this->players[j].p_placer[i].position.x * 80 + 50), this->players[j].p_placer[i].position.y * 45 / 2 );
 			}
 			if (this->players[j].p_placer[i].position.y % 2 == 0) {
-				cerclejoueur.setPosition((this->players[j].p_placer[i].position.x * 80) + 27, decalage_y_cercle + (this->players[j].p_placer[i].position.y / 2) * 45);
-				spriteperso.setPosition((this->players[j].p_placer[i].position.x * 80) + 20, (this->players[j].p_placer[i].position.y / 2) * 45);
+				cerclejoueur.setPosition((this->players[j].p_placer[i].position.x * 80) + 27, decalage_y_cercle + (this->players[j].p_placer[i].position.y / 2) * 45 );
+				spriteperso.setPosition((this->players[j].p_placer[i].position.x * 80) + 10, (this->players[j].p_placer[i].position.y / 2) * 45 - 10 );
+				this->players[this->joueur].p_placer[i].sarme->setPosition((this->players[j].p_placer[i].position.x * 80) + 10, (this->players[j].p_placer[i].position.y / 2) * 45);
 			}
+
 
 			float fr = (float)r / 255.0; // ici arriver a trouver les 3 r g b a partir du char;
 			float fg = (float)g / 255.0;
@@ -1264,10 +1297,12 @@ void FenetreYoan::renderView() {
 
 			this->draw(cerclejoueur);
 			this->draw(spriteperso);
+			this->draw(*this->players[this->joueur].p_placer[i].sarme);
 			renderTexture.draw(spriteperso, rs); // rendu dans une texture shader
 		}								 
 		}
 	}
+
 
 	this->renderTexteView();
 	this->autre[0].setPosition(870, 515);
@@ -1290,8 +1325,8 @@ void FenetreYoan::renderView() {
 	const sf::Texture& texture = renderTexture.getTexture();
 	sf::Sprite sprite(texture);
 	Image *image;
-	this->debug->draw(sprite);
-	this->debug->display();
+	//this->debug->draw(sprite);
+	//this->debug->display();
 	this->bm.image = texture.copyToImage();
 	this->display();
 

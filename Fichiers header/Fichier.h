@@ -2,8 +2,8 @@
 #define __FICHIER_H__
 
 #include <string>
-#define MAXI 16
-#define MAXJ 34
+#define MAXI 11
+#define MAXJ 12
 
 class Fichier
 {
