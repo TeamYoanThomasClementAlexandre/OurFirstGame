@@ -4,23 +4,25 @@
 #include <SFML\Graphics\RenderWindow.hpp>
 #include <SFML\Graphics\RectangleShape.hpp>
 #include <SFML\Window\VideoMode.hpp>
-#include "Rectangle.h"
 using namespace std;
 using namespace sf;
 class Fenetre : public sf::RenderWindow
 {
 private:
 	std::string titre;
+	std::string joueur1;
 	int tailleFenetreAccueilX;
 	int tailleFenetreAccueilY;
 	sf::VideoMode Mode;
-	//std::vector<Rectangle>choixJeu;// tous les carré de choix
+
+	sf::Vector2u newScreen();
+	std::string adversaireEnter();
 
 public:
-	Fenetre(int tailleFenetreAccueilX, int tailleFenetreAccueilY);
+	Fenetre(int tailleFenetreAccueilX, int tailleFenetreAccueilY,string joueur0);
 	~Fenetre();
 	void affichageMenu();
-	sf::Vector2u newScreen();
+	
 
 };
 

@@ -6,7 +6,7 @@
 #include <SFML\Graphics\Image.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML\Graphics\Color.hpp>
-#include "..\Fichiers header\Personnage.h"
+#include "..\Fichiers header\PersonnageYoan.h"
 
 
 struct char_cmp
@@ -18,13 +18,13 @@ class BlendModee
 {
 public:
 	BlendModee();
-	BlendModee(std::map<char*, sf::Vector2u*,char_cmp>* dico, std::map<char*,Personnage*, char_cmp>* dicoIJ);
+	BlendModee(std::map<char*, sf::Vector2u*,char_cmp>* dico, std::map<char*,PersonnageYoan*, char_cmp>* dicoIJ);
 	~BlendModee();
 	//sf::RenderWindow *debug;
 	sf::Image image;
 	std::map<char*, sf::Vector2u*,char_cmp>* dico;
 
-	std::map<char*, Personnage*, char_cmp>* dicoPersonnagesIJ;
+	std::map<char*, PersonnageYoan*, char_cmp>* dicoPersonnagesIJ;
 private:
 
 	

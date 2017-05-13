@@ -1,16 +1,13 @@
 #include "..\Fichiers header\Joueur.h"
 
-
-Joueur::Joueur()
-{
-	this->personnage_placer = 0;
-	Personnage* p= new Personnage[4];
-	this->p_placer = p;
-
-	this->selected = -1;
+Joueur::Joueur(std::string login0) {
+	this->login = login0;
+	this->tabPersonnage.push_back(Personnage("dragodia", "Archer"));
+	this->tabPersonnage.push_back(Personnage("dragodia", "Lancier"));
+	this->tabPersonnage.push_back(Personnage("dragodia", "Archer"));
+	this->tabPersonnage.push_back(Personnage("dragodia", "Archer"));
+	tabPersonnage[0].getArmure();
 }
+Joueur::~Joueur() {
 
-
-Joueur::~Joueur()
-{
 }

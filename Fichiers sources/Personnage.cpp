@@ -1,79 +1,41 @@
 #include "..\\Fichiers header\Personnage.h"
-Personnage::Personnage(std::string typeConstr){
-	this->type = typeConstr;
 
-	char* s = new char[10];
-	memset(s, 0, 10);
-	sprintf_s(s, 10, "%00d%00d%00d\0", 0, 0, 0);
-	this->position.x = -1;
-	this->position.y = -1;
-	this->id = s;
-	this->vitesse_dattaque = 1;
-	this->arme = "epe.png";
-	if (type == "constr") {
-		this->degat = -1;
-		this->armure = -1;
-		this->deplacement = -1;
-		this->deplacementRestante = this->deplacement;
-		this->range = -1;
-		this->vie = -1;
-		this->vieRestante = -1;
 
-	}
-
-	if (type == "archer") {
-		this->degat = 40;
-		this->armure = 0;
-		this->deplacement = 2;
-		this->deplacementRestante = this->deplacement;
-		this->range = 3;
-		this->vie = 80;
-		this->vieRestante = this->vie;
-
-	}
-	if (type == "paladin") {
-		this->degat = 40;
-		this->armure = 20;
-		this->deplacement = 4;
-		this->deplacementRestante = this->deplacement;
-		this->range = 1;
-		this->vie = 100;
-		this->vieRestante = this->vie;
-
-	}
-	if (type == "epeiste") {
-		this->degat = 50;
-		this->armure = 20;
-		this->deplacement = 2;
-		this->deplacementRestante = this->deplacement;
-		this->range = 1;
-		this->vie = 80;
-		this->vieRestante = this->vie;
-
-	}
-	if (type == "lancier") {
-		this->degat = 40;
-		this->armure = 20;
-		this->deplacement = 3;
-		this->deplacementRestante = this->deplacement;
-		this->range = 1;
-		this->vie = 80;
-		this->vieRestante = this->vie;
-
-	}
+Personnage::Personnage(string nomJoueur0,string typePersonnage0){
+	this->interactionBDD= InteractionBDD::Ini();
+	this->nomJoueur = nomJoueur0;
+	this->typePersonnage = typePersonnage0;
+	this->InitialisationCarac();
 }
-std::string Personnage::afficher() {
-	std::string s = this->type +
-		"        " + std::to_string(this->vieRestante) + "/" + std::to_string(this->vie) +
-		"    " + std::to_string(this->deplacementRestante) + "/" + std::to_string(this->deplacement) +
-		"  " + std::to_string(this->degat) +
-		"   " + std::to_string(this->armure) +
-		"         " + std::to_string(this->range);
 
-	return s;
-}
-Personnage::Personnage() {
+void Personnage::InitialisationCarac() { 
+	int i;
+	int *tableauCarac =interactionBDD->getCarac(nomJoueur, typePersonnage);
+	
+	this->degat = tableauCarac[0];
+	printf("mes dommages sont de %d\n",this->degat );
 
+	this->vie = tableauCarac[1];
+	printf("mes vies sont de %d\n", this->vie);
+
+	this->mouvement = tableauCarac[2];
+	printf("mes mouvements sont de %d\n", this->mouvement);
+
+	this->armure = tableauCarac[3];
+	printf("mes armures sont de %d\n", this->armure);
+
+	printf("\n\n");
 }
-void Personnage::setCarac(){
+int Personnage::getMouvement(){
+	return this->mouvement;
+}
+int Personnage::getArmure() {
+	interactionBDD->getEquipement("dragodia");
+	return this->armure;
+}
+int Personnage::getDegat() {
+	return this->degat;
+}
+int Personnage::getVie() {
+	return this->vie;
 }

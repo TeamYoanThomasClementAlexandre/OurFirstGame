@@ -5,9 +5,10 @@
 #include <SFML\Window\VideoMode.hpp>
 #include <SFML/Graphics.hpp>
 #include "Carte.h"
-#include "..\\Fichiers header\Personnage.h"
-#include "..\\Fichiers header\Joueur.h"
+#include "..\\Fichiers header\PersonnageYoan.h"
+#include "..\\Fichiers header\JoueurYoan.h"
 #include "..\\Fichiers header\BlendModee.h"
+#include "..\\Fichiers header\Combat.h"
 
 
 
@@ -25,7 +26,7 @@ private:
 	Carte* map; // map du jeu
 	int joueur; // tour de quelle joueur
 	Event event; // evenement
-	Joueur* players; // tableau de joueur
+	JoueurYoan* players; // tableau de joueur
 	sf::RenderWindow *debug; // debug blendmode
 	BlendModee bm; // blendmode 
 	Sprite* sPersonnage; // contient les 4 sprites de personnages
@@ -39,11 +40,14 @@ private:
 	sf::Vector2u** tabCombat;
 	bool map_clicked;
 	Vector2u map_clicked_ij;
+	Combat combat;
+	bool** tabcombatbool; // connaitre si un perso peut attaquer
+	bool isWin; // c'est gagné ?
 
 	// TODO : faire un gestionnaire des resources
 	sf::Sprite sprite;
 public:
-	FenetreYoan(sf::Vector2u dimension, Joueur* players);
+	FenetreYoan(sf::Vector2u dimension, JoueurYoan* players);
 	~FenetreYoan();
 
 	void controleur_placement(Event event);
@@ -58,7 +62,6 @@ public:
 	void idle(); // instructions principales
 	void PlacementPersonnage(); // boucle de placement
 	void Game(); // boucle de jeu
-	bool isWin(); // c'est gagné ?
 	int ini_first_tour();
 	void player_choice(); // affiche cercle de choix perso
 

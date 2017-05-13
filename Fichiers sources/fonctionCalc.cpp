@@ -1,5 +1,7 @@
 #include "..\\Fichiers header\fonctionCalc.h"
+#include "..\\Fichiers header\InteractionBDD.h"
 #include <SFML/Graphics.hpp>
+
 
 sf::RectangleShape calcRedimension(sf::RectangleShape temp, sf::Vector2u tailleFenetre, int tailleDepartFenetreX, int tailleDepartFenetreY) {
 	sf::Vector2f position;
@@ -9,4 +11,11 @@ sf::RectangleShape calcRedimension(sf::RectangleShape temp, sf::Vector2u tailleF
 	temp.setSize(sf::Vector2f(tailleFenetre.x / (tailleDepartFenetreX / position.x), tailleFenetre.y/ (tailleDepartFenetreY / position.y)));
 
 	return temp;
+}
+bool verifNom(string joueur2) {
+	InteractionBDD* interaction = InteractionBDD::Ini();
+	if (interaction->exist(joueur2))
+		return true;
+	else
+		return false;
 }

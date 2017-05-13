@@ -1,43 +1,42 @@
-#include <winsock.h>
-#include <mysql/mysql.h>
-#include <cstdlib>
-#include <iostream>
+
+#include <stdio.h>
+#include<stdlib.h>
 #include "..\\Fichiers header\Fenetre.h"
-int main()
-{
-	/*MYSQL mysql;
-	MYSQL_RES *result = NULL;
-	MYSQL_ROW row;
-	unsigned int nbr_champs = 0;
-	int i;
+#include <iostream>
+#include <fstream>
 
-	mysql_init(&mysql);
-	mysql_options(&mysql, MYSQL_READ_DEFAULT_GROUP, "option");
 
-	if (mysql_real_connect(&mysql, "dwarves.iut-fbleau.fr", "barbier", "barbier", "barbier", 0, NULL, 0) != NULL)
+void lecture() {
+	std::string login;
+	std::ifstream fichier("testFileWriter.txt");
+	if (fichier) 
 	{
-		mysql_query(&mysql, "SELECT passwd,user FROM compte");
-		result = mysql_store_result(&mysql);
-		nbr_champs= mysql_num_fields(result);
-		while (row = mysql_fetch_row(result)){
-			for (i = 0; i < nbr_champs; i++) {
-				printf(" %s", row[i]);
-			}
-			printf("\n");
-		}
-		mysql_free_result(result);
-		mysql_close(&mysql);
+		fichier >> login;
+		cout << login;
 	}
 	else
 	{
-		printf("non");
+		cout << "ERREUR: Impossible d'ouvrir le fichier." << endl;
 	}
-	char * utilisateur;
-	utilisateur = "clément";*/
+}
+
+int main()
+{
+	char commande[100] = "java -cp \"mariadb-client.jar;.\" Main";
+	/*std::vector<Personnage>tabPersonnage;
+	tabPersonnage.push_back(Personnage("dragodia","Archer"));
+	tabPersonnage.push_back(Personnage("dragodia","Lancier"));
+	tabPersonnage.push_back(Personnage("dragodia","Archer"));
+	tabPersonnage.push_back(Personnage("dragodia","Archer"));
+
+	/* on a cré les 4 personnages du joueur numéro 1 */
+	system(commande);
+	//Joueur j1 = Joueur("dragodia");
+	// lancé le java ici !
 
 
-	//int i = system("java Freq");
-	//std::cout << i;
-	Fenetre test(960, 540);
+	lecture();
+	Fenetre test(960, 540,"dragodia");
+	
 	return 0;
 }

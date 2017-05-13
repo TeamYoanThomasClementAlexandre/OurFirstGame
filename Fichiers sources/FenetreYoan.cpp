@@ -6,6 +6,7 @@
 #include "..\Fichiers header\Carte.h"
 #include "..\Fichiers header\Case.h"
 #include "..\Fichiers header\Fichier.h"
+#include "..\Fichiers header\InteractionBDD.h"
 
 #define MAXI 11 //1280 1024
 #define MAXJ 12
@@ -24,8 +25,12 @@
 using namespace std;
 using namespace sf;
 
-FenetreYoan::FenetreYoan(sf::Vector2u dimension,Joueur* playerss)
+FenetreYoan::FenetreYoan(sf::Vector2u dimension,JoueurYoan* playerss)
 {
+	// ini combat 
+	Combat *c = new Combat();
+	this->combat = *c;
+
 	// ini fin du game
 	this->exit = false;
 	// ini case map cliqued
@@ -58,7 +63,18 @@ FenetreYoan::FenetreYoan(sf::Vector2u dimension,Joueur* playerss)
 	}
 	this->tabDeplacement = vecc;
 
+	//ini tabcombat 
 
+	bool** tabcombe = new bool*[2];
+	for (int i = 0; i < 2; i++) {
+		bool* comm = new bool[4];
+		tabcombe[i] = comm;
+		for (int j = 0; j < 4; j++) {
+			tabcombe[i][j] = true;
+		}
+
+	}
+	this->tabcombatbool = tabcombe;
 	// ini tableau de coordoné de surbrillance rouge pour attaquer
 	Vector2u** comb = new Vector2u*[8];
 	for (int i = 0; i < 8; i++) {
@@ -130,10 +146,10 @@ FenetreYoan::FenetreYoan(sf::Vector2u dimension,Joueur* playerss)
 
 	// Initialisation des Joueurs
 	this->players= playerss;
-	Personnage* p_good = new Personnage[4];
-	Personnage* p_good2 = new Personnage[4];
+	PersonnageYoan* p_good = new PersonnageYoan[4];
+	PersonnageYoan* p_good2 = new PersonnageYoan[4];
 	for (int i = 0; i < 4; i++) {
-		Personnage *p = new Personnage("constr");
+		PersonnageYoan *p = new PersonnageYoan("constr");
 		p_good[i] = *p;
 		p_good2[i] = *p;
 	}
@@ -142,7 +158,7 @@ FenetreYoan::FenetreYoan(sf::Vector2u dimension,Joueur* playerss)
 
 	//Initialisation de la map virtuel
 		std::map<char*, sf::Vector2u*,char_cmp> *dicoo = new std::map<char*, sf::Vector2u*,char_cmp>;
-		std::map<char*, Personnage*, char_cmp> *dicooIJ = new std::map<char*, Personnage*, char_cmp>;
+		std::map<char*, PersonnageYoan*, char_cmp> *dicooIJ = new std::map<char*, PersonnageYoan*, char_cmp>;
 		BlendModee *bmm = new BlendModee(dicoo, dicooIJ);
 		this->bm = *bmm;
 
@@ -153,16 +169,16 @@ FenetreYoan::FenetreYoan(sf::Vector2u dimension,Joueur* playerss)
 }
 Sprite FenetreYoan::getSpritebyname(std::string str) {
 
-	if (str == "archer") {
+	if (str == "Archer") {
 		return this->sPersonnage[0];
 	}
-	else if (str == "epeiste") {
+	else if (str == "Epeiste") {
 		return this->sPersonnage[1];
 	}
-	else if (str == "lancier") {
+	else if (str == "Lancier") {
 		return this->sPersonnage[3];
 	}
-	else if (str == "paladin") {
+	else if (str == "Paladin") {
 		return this->sPersonnage[2];
 	}
 
@@ -170,7 +186,7 @@ Sprite FenetreYoan::getSpritebyname(std::string str) {
 bool FenetreYoan::verifContrainte(sf::Vector2u *vec, char* s) {
 	
 	if (vec == NULL) {
-		Personnage* perso = (*(this->bm.dicoPersonnagesIJ))[s];
+		PersonnageYoan* perso = (*(this->bm.dicoPersonnagesIJ))[s];
 		if (perso != NULL) {
 			this->tablo_text[1].setString("Action Impossible, Unité déjà présente !");
 		}
@@ -285,7 +301,7 @@ void FenetreYoan::load() {
 			Texture* parme = new Texture();
 			//snprintf(,);
 			char c[100];
-			sprintf_s(c, "../Fichiers externe/img/%s", this->players[i].p[j].arme.c_str());
+			sprintf_s(c, "../Fichiers externe/img/equip/%s.png", this->players[i].p[j].arme.c_str());
 			if (!parme->loadFromFile(c)) {
 				printf("Error load sprite %s", c);
 			}
@@ -433,15 +449,15 @@ void FenetreYoan::load() {
 	if (!pArcherTexture->loadFromFile(szResourceArcher)) {
 		printf("Error load sprite %s", szResourceArcher);
 	}
-	const char* szResourceEpeiste = "../Fichiers externe/img/epeiste.jpg";
+	const char* szResourceEpeiste = "../Fichiers externe/img/test.png";
 	if (!pEpeisteTexture->loadFromFile(szResourceEpeiste)) {
 		printf("Error load sprite %s", szResourceEpeiste);
 	}
-	const char* szResourcePaladin = "../Fichiers externe/img/paladin.jpg";
+	const char* szResourcePaladin = "../Fichiers externe/img/test.png";
 	if (!pPaladinTexture->loadFromFile(szResourcePaladin)) {
 		printf("Error load sprite %s", szResourcePaladin);
 	}
-	const char* szResourceLancier = "../Fichiers externe/img/lancier.jpg";
+	const char* szResourceLancier = "../Fichiers externe/img/test.png";
 	if (!pLancierTexture->loadFromFile(szResourceLancier)) {
 		printf("Error load sprite %s", szResourceLancier);
 	}
@@ -482,6 +498,7 @@ int FenetreYoan::ini_first_tour() {
 	}
 }
 void FenetreYoan::idle() {	
+	
 	this->PlacementPersonnage();
 	this->joueur = (this->joueur == 0) ? 1 : 0;
 	this->PlacementPersonnage();
@@ -498,6 +515,12 @@ void FenetreYoan::idle() {
 		}
 
 		this->Game();
+		if (this->isWin) {
+			printf("Win\n");
+			sf::Window window;
+			window.create(sf::VideoMode(800, 600), "My window");
+			this->close();
+		}
 		if (this->exit) {
 			printf("FIN DU GAME\n");
 			return;
@@ -511,15 +534,19 @@ void FenetreYoan::idle() {
 
 		this->Game();
 
+		if (this->isWin) {
+			printf("Win\n");
+			sf::Window window;
+			window.create(sf::VideoMode(800, 600), "My window");
+			this->close();
+
+			while(1);
+		}
 		if (this->exit) {
 			printf("FIN DU GAME\n");
 			return;
 		}
 
-		if (this->isWin()) {
-			printf("Un joueur à gagné");
-			return;
-		}
 		this->nbr_tour++;
 
 
@@ -540,7 +567,7 @@ void FenetreYoan::idle() {
 void FenetreYoan::PlacementPersonnage() {
 	this->clear(Color(100, 100, 100));
 	this->render();
-	//Personnage** persos = new Personnage*[2]; // tableau de perso a remplir 
+	//PersonnageYoan** persos = new PersonnageYoan*[2]; // tableau de perso a remplir 
 	while (1) {
 
 		while (this->pollEvent(this->event))
@@ -567,11 +594,19 @@ void FenetreYoan::Game() {
 		{
 			this->controleur_game(this->event);
 		}
+		if (this->isWin) {
+			return;
+		}
 
 		if (this->exit) {
 			return;
 		}
 		if (this->findutour) {
+
+			for (int j = 0; j < 4; j++) {
+				this->tabcombatbool[this->joueur][j] = true;
+			}
+
 			printf("Fin du tour de joueur %d !\n", this->joueur);
 			this->findutour = false;
 			return;
@@ -599,7 +634,7 @@ void FenetreYoan::controleur_game(Event event)
 		memset(s, 0, 10);
 		sprintf_s(s, 10, "%00d%00d%00d\0", c.r, c.g, c.b);
 		sf::Vector2u* vec = (*(this->bm.dico))[s];
-		Personnage* perso = (*(this->bm.dicoPersonnagesIJ))[s];
+		PersonnageYoan* perso = (*(this->bm.dicoPersonnagesIJ))[s];
 		if (vec != NULL) {
 			if (this->players[this->joueur].selected != -1) {
 				for (int l=0; l < 8; l++) {
@@ -671,11 +706,10 @@ void FenetreYoan::controleur_game(Event event)
 			this->players[this->joueur].selected = -1;
 		}
 	}
-	if (event.mouseButton.button == sf::Mouse::Right) //
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) //
 	{
-
 		Color c;
-		if (event.mouseButton.x != NULL && event.mouseButton.y != NULL) {
+		if (event.mouseButton.x != NULL && event.mouseButton.y != NULL  && event.mouseButton.x >= 0 && event.mouseButton.x <= 960 && event.mouseButton.y >= 0 && event.mouseButton.y <= 540) {
 			c = this->bm.image.getPixel(event.mouseButton.x, 540 - event.mouseButton.y);
 
 		}
@@ -683,7 +717,7 @@ void FenetreYoan::controleur_game(Event event)
 		memset(s, 0, 10);
 		sprintf_s(s, 10, "%00d%00d%00d\0", c.r, c.g, c.b);
 		//sf::Vector2u* vec = (*(this->bm.dico))[s];
-		Personnage* perso = (*(this->bm.dicoPersonnagesIJ))[s];
+		PersonnageYoan* perso = (*(this->bm.dicoPersonnagesIJ))[s];
 		if (perso != NULL) {
 			if (this->players[this->joueur].selected != -1) {
 				for (int l = 0; l < 8; l++) {
@@ -691,6 +725,30 @@ void FenetreYoan::controleur_game(Event event)
 						if (this->tabCombat[l][k].x == perso->position.x && this->tabCombat[l][k].y == perso->position.y) {
 							if (this->joueur != perso->appartenance.x) {
 								printf("\n COMBAT :  Joueur %d , perso %d\n VS\n Joueur %d, perso %d \n", this->joueur, this->players[this->joueur].selected, perso->appartenance.x, perso->appartenance.y);
+
+								if (this->tabcombatbool[this->joueur][this->players[this->joueur].selected]) {
+									bool test=this->combat.simulationCombat(&this->players[this->joueur].p_placer[this->players[this->joueur].selected],& this->players[perso->appartenance.x].p_placer[perso->appartenance.y]);
+									this->tabcombatbool[this->joueur][this->players[this->joueur].selected] = false;
+									this->tablo_text[1].setString("Attaque reussie <3 !");
+									
+									this->players[perso->appartenance.x].p_placer[0].vieRestante = 0;
+									this->players[perso->appartenance.x].p_placer[1].vieRestante = 0;
+									this->players[perso->appartenance.x].p_placer[2].vieRestante = 0;
+									this->players[perso->appartenance.x].p_placer[3].vieRestante = 0;
+
+										if (this->players[perso->appartenance.x].p_placer[0].vieRestante<=0 && this->players[perso->appartenance.x].p_placer[1].vieRestante <= 0 && this->players[perso->appartenance.x].p_placer[2].vieRestante <= 0 && this->players[perso->appartenance.x].p_placer[3].vieRestante <= 0) {
+											this->isWin = true;
+											return;
+																		
+									}
+								}
+								else {
+									this->tablo_text[1].setString("Action Impossible, Ce personnage a déjà attaqué !");
+									this->clear(Color(50, 50, 50));
+									this->renderView();
+									return;
+								}
+								
 							}
 
 						}
@@ -721,15 +779,18 @@ void FenetreYoan::controleur_game(Event event)
 
 				}
 				//printf("position perso (%d,%d)\n", v.x, v.y);
-				this->map->getCasesForCombatRecursifNord(this->tabCombat[0], v, perso->range, 0);
-				this->map->getCasesForCombatRecursifSud(this->tabCombat[1], v, perso->range, 0);
-				this->map->getCasesForCombatRecursifEst(this->tabCombat[2], v, perso->range, 0);
-				this->map->getCasesForCombatRecursifOuest(this->tabCombat[3], v, perso->range ,0);
 
-				this->map->getCasesForCombatRecursifNordOuest(this->tabCombat[4], v, perso->range,0);
-				this->map->getCasesForCombatRecursifNordEst(this->tabCombat[5], v, perso->range, 0);
-				this->map->getCasesForCombatRecursifSudOuest(this->tabCombat[6], v, perso->range, 0);
-				this->map->getCasesForCombatRecursifSudEst(this->tabCombat[7], v, perso->range,0);
+				if (this->tabcombatbool[perso->appartenance.x][perso->appartenance.y]) {
+					this->map->getCasesForCombatRecursifNord(this->tabCombat[0], v, perso->range, 0);
+					this->map->getCasesForCombatRecursifSud(this->tabCombat[1], v, perso->range, 0);
+					this->map->getCasesForCombatRecursifEst(this->tabCombat[2], v, perso->range, 0);
+					this->map->getCasesForCombatRecursifOuest(this->tabCombat[3], v, perso->range, 0);
+
+					this->map->getCasesForCombatRecursifNordOuest(this->tabCombat[4], v, perso->range, 0);
+					this->map->getCasesForCombatRecursifNordEst(this->tabCombat[5], v, perso->range, 0);
+					this->map->getCasesForCombatRecursifSudOuest(this->tabCombat[6], v, perso->range, 0);
+					this->map->getCasesForCombatRecursifSudEst(this->tabCombat[7], v, perso->range, 0);
+				}
 
 			}
 		}
@@ -743,10 +804,6 @@ void FenetreYoan::controleur_game(Event event)
 	this->renderView();
 }
 
-bool FenetreYoan::isWin()
-{
-	return false;
-}
 
 void FenetreYoan::player_choice() {
 	if (this->players[this->joueur].selected != -1) {
@@ -911,8 +968,8 @@ void FenetreYoan::render() {
 				Vector2u *v = new Vector2u();
 				v->x = this->players[this->joueur].p_placer[i].position.x;
 				v->y = this->players[this->joueur].p_placer[i].position.y;
-				Personnage * p_tmp = &(this->players[this->joueur].p_placer[i]);
-				this->bm.dicoPersonnagesIJ->insert(std::pair<char*, Personnage*>(couleurname, p_tmp));
+				PersonnageYoan * p_tmp = &(this->players[this->joueur].p_placer[i]);
+				this->bm.dicoPersonnagesIJ->insert(std::pair<char*, PersonnageYoan*>(couleurname, p_tmp));
 
 				//char* id = new char[10];
 				//id = this->players[j].p_placer[i].id;
@@ -1266,8 +1323,8 @@ void FenetreYoan::renderView() {
 			Vector2u *v = new Vector2u();
 			v->x = this->players[j].p_placer[i].position.x;
 			v->y = this->players[j].p_placer[i].position.y;
-			Personnage * p_tmp = &(this->players[j].p_placer[i]);
-			this->bm.dicoPersonnagesIJ->insert(std::pair<char*, Personnage*>(couleurname, p_tmp));
+			PersonnageYoan * p_tmp = &(this->players[j].p_placer[i]);
+			this->bm.dicoPersonnagesIJ->insert(std::pair<char*, PersonnageYoan*>(couleurname, p_tmp));
 
 			float offsetPosX = this->players[j].p_placer[i].position.x % 2 == 0 ? offsetX : offsetX + tileWidth2;
 
