@@ -9,7 +9,7 @@ private:
 public:
 	Combat();
 	~Combat();
-	bool simulationCombat(PersonnageYoan* attaquant, PersonnageYoan* victime);
+	void simulationCombat(PersonnageYoan* attaquant, PersonnageYoan* victime);
 
 };
 

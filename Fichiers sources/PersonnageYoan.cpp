@@ -9,6 +9,8 @@ PersonnageYoan::PersonnageYoan(std::string typeConstr){
 	this->position.y = -1;
 	this->id = s;
 	this->vitesse_dattaque = 1;
+	this->isdead = false;
+	this->level = -1;
 	if (type == "constr") {
 		this->degat = -1;
 		this->armure = -1;

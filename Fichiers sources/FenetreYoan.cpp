@@ -508,6 +508,7 @@ void FenetreYoan::idle() {
 	this->players[0].selected = -1;
 	this->players[1].selected = -1;
 	while (1) {
+		if(!this->isWin)
 		this->joueur = (this->joueur == 0) ? 1 : 0;
 
 		for (int i = 0; i < 4; i++) {
@@ -517,9 +518,8 @@ void FenetreYoan::idle() {
 		this->Game();
 		if (this->isWin) {
 			printf("Win\n");
-			sf::Window window;
-			window.create(sf::VideoMode(800, 600), "My window");
-			this->close();
+			this->Win();
+
 		}
 		if (this->exit) {
 			printf("FIN DU GAME\n");
@@ -536,11 +536,8 @@ void FenetreYoan::idle() {
 
 		if (this->isWin) {
 			printf("Win\n");
-			sf::Window window;
-			window.create(sf::VideoMode(800, 600), "My window");
-			this->close();
-
-			while(1);
+			this->Win();
+			
 		}
 		if (this->exit) {
 			printf("FIN DU GAME\n");
@@ -562,6 +559,128 @@ void FenetreYoan::idle() {
 	- on affiche la case dans le carre
 	- si auparavant on a cliquer sur une unité elle se deplacera 
 	*/
+}
+
+void FenetreYoan::Win() {
+	printf("Victoire du joueur %d", this->joueur);
+	Texture* Win = new Texture();
+	Texture* Loose = new Texture();
+	Texture* dead = new Texture();
+
+	const char* deads = "../Fichiers externe/img/dead.jpg";
+	if (!dead->loadFromFile(deads)) {
+		printf("Error load sprite %s", deads);
+	}
+
+	const char* szwin = "../Fichiers externe/img/victory.jpg";
+	if (!Win->loadFromFile(szwin)) {
+		printf("Error load sprite %s", szwin);
+	}
+	const char* szloose= "../Fichiers externe/img/defeat.jpg";
+	if (!Loose->loadFromFile(szloose)) {
+		printf("Error load sprite %s", szloose);
+	}
+	Sprite *win = new Sprite(*Win);
+	Sprite *loose = new Sprite(*Loose);
+	Sprite *deadsprite = new Sprite(*dead);
+
+	sf::RenderWindow* window = new RenderWindow();
+	window->create(sf::VideoMode(960	, 540), "Win screen");
+	window->clear(Color(50,50,50));
+
+	sf::Font font;
+	if (!font.loadFromFile("../Fichiers externe/arial.ttf"))
+	{
+		printf("Error load text :%s", font);
+	}
+
+	sf::Text namewin;
+	namewin.setFont(font);
+	namewin.setCharacterSize(15);
+	namewin.setString("Victoire de : " + this->players[this->joueur].pseudo);
+	
+
+	sf::Text nameloose;
+	nameloose.setFont(font);
+	nameloose.setCharacterSize(15);
+	nameloose.setString("Defaite de : " + this->players[(this->joueur == 0) ? 1 : 0].pseudo);
+
+
+
+	if (this->joueur==0) {
+		win->setPosition(0, 0);
+		loose->setPosition(480, 0);	
+		namewin.setPosition(150, 300);
+		nameloose.setPosition(650, 300);
+	}
+	else {
+		win->setPosition(480, 0);
+		loose->setPosition(0, 0);
+		namewin.setPosition(650, 300);
+		nameloose.setPosition(150, 300);
+	}
+	
+	
+	
+
+		for (int i = 0; i < 4; i++) {
+			sf::Text level;
+			level.setFont(font);
+			level.setCharacterSize(40);
+			level.setString(std::to_string(this->players[0].p_placer[i].level));
+			//level.setColor(Color::Red);
+			level.setPosition(50,350 + (i * 40));
+
+
+			std::string name = this->players[0].p_placer[i].type;
+			Sprite spriteperso = getSpritebyname(name);
+			Sprite* arme = this->players[0].p_placer[i].sarme;
+
+			spriteperso.setPosition(100, 350 + (i * 40));
+			arme->setPosition(spriteperso.getPosition());
+			deadsprite->setPosition(160, 350 + (i * 40));
+			if (this->players[0].p_placer[i].isdead) {
+				window->draw(*deadsprite);
+			}
+			window->draw(level);
+			window->draw(spriteperso);
+			window->draw(*arme);
+		}
+		for (int i = 0; i < 4; i++) {
+			sf::Text level;
+			level.setFont(font);
+			level.setCharacterSize(40);
+			level.setString(std::to_string(this->players[1].p_placer[i].level));
+			//level.setColor(Color::Red);
+			level.setPosition(550, 350 + (i * 40));
+
+			std::string name = this->players[1].p_placer[i].type;
+			Sprite spriteperso = getSpritebyname(name);
+			Sprite* arme = this->players[1].p_placer[i].sarme;
+
+			spriteperso.setPosition(600, 350 + (i * 40));
+			arme->setPosition(spriteperso.getPosition());
+			deadsprite->setPosition(660, 350 + (i * 40));
+			if (this->players[1].p_placer[i].isdead) {
+				window->draw(*deadsprite);
+			}
+			
+			window->draw(level);
+			window->draw(spriteperso);
+			window->draw(*arme);
+		}
+
+		window->draw(namewin);
+		window->draw(nameloose);
+		window->draw(*win);
+		window->draw(*loose);
+		window->display();
+		while (1);
+		this->close();
+
+
+
+	
 }
 
 void FenetreYoan::PlacementPersonnage() {
@@ -706,7 +825,7 @@ void FenetreYoan::controleur_game(Event event)
 			this->players[this->joueur].selected = -1;
 		}
 	}
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) //
+	if (event.mouseButton.button == sf::Mouse::Right) //
 	{
 		Color c;
 		if (event.mouseButton.x != NULL && event.mouseButton.y != NULL  && event.mouseButton.x >= 0 && event.mouseButton.x <= 960 && event.mouseButton.y >= 0 && event.mouseButton.y <= 540) {
@@ -727,15 +846,20 @@ void FenetreYoan::controleur_game(Event event)
 								printf("\n COMBAT :  Joueur %d , perso %d\n VS\n Joueur %d, perso %d \n", this->joueur, this->players[this->joueur].selected, perso->appartenance.x, perso->appartenance.y);
 
 								if (this->tabcombatbool[this->joueur][this->players[this->joueur].selected]) {
-									bool test=this->combat.simulationCombat(&this->players[this->joueur].p_placer[this->players[this->joueur].selected],& this->players[perso->appartenance.x].p_placer[perso->appartenance.y]);
+									this->combat.simulationCombat(&this->players[this->joueur].p_placer[this->players[this->joueur].selected],& this->players[perso->appartenance.x].p_placer[perso->appartenance.y]);
 									this->tabcombatbool[this->joueur][this->players[this->joueur].selected] = false;
 									this->tablo_text[1].setString("Attaque reussie <3 !");
 									
-									this->players[perso->appartenance.x].p_placer[0].vieRestante = 0;
-									this->players[perso->appartenance.x].p_placer[1].vieRestante = 0;
-									this->players[perso->appartenance.x].p_placer[2].vieRestante = 0;
-									this->players[perso->appartenance.x].p_placer[3].vieRestante = 0;
+									//this->players[perso->appartenance.x].p_placer[0].vieRestante = 0;
+									//this->players[perso->appartenance.x].p_placer[1].vieRestante = 0;
+									//this->players[perso->appartenance.x].p_placer[2].vieRestante = 0;
+									//this->players[perso->appartenance.x].p_placer[3].vieRestante = 0;
 
+									// ici si il es mort mettre isdead=true
+									if (this->players[perso->appartenance.x].p_placer[perso->appartenance.y].vieRestante <= 0) {
+										this->players[perso->appartenance.x].p_placer[perso->appartenance.y].isdead=true;
+									}
+									
 										if (this->players[perso->appartenance.x].p_placer[0].vieRestante<=0 && this->players[perso->appartenance.x].p_placer[1].vieRestante <= 0 && this->players[perso->appartenance.x].p_placer[2].vieRestante <= 0 && this->players[perso->appartenance.x].p_placer[3].vieRestante <= 0) {
 											this->isWin = true;
 											return;
@@ -1025,7 +1149,7 @@ void FenetreYoan::render() {
 
 void FenetreYoan::renderTexte() {
 	// Quell joueur
-	this->tablo_text[0].setString(this->players[this->joueur].pseudo);
+	this->tablo_text[0].setString(this->players[this->joueur].pseudo+"  J"+ std::to_string(this->joueur+1));
 	this->tablo_text[0].setPosition(10, 515);
 	// erreur
 	this->tablo_text[1].setPosition(100, 515);
@@ -1093,7 +1217,7 @@ void FenetreYoan::renderTexte() {
 
 void FenetreYoan::renderTexteView() {
 	// Quell joueur
-	this->tablo_text[0].setString(this->players[this->joueur].pseudo);
+	this->tablo_text[0].setString(this->players[this->joueur].pseudo + "  J" + std::to_string(this->joueur + 1));
 	this->tablo_text[0].setPosition(10, 515);
 	// erreur
 	this->tablo_text[1].setPosition(100, 515);
@@ -1280,6 +1404,10 @@ void FenetreYoan::renderView() {
 	for(int j = 0;j<2;j++) {
 	for (int i = 0; i < 4; i++) {
 
+		if (!this->players[j].p_placer[i].isdead) {
+
+		
+
 		// initialisation du cercle des joueur
 		sf::CircleShape cerclejoueur(10);
 		if (j == 1) {
@@ -1306,7 +1434,7 @@ void FenetreYoan::renderView() {
 			Sprite spriteperso = getSpritebyname(name);
 
 			unsigned int r = 10;
-			unsigned int g = 63 * (i+ 1);
+			unsigned int g = 63 * (i + 1);
 			unsigned int b = j * (127 + 1);
 
 			char* couleurname = new char[10];
@@ -1318,7 +1446,7 @@ void FenetreYoan::renderView() {
 			if (!pepe->loadFromFile(szResourceepe)) {
 				printf("Error load sprite %s", szResourceepe);
 			}
-	
+
 
 			Vector2u *v = new Vector2u();
 			v->x = this->players[j].p_placer[i].position.x;
@@ -1336,11 +1464,11 @@ void FenetreYoan::renderView() {
 			if (this->players[j].p_placer[i].position.y % 2 == 1) {
 				cerclejoueur.setPosition((this->players[j].p_placer[i].position.x * 80 + 67), decalage_y_cercle + this->players[j].p_placer[i].position.y * 45 / 2);
 				spriteperso.setPosition((this->players[j].p_placer[i].position.x * 80 + 50), this->players[j].p_placer[i].position.y * 45 / 2 - 10);
-				this->players[this->joueur].p_placer[i].sarme->setPosition((this->players[j].p_placer[i].position.x * 80 + 50), this->players[j].p_placer[i].position.y * 45 / 2 );
+				this->players[this->joueur].p_placer[i].sarme->setPosition((this->players[j].p_placer[i].position.x * 80 + 50), this->players[j].p_placer[i].position.y * 45 / 2);
 			}
 			if (this->players[j].p_placer[i].position.y % 2 == 0) {
-				cerclejoueur.setPosition((this->players[j].p_placer[i].position.x * 80) + 27, decalage_y_cercle + (this->players[j].p_placer[i].position.y / 2) * 45 );
-				spriteperso.setPosition((this->players[j].p_placer[i].position.x * 80) + 10, (this->players[j].p_placer[i].position.y / 2) * 45 - 10 );
+				cerclejoueur.setPosition((this->players[j].p_placer[i].position.x * 80) + 27, decalage_y_cercle + (this->players[j].p_placer[i].position.y / 2) * 45);
+				spriteperso.setPosition((this->players[j].p_placer[i].position.x * 80) + 10, (this->players[j].p_placer[i].position.y / 2) * 45 - 10);
 				this->players[this->joueur].p_placer[i].sarme->setPosition((this->players[j].p_placer[i].position.x * 80) + 10, (this->players[j].p_placer[i].position.y / 2) * 45);
 			}
 
@@ -1356,6 +1484,8 @@ void FenetreYoan::renderView() {
 			this->draw(spriteperso);
 			this->draw(*this->players[this->joueur].p_placer[i].sarme);
 			renderTexture.draw(spriteperso, rs); // rendu dans une texture shader
+
+		}
 		}								 
 		}
 	}

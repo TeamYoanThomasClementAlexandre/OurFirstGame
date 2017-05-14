@@ -33,7 +33,8 @@ public:
 	sf::Vector2i appartenance;
 	std::string arme;
 	Sprite* sarme;
-
+	bool isdead;
+	int level;
 
 };
 

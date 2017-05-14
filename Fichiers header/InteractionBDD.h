@@ -21,7 +21,8 @@ public:
 	
 
 	static InteractionBDD* Ini();
-	int requeteParCol(string joueur,string nomTable,string nomCol);
+	int requeteParCol(string joueur, string nomTable, string nomCol, string classe);
+	int requeteParCol2(string joueur, string nomTable, string nomCol);
 	int* getCarac(string joueur, string classe);
 	vector<vector<string>> getEquipement(string joueur);
 	vector<vector <string>> InteractionBDD::getEquipementEquiped(string joueur, string classe);

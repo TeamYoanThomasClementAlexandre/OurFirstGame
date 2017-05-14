@@ -18,7 +18,38 @@ InteractionBDD::~InteractionBDD()
 {
 }
 
-int InteractionBDD::requeteParCol(string joueur, string nomTable, string nomCol) {
+int InteractionBDD::requeteParCol(string joueur, string nomTable, string nomCol, string classe) {
+	/*
+	---------joueur -> nom du joueur connecté
+	---------nomTable -> "Personnages" ou "Equipements" ou " Personnages et Equipements"
+	---------nomCol -> "force" ou "vie" ou "déplacement" ou "niveau"
+	---------nomClasse -> " Archer" etc
+	*/
+	MYSQL_RES *result = NULL;
+	MYSQL_ROW row;
+	unsigned int nbr_champs = 0;
+	int i;
+	int champsAreturn = 0;
+	string requete;
+	mysql_init(&mysql);
+	mysql_options(&mysql, MYSQL_READ_DEFAULT_GROUP, "option");
+	if (mysql_real_connect(&mysql, "dwarves.iut-fbleau.fr", "barbier", "barbier", "barbier", 0, NULL, 0) != NULL)
+	{
+		requete = "SELECT " + nomCol + " FROM Personnages where loginUser='" + joueur + "' and  typePersonnage='" + classe + "';";
+		mysql_query(&mysql, requete.c_str());
+		result = mysql_store_result(&mysql);
+		row = mysql_fetch_row(result); // on a le resultat enq uestion
+		champsAreturn = std::stoi(row[0]);
+		mysql_free_result(result); // libère la requete pour reuse result
+	}
+	else {
+		printf("erreur de connexion");
+	}
+	mysql_close(&mysql); // ferme la connexion à la BD
+	return champsAreturn;
+}
+
+int InteractionBDD::requeteParCol2(string joueur, string nomTable, string nomCol) {
 	/*
 	---------joueur -> nom du joueur connecté
 	---------nomTable -> "Personnages" ou "Equipements" ou " Personnages et Equipements"

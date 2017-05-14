@@ -418,12 +418,15 @@ void Fenetre::affichageMenu() {
 						
 								for (int i = 0; i < 4; i++) {
 
+									int lvl=bdd->requeteParCol(this->joueur1, "Personnages", "level", pj1[i].type);
+									pj1[i].level = lvl;
 									string url = bdd->getUrl(this->joueur1, pj1[i].type);
 									pj1[i].arme = url.c_str();
 								}
 
 								for (int i = 0; i < 4; i++) {
-
+									int lvl = bdd->requeteParCol(joueur2s, "Personnages", "level", pj1[i].type);
+									pj2[i].level = lvl;
 									string url = bdd->getUrl(joueur2s, pj2[i].type);
 									pj2[i].arme = url.c_str();
 								}
