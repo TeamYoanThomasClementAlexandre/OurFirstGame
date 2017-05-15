@@ -1,5 +1,6 @@
 #include "..\Fichiers header\FenetreYoan.h"
 #include <SFML\Window\Event.hpp>
+#include <SFML\System\Time.hpp>
 
 #include <iostream>
 
@@ -27,6 +28,9 @@ using namespace sf;
 
 FenetreYoan::FenetreYoan(sf::Vector2u dimension,JoueurYoan* playerss)
 {
+
+	this->ennemi_clicked.x = -1;
+	this->ennemi_clicked.y = -1;
 	// ini combat 
 	Combat *c = new Combat();
 	this->combat = *c;
@@ -518,7 +522,8 @@ void FenetreYoan::idle() {
 		this->Game();
 		if (this->isWin) {
 			printf("Win\n");
-			this->Win();
+			this->RenderWin();
+			this->exit = true;
 
 		}
 		if (this->exit) {
@@ -536,7 +541,8 @@ void FenetreYoan::idle() {
 
 		if (this->isWin) {
 			printf("Win\n");
-			this->Win();
+			this->RenderWin();
+			this->exit = true;
 			
 		}
 		if (this->exit) {
@@ -561,7 +567,7 @@ void FenetreYoan::idle() {
 	*/
 }
 
-void FenetreYoan::Win() {
+void FenetreYoan::RenderWin() {
 	printf("Victoire du joueur %d", this->joueur);
 	Texture* Win = new Texture();
 	Texture* Loose = new Texture();
@@ -584,9 +590,9 @@ void FenetreYoan::Win() {
 	Sprite *loose = new Sprite(*Loose);
 	Sprite *deadsprite = new Sprite(*dead);
 
-	sf::RenderWindow* window = new RenderWindow();
-	window->create(sf::VideoMode(960	, 540), "Win screen");
-	window->clear(Color(50,50,50));
+	//sf::RenderWindow* window = new RenderWindow();
+	//window->create(sf::VideoMode(960	, 540), "Win screen");
+	this->clear(Color(50,50,50));
 
 	sf::Font font;
 	if (!font.loadFromFile("../Fichiers externe/arial.ttf"))
@@ -640,11 +646,11 @@ void FenetreYoan::Win() {
 			arme->setPosition(spriteperso.getPosition());
 			deadsprite->setPosition(160, 350 + (i * 40));
 			if (this->players[0].p_placer[i].isdead) {
-				window->draw(*deadsprite);
+				this->draw(*deadsprite);
 			}
-			window->draw(level);
-			window->draw(spriteperso);
-			window->draw(*arme);
+			this->draw(level);
+			this->draw(spriteperso);
+			this->draw(*arme);
 		}
 		for (int i = 0; i < 4; i++) {
 			sf::Text level;
@@ -662,21 +668,21 @@ void FenetreYoan::Win() {
 			arme->setPosition(spriteperso.getPosition());
 			deadsprite->setPosition(660, 350 + (i * 40));
 			if (this->players[1].p_placer[i].isdead) {
-				window->draw(*deadsprite);
+				this->draw(*deadsprite);
 			}
 			
-			window->draw(level);
-			window->draw(spriteperso);
-			window->draw(*arme);
+			this->draw(level);
+			this->draw(spriteperso);
+			this->draw(*arme);
 		}
 
-		window->draw(namewin);
-		window->draw(nameloose);
-		window->draw(*win);
-		window->draw(*loose);
-		window->display();
-		while (1);
-		this->close();
+		this->draw(namewin);
+		this->draw(nameloose);
+		this->draw(*win);
+		this->draw(*loose);
+		this->display();
+		sf::sleep(sf::milliseconds(100000));
+		//this->close();
 
 
 
@@ -706,6 +712,8 @@ void FenetreYoan::PlacementPersonnage() {
 void FenetreYoan::Game() {
 	this->map_clicked = false;
 	this->findutour = false;
+	this->ennemi_clicked.x = -1;
+	this->ennemi_clicked.y = -1;
 	this->clear(Color(50, 50, 50));
 	this->renderView();
 	while (1) {
@@ -725,6 +733,12 @@ void FenetreYoan::Game() {
 			for (int j = 0; j < 4; j++) {
 				this->tabcombatbool[this->joueur][j] = true;
 			}
+
+			for(int u=0;u<2;u++)
+			for (int j = 0; j < 4; j++) {
+				printf("%d %s\n",j,this->players[u].p_placer[j].arme.c_str());
+			}
+
 
 			printf("Fin du tour de joueur %d !\n", this->joueur);
 			this->findutour = false;
@@ -818,6 +832,16 @@ void FenetreYoan::controleur_game(Event event)
 				this->map->getCasesForDeplacementRecursifSudEst(this->tabDeplacement[7], this->tabCost[7], v, perso->deplacementRestante, perso->deplacementRestante, 0);
 
 			}
+			else {
+				this->ennemi_clicked.x = perso->appartenance.x;
+				this->ennemi_clicked.y = perso->appartenance.y;
+				
+				printf("perso ennemi\n");
+				this->clear(Color(50, 50, 50));
+				this->renderView();
+
+				//afficher en bas a droite les caracteristiques du perso selectionné
+			}
 		}
 		else if (vec == NULL  && perso == NULL) {
 			this->map_clicked = false;
@@ -858,6 +882,9 @@ void FenetreYoan::controleur_game(Event event)
 									// ici si il es mort mettre isdead=true
 									if (this->players[perso->appartenance.x].p_placer[perso->appartenance.y].vieRestante <= 0) {
 										this->players[perso->appartenance.x].p_placer[perso->appartenance.y].isdead=true;
+										this->map->caseJeu[this->players[perso->appartenance.x].p_placer[perso->appartenance.y].position.x][this->players[perso->appartenance.x].p_placer[perso->appartenance.y].position.y]->who = -1;
+										this->players[perso->appartenance.x].p_placer[perso->appartenance.y].position.x = -1;
+										this->players[perso->appartenance.x].p_placer[perso->appartenance.y].position.y = -1;
 									}
 									
 										if (this->players[perso->appartenance.x].p_placer[0].vieRestante<=0 && this->players[perso->appartenance.x].p_placer[1].vieRestante <= 0 && this->players[perso->appartenance.x].p_placer[2].vieRestante <= 0 && this->players[perso->appartenance.x].p_placer[3].vieRestante <= 0) {
@@ -1481,6 +1508,12 @@ void FenetreYoan::renderView() {
 
 
 			this->draw(cerclejoueur);
+			if (!this->tabcombatbool[j][i]) {
+				spriteperso.setColor(Color(128, 128, 128));
+			}
+			else {
+				spriteperso.setColor(Color(255,255,255));
+			}
 			this->draw(spriteperso);
 			this->draw(*this->players[this->joueur].p_placer[i].sarme);
 			renderTexture.draw(spriteperso, rs); // rendu dans une texture shader
@@ -1498,15 +1531,68 @@ void FenetreYoan::renderView() {
 	this->draw(autre[1]);
 
 	if (this->map_clicked) {
+		this->ennemi_clicked.x = -1;
+		this->ennemi_clicked.y = -1;
 		Case *c = this->map->caseJeu[this->map_clicked_ij.y][this->map_clicked_ij.x];
 		Sprite *s = new Sprite(c->texture);
-		s->setPosition(800, 380);
+		s->setPosition(750, 380);
 
 		this->tablo_text[4].setString(c->types);
-		this->tablo_text[4].setPosition(800, 360);
+		this->tablo_text[4].setPosition(750, 360);
 		this->draw(this->tablo_text[4]);
 		this->draw(*s);
 	}
+	sf::Font font;
+	if (!font.loadFromFile("../Fichiers externe/arial.ttf"))
+	{
+		printf("Error load text :%s", font);
+	}
+	sf::Text pv;
+	pv.setFont(font);
+	pv.setCharacterSize(12);
+	pv.setPosition(900, 375);
+	sf::Text pm;
+	pm.setFont(font);
+	pm.setCharacterSize(15);
+	pm.setPosition(900, 400);
+	sf::Text degat;
+	degat.setFont(font);
+	degat.setCharacterSize(15);
+	degat.setPosition(900, 425);
+	sf::Text armor;
+	armor.setFont(font);
+	armor.setCharacterSize(15);
+	armor.setPosition(900, 450);
+	sf::Text range;
+	range.setFont(font);
+	range.setCharacterSize(15);
+	range.setPosition(900, 475);
+	if (this->ennemi_clicked.x != -1 && this->ennemi_clicked.y !=-1) {
+		
+		
+		pv.setString(std::to_string(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].vieRestante) + "/" + std::to_string(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].vie));		
+		pm.setString(std::to_string(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].deplacementRestante) + "/" + std::to_string(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].deplacement));		
+		degat.setString(std::to_string(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].degat));
+		armor.setString(std::to_string(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].armure));
+		range.setString(std::to_string(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].range));
+		
+
+		
+	}
+	else {
+		pv.setString("");
+		pm.setString("");
+		degat.setString("");
+		armor.setString("");
+		range.setString("");
+	}
+
+
+	this->draw(pv);
+	this->draw(pm);
+	this->draw(degat);
+	this->draw(armor);
+	this->draw(range);
 
 	//DEBUG	
 	const sf::Texture& texture = renderTexture.getTexture();

@@ -43,7 +43,8 @@ private:
 	Combat combat;
 	bool** tabcombatbool; // connaitre si un perso peut attaquer
 	bool isWin; // c'est gagné ?
-	void Win();
+	void RenderWin();
+	sf::Vector2u ennemi_clicked; // get info unité sf::Text
 
 	// TODO : faire un gestionnaire des resources
 	sf::Sprite sprite;
