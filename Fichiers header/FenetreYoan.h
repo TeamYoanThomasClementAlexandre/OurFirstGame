@@ -45,6 +45,7 @@ private:
 	bool isWin; // c'est gagné ?
 	void RenderWin();
 	sf::Vector2u ennemi_clicked; // get info unité sf::Text
+	void addCaracCaseOnPerso(PersonnageYoan *p,Case c);
 
 	// TODO : faire un gestionnaire des resources
 	sf::Sprite sprite;

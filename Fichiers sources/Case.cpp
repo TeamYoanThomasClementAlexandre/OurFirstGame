@@ -2,11 +2,16 @@
 #include "..\\Fichiers header\\Terrain.h"
 #include <SFML/Graphics.hpp>
 
-Case::Case(sf::Sprite s,int cost)
+Case::Case(sf::Sprite s,int cost,int vie,int range,int degat,int armure)
 {
 	this->sprite = s;
 	this->who = -1;
 	this->pmCost = cost;
+	this->vie = vie;
+	this->range = range;
+	this->degat = degat;
+	this->armure = armure;
+
 }
 
 

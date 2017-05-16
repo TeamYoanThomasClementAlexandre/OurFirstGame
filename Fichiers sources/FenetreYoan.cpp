@@ -348,10 +348,14 @@ void FenetreYoan::load() {
 	Texture* pPlaineTexture = new Texture();
 	Texture* pEauTexture = new Texture();
 	Texture* pDesertTexture = new Texture();
+	Texture* pMontagneTexture = new Texture();
+	Texture* pForetTexture = new Texture();
 
 	Texture* pPlaineTextureMin = new Texture();
 	Texture* pEauTextureMin = new Texture();
 	Texture* pDesertTextureMin = new Texture();
+	Texture* pMontagneTextureMin = new Texture();
+	Texture* pForetTextureMin = new Texture();
 
 	const char* szResourcePlaine = "../Fichiers externe/img/plaine.png";
 	if (!pPlaineTexture->loadFromFile(szResourcePlaine)) {
@@ -365,6 +369,14 @@ void FenetreYoan::load() {
 	if (!pDesertTexture->loadFromFile(szResourceDesert)) {
 		printf("Error load sprite %s", szResourceDesert);
 	}
+	const char* szResourceMontagne = "../Fichiers externe/img/montagne.png";
+	if (!pMontagneTexture->loadFromFile(szResourceMontagne)) {
+		printf("Error load sprite %s", szResourceMontagne);
+	}
+	const char* szResourceForet = "../Fichiers externe/img/foret.png";
+	if (!pForetTexture->loadFromFile(szResourceForet)) {
+		printf("Error load sprite %s", szResourceForet);
+	}
 	/*  */
 	const char* szResourcePlaineMin = "../Fichiers externe/img/plaine_min.png";
 	if (!pPlaineTextureMin->loadFromFile(szResourcePlaineMin)) {
@@ -377,6 +389,14 @@ void FenetreYoan::load() {
 	const char* szResourceDesertMin = "../Fichiers externe/img/desert_min.png";
 	if (!pDesertTextureMin->loadFromFile(szResourceDesertMin)) {
 		printf("Error load sprite %s", szResourceDesertMin);
+	}
+	const char* szResourceMontagneMin = "../Fichiers externe/img/montagne_min.png";
+	if (!pMontagneTextureMin->loadFromFile(szResourceMontagneMin)) {
+		printf("Error load sprite %s", szResourceMontagneMin);
+	}
+	const char* szResourceForetMin = "../Fichiers externe/img/foret_min.png";
+	if (!pForetTextureMin->loadFromFile(szResourceForetMin)) {
+		printf("Error load sprite %s", szResourceForetMin);
 	}
 
 	Case*** pTableau = new Case**[this->max_y];
@@ -392,13 +412,13 @@ void FenetreYoan::load() {
 			if (s=="plaine") {
 				if (i == 0 && j % 2 == 0 || j == this->max_y -1 || i == this->max_x-1) {
 					Sprite *plaine = new Sprite(*pPlaineTexture);
-					pCase = new Case(*plaine,1);
+					pCase = new Case(*plaine,1,0,0,10,-10); //vie , range, degat , armure
 					pCase->texture = *pPlaineTexture;
 				}
 				else {
 					
 					Sprite *plaineMin = new Sprite(*pPlaineTextureMin);
-					pCase = new Case(*plaineMin,1);
+					pCase = new Case(*plaineMin,1,0,0,10,-10);
 					pCase->texture = *pPlaineTextureMin;
 				}
 			
@@ -406,32 +426,57 @@ void FenetreYoan::load() {
 			if (s == "eau") {
 				if (i == 0 && j % 2 == 0 || j == this->max_y - 1 || i == this->max_x - 1) {
 					Sprite *eau = new Sprite(*pEauTexture);
-					pCase = new Case(*eau,100);
+					pCase = new Case(*eau,100,0,0,0,0);
 					pCase->texture = *pEauTexture;
 				}
 				else {
 					Sprite *EauMin = new Sprite(*pEauTextureMin);
-					pCase = new Case(*EauMin,100);
+					pCase = new Case(*EauMin,100,0,0,0,0);
 					pCase->texture = *pPlaineTextureMin;
 				}
 			}
-				
+			if (s == "montagne") {
+				if (i == 0 && j % 2 == 0 || j == this->max_y - 1 || i == this->max_x - 1) {
+					Sprite *montagne = new Sprite(*pMontagneTexture);
+					pCase = new Case(*montagne, 2,10,1,-10,10);
+					pCase->texture = *pMontagneTexture;
+				}
+				else {
+					Sprite *montagneMin = new Sprite(*pMontagneTextureMin);
+					pCase = new Case(*montagneMin, 2,10,1,-10,10);
+					pCase->texture = *pMontagneTextureMin;
+				}
+			}
 			
 			if (s=="desert") {
 				if (i == 0 && j % 2 == 0 || j == this->max_y - 1 || i== this->max_x - 1) {
 					
 					Sprite *desert = new Sprite(*pDesertTexture);
-				pCase = new Case(*desert,2);
+				pCase = new Case(*desert,2,-5,0,20,0);
 				pCase->texture = *pDesertTexture;
 				}
 				else {
 					Sprite *DesertMin = new Sprite(*pDesertTextureMin);
-					pCase = new Case(*DesertMin,2);
+					pCase = new Case(*DesertMin,2,-5,0,20,0);
 					pCase->texture = *pDesertTextureMin;
 				}
 			
-
 				}
+			if (s == "foret") {
+				if (i == 0 && j % 2 == 0 || j == this->max_y - 1 || i == this->max_x - 1) {
+
+					Sprite *foret = new Sprite(*pForetTexture);
+					pCase = new Case(*foret, 2,0,-1,-10,20);
+					pCase->texture = *pForetTexture;
+				}
+				else {
+					Sprite *ForetMin = new Sprite(*pForetTextureMin);
+					pCase = new Case(*ForetMin, 2,0,-1,-10,20);
+					pCase->texture = *pForetTextureMin;
+				}
+
+
+			}
 			pCase->types = s;
 
 			pTableau[j][i] = pCase;
@@ -689,6 +734,18 @@ void FenetreYoan::RenderWin() {
 	
 }
 
+void FenetreYoan::addCaracCaseOnPerso(PersonnageYoan * p,Case c)
+{
+	p->armure += c.armure;
+	p->degat += c.degat;
+	if (p->type == "archer") {
+		p->range += c.range;
+	}
+	p->vie += c.vie;
+
+	return;
+}
+
 void FenetreYoan::PlacementPersonnage() {
 	this->clear(Color(100, 100, 100));
 	this->render();
@@ -820,7 +877,9 @@ void FenetreYoan::controleur_game(Event event)
 					}
 
 				}
-				//printf("position perso (%d,%d)\n", v.x, v.y);
+				// change stats des perso en fonction de leur case
+				//this->addCaracCaseOnPerso(perso, *this->map->caseJeu[perso->position.x][perso->position.y]);
+
 				this->map->getCasesForDeplacementRecursifNord(this->tabDeplacement[0], this->tabCost[0], v, perso->deplacementRestante, perso->deplacementRestante, 0);
 				this->map->getCasesForDeplacementRecursifSud(this->tabDeplacement[1], this->tabCost[1], v, perso->deplacementRestante, perso->deplacementRestante, 0);
 				this->map->getCasesForDeplacementRecursifEst(this->tabDeplacement[2], this->tabCost[2], v, perso->deplacementRestante, perso->deplacementRestante, 0);
@@ -835,6 +894,7 @@ void FenetreYoan::controleur_game(Event event)
 			else {
 				this->ennemi_clicked.x = perso->appartenance.x;
 				this->ennemi_clicked.y = perso->appartenance.y;
+				this->map_clicked = false;
 				
 				printf("perso ennemi\n");
 				this->clear(Color(50, 50, 50));
@@ -862,6 +922,10 @@ void FenetreYoan::controleur_game(Event event)
 		//sf::Vector2u* vec = (*(this->bm.dico))[s];
 		PersonnageYoan* perso = (*(this->bm.dicoPersonnagesIJ))[s];
 		if (perso != NULL) {
+			this->ennemi_clicked.x = perso->appartenance.x;
+			this->ennemi_clicked.y = perso->appartenance.y;
+			this->map_clicked = false;
+
 			if (this->players[this->joueur].selected != -1) {
 				for (int l = 0; l < 8; l++) {
 					for (int k = 0; k < 10; k++) { 
@@ -930,6 +994,8 @@ void FenetreYoan::controleur_game(Event event)
 
 				}
 				//printf("position perso (%d,%d)\n", v.x, v.y);
+				// change stats des perso en fonction de leur case
+				//this->addCaracCaseOnPerso(perso, *this->map->caseJeu[perso->position.x][perso->position.y]);
 
 				if (this->tabcombatbool[perso->appartenance.x][perso->appartenance.y]) {
 					this->map->getCasesForCombatRecursifNord(this->tabCombat[0], v, perso->range, 0);
@@ -941,6 +1007,7 @@ void FenetreYoan::controleur_game(Event event)
 					this->map->getCasesForCombatRecursifNordEst(this->tabCombat[5], v, perso->range, 0);
 					this->map->getCasesForCombatRecursifSudOuest(this->tabCombat[6], v, perso->range, 0);
 					this->map->getCasesForCombatRecursifSudEst(this->tabCombat[7], v, perso->range, 0);
+
 				}
 
 			}
@@ -950,7 +1017,6 @@ void FenetreYoan::controleur_game(Event event)
 		}
 	
 	}
-
 	this->clear(Color(50, 50, 50));
 	this->renderView();
 }
