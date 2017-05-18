@@ -30,6 +30,7 @@ private:
 	sf::RenderWindow *debug; // debug blendmode
 	BlendModee bm; // blendmode 
 	Sprite* sPersonnage; // contient les 4 sprites de personnages
+	Sprite * sCase; // contient les 6 sprites de type de cases
 	sf::Text* tablo_text; // contient les Texts de la vue
 	int nbr_tour;
 	bool findutour;
@@ -60,6 +61,7 @@ public:
 	
 	bool verifContrainte(sf::Vector2u* vec,char* s); // verif contrainte de positionnement perso
 	Sprite getSpritebyname(std::string str);
+	Sprite getSpritecbyname(std::string str);
 
 	void load(); // charge les sprites
 	void idle(); // instructions principales

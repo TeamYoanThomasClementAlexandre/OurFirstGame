@@ -407,9 +407,7 @@ void Fenetre::affichageMenu() {
 							PersonnageYoan* p40 = new PersonnageYoan("Lancier");
 
 							InteractionBDD* bdd = InteractionBDD::Ini();
-
-							// ici il va falloir donner les armes des personnages
-
+							
 							pj2[0] = *p10;
 							pj2[1] = *p20;
 							pj2[2] = *p30;

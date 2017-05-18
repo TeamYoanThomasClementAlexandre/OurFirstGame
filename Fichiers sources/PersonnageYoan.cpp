@@ -78,19 +78,17 @@ PersonnageYoan::PersonnageYoan() {
 }
 
 int* PersonnageYoan::getNewCaracwithCase(Carte c) {
-	Case* casee=c.caseJeu[this->position.x][this->position.y];
+	Case* casee=c.caseJeu[this->position.y][this->position.x];
 
 	int* tab = new int[3];
 	tab[0] = this->armure + casee->armure;
 	tab[1] = this->degat + casee->degat;
 	tab[2] = this->range;
 
-	printf("range =>\n%d\n", this->range);
 	string typ = this->type;
 	string typ2 = "Archer";
 	if (typ == typ2) {
 		tab[2] = this->range + casee->range;
-		printf("range =>\n%d,%d\n", this->range, casee->range);
 
 	}
 	
