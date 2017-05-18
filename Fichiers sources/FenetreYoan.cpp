@@ -178,7 +178,7 @@ FenetreYoan::FenetreYoan(sf::Vector2u dimension,JoueurYoan* playerss)
 }
 Sprite FenetreYoan::getSpritecbyname(std::string str) {
 	
-	if (str == "chemin") {
+	if (str == "plaine") {
 		return this->sCase[0];
 	}
 	else if (str == "eau") {
@@ -863,6 +863,13 @@ void FenetreYoan::controleur_game(Event event)
 {
 	if (event.mouseButton.button == sf::Mouse::Left) //
 	{
+		/*for (int i = 0; i < 10; i++) {
+			for (int j = 0; j < 11; j++) {
+				printf("%s\n",&this->map->caseJeu[i][j]->types);
+			}
+
+		}*/
+
 		if (event.mouseButton.x > 900 && event.mouseButton.x < 950 && event.mouseButton.y >= 300 && event.mouseButton.y < 340) { // EXIT
 			this->exit = true;
 		}
@@ -1748,16 +1755,16 @@ void FenetreYoan::renderView() {
 		}
 		Sprite *s = new Sprite(this->getSpritebyname(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].type));
 		//Case *c = this->map->caseJeu[ennemi_clicked.y][ennemi_clicked.x];
-		Case c2 = *this->map->caseJeu[ennemi_clicked.x][ennemi_clicked.y];
 		Sprite *sarme = this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].sarme;
-		Sprite *s2 = new Sprite(this->getSpritecbyname(c2.types));
-		printf("map = %s\n", this->getSpritecbyname(c2.types));
+
+		Sprite *s2 = new Sprite(this->getSpritecbyname(this->map->caseJeu[this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].position.y][this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].position.x]->types));
+		//printf("%d/ %dmap = %s\n", ennemi_clicked.y, ennemi_clicked.x, &this->map->caseJeu[ennemi_clicked.y][ennemi_clicked.x]->types);
 		s->setPosition(750, 380);
 		s2->setPosition(780, 420);
 		s2->setScale(sf::Vector2f(0.8, 0.8));
 		sarme->setPosition(775,385);
 		this->draw(*s);
-		this->draw(*s2);
+		this->draw(*s2);//BUGICI 
 		this->draw(*sarme);
 
 		this->tablo_text[4].setString(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].type+"  J"+ std::to_string(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].appartenance.x+1) +"/"+ std::to_string(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].appartenance.y));
@@ -1769,7 +1776,7 @@ void FenetreYoan::renderView() {
 
 	else if (this->map_clicked) {
 		Case *c = this->map->caseJeu[this->map_clicked_ij.y][this->map_clicked_ij.x];
-		Sprite *s = new Sprite(c->texture);
+		Sprite *s = new Sprite(this->getSpritecbyname(c->types));
 		s->setPosition(750, 380);
 
 		pv.setString("");

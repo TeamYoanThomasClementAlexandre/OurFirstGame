@@ -275,7 +275,7 @@ bool InteractionBDD::exist(string joueur2) {
 	unsigned int nbr_champs = 0;
 	mysql_init(&mysql);
 	mysql_options(&mysql, MYSQL_READ_DEFAULT_GROUP, "option");
-	if (mysql_real_connect(&mysql, "dwarves.iut-fbleau.fr", "barbier", "barbier", "barbier", 0, NULL, 0) != NULL)
+	if (mysql_real_connect(&mysql, "dwarves.iut-fbleau.fr", "barbier", "barbier", "barbier", 0, NULL, 0) != NULL) //BUGICI
 	{
 		printf("%s\n", joueur2.c_str());
 		requeteString = "Select compte.login from compte where compte.login='" + joueur2 + "';";
