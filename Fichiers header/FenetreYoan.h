@@ -39,13 +39,13 @@ private:
 	int** tabCost;
 	sf::Vector2u** tabCombat;
 	bool map_clicked;
+	bool rien_clicked;
 	Vector2u map_clicked_ij;
 	Combat combat;
 	bool** tabcombatbool; // connaitre si un perso peut attaquer
 	bool isWin; // c'est gagné ?
 	void RenderWin();
 	sf::Vector2u ennemi_clicked; // get info unité sf::Text
-	void addCaracCaseOnPerso(PersonnageYoan *p,Case c);
 
 	// TODO : faire un gestionnaire des resources
 	sf::Sprite sprite;

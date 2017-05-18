@@ -10,7 +10,7 @@ private:
 	
 
 public:	
-	Case(sf::Sprite s,int pmCostc,int vie,int range,int degat,int armure);
+	Case(sf::Sprite s,int pmCostc,int range,int degat,int armure,std::string types);
 	static std::string getRealString(char c);
 	~Case();
 	int who;
@@ -18,7 +18,6 @@ public:
 	std::string types;
 	sf::Sprite sprite;
 	sf::Texture texture;
-	int vie;
 	int range;
 	int degat;
 	int armure;

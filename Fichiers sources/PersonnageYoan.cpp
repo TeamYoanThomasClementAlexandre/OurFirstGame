@@ -76,5 +76,57 @@ std::string PersonnageYoan::afficher() {
 PersonnageYoan::PersonnageYoan() {
 
 }
+
+int* PersonnageYoan::getNewCaracwithCase(Carte c) {
+	Case* casee=c.caseJeu[this->position.x][this->position.y];
+
+	int* tab = new int[3];
+	tab[0] = this->armure + casee->armure;
+	tab[1] = this->degat + casee->degat;
+	tab[2] = this->range;
+
+	printf("range =>\n%d\n", this->range);
+	string typ = this->type;
+	string typ2 = "Archer";
+	if (typ == typ2) {
+		tab[2] = this->range + casee->range;
+		printf("range =>\n%d,%d\n", this->range, casee->range);
+
+	}
+	
+	return tab;
+
+}
+bool* PersonnageYoan::isChangeCarac(Carte c) {
+	Case* casee = c.caseJeu[this->position.y][this->position.x];
+
+	int* tab = new int[3];
+	tab[0] = this->armure + casee->armure;
+	tab[1] = this->degat + casee->degat;
+	tab[2] = this->range;
+
+	string typ = this->type;
+	string typ2 = "Archer";
+	if (typ == typ2) {
+		tab[2] = this->range + casee->range;
+
+	}
+	bool* b = new bool[3];
+
+	for (int i = 0; i < 3; i++) {
+		b[i] = false;
+	}
+	if (tab[0] != this->armure) {
+		b[0] = true;
+	}
+	if (tab[1] != this->degat) {
+		b[1] = true;
+	}
+	if (tab[2] != this->range) {
+		b[2] = true;
+	}
+
+	return b;
+}
 void PersonnageYoan::setCarac(){
 }

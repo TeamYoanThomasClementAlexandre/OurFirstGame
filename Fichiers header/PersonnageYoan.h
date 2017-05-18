@@ -5,6 +5,7 @@
 #include <SFML\Graphics\RectangleShape.hpp>
 #include <SFML\Window\VideoMode.hpp>
 #include <SFML/Graphics.hpp>
+#include "..\\Fichiers header\Carte.h"
 
 using namespace std;
 using namespace sf;
@@ -19,6 +20,8 @@ public:
 	std::string afficher();
 	PersonnageYoan();
 	char* id;
+	int* getNewCaracwithCase(Carte c);
+	bool * isChangeCarac(Carte c);
 	void setCarac();
 	int vie;
 	int range;

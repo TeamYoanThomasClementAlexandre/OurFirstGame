@@ -31,6 +31,8 @@ FenetreYoan::FenetreYoan(sf::Vector2u dimension,JoueurYoan* playerss)
 
 	this->ennemi_clicked.x = -1;
 	this->ennemi_clicked.y = -1;
+	this->map_clicked = false;
+	this->rien_clicked = true;
 	// ini combat 
 	Combat *c = new Combat();
 	this->combat = *c;
@@ -350,12 +352,14 @@ void FenetreYoan::load() {
 	Texture* pDesertTexture = new Texture();
 	Texture* pMontagneTexture = new Texture();
 	Texture* pForetTexture = new Texture();
+	Texture* pCheminTexture = new Texture();
 
 	Texture* pPlaineTextureMin = new Texture();
 	Texture* pEauTextureMin = new Texture();
 	Texture* pDesertTextureMin = new Texture();
 	Texture* pMontagneTextureMin = new Texture();
 	Texture* pForetTextureMin = new Texture();
+	Texture* pCheminTextureMin = new Texture();
 
 	const char* szResourcePlaine = "../Fichiers externe/img/plaine.png";
 	if (!pPlaineTexture->loadFromFile(szResourcePlaine)) {
@@ -376,6 +380,10 @@ void FenetreYoan::load() {
 	const char* szResourceForet = "../Fichiers externe/img/foret.png";
 	if (!pForetTexture->loadFromFile(szResourceForet)) {
 		printf("Error load sprite %s", szResourceForet);
+	}
+	const char* szResourceChemin = "../Fichiers externe/img/chemin.png";
+	if (!pCheminTexture->loadFromFile(szResourceChemin)) {
+		printf("Error load sprite %s", szResourceChemin);
 	}
 	/*  */
 	const char* szResourcePlaineMin = "../Fichiers externe/img/plaine_min.png";
@@ -398,6 +406,10 @@ void FenetreYoan::load() {
 	if (!pForetTextureMin->loadFromFile(szResourceForetMin)) {
 		printf("Error load sprite %s", szResourceForetMin);
 	}
+	const char* szResourceCheminMin = "../Fichiers externe/img/chemin_min.png";
+	if (!pCheminTextureMin->loadFromFile(szResourceCheminMin)) {
+		printf("Error load sprite %s", szResourceCheminMin);
+	}
 
 	Case*** pTableau = new Case**[this->max_y];
 	Carte* pMap = new Carte();
@@ -407,85 +419,100 @@ void FenetreYoan::load() {
 
 		for (int i = 0; i < this->max_x; i++) {
 
-			Case* pCase=NULL;
-			s= textureId[j][i];
-			if (s=="plaine") {
-				if (i == 0 && j % 2 == 0 || j == this->max_y -1 || i == this->max_x-1) {
+			Case* pCase = NULL;
+			s = textureId[j][i];
+			if (s == "plaine") {
+				if (i == 0 && j % 2 == 0 || j == this->max_y - 1 || i == this->max_x - 1) {
 					Sprite *plaine = new Sprite(*pPlaineTexture);
-					pCase = new Case(*plaine,1,0,0,10,-10); //vie , range, degat , armure
+					pCase = new Case(*plaine, 1, 0, 10, -10, s); //vie , range, degat , armure
 					pCase->texture = *pPlaineTexture;
 				}
 				else {
-					
+
 					Sprite *plaineMin = new Sprite(*pPlaineTextureMin);
-					pCase = new Case(*plaineMin,1,0,0,10,-10);
+					pCase = new Case(*plaineMin, 1, 0, 10, -10, s);
 					pCase->texture = *pPlaineTextureMin;
 				}
-			
+
 			}
 			if (s == "eau") {
 				if (i == 0 && j % 2 == 0 || j == this->max_y - 1 || i == this->max_x - 1) {
 					Sprite *eau = new Sprite(*pEauTexture);
-					pCase = new Case(*eau,100,0,0,0,0);
+					pCase = new Case(*eau, 100, 0, 0, 0, s);
 					pCase->texture = *pEauTexture;
 				}
 				else {
 					Sprite *EauMin = new Sprite(*pEauTextureMin);
-					pCase = new Case(*EauMin,100,0,0,0,0);
-					pCase->texture = *pPlaineTextureMin;
+					pCase = new Case(*EauMin, 100, 0, 0, 0, s);
+					pCase->texture = *pEauTextureMin;
 				}
 			}
 			if (s == "montagne") {
 				if (i == 0 && j % 2 == 0 || j == this->max_y - 1 || i == this->max_x - 1) {
 					Sprite *montagne = new Sprite(*pMontagneTexture);
-					pCase = new Case(*montagne, 2,10,1,-10,10);
+					pCase = new Case(*montagne, 2, 1, -10, 10, s);
 					pCase->texture = *pMontagneTexture;
 				}
 				else {
 					Sprite *montagneMin = new Sprite(*pMontagneTextureMin);
-					pCase = new Case(*montagneMin, 2,10,1,-10,10);
+					pCase = new Case(*montagneMin, 2, 1, -10, 10, s);
 					pCase->texture = *pMontagneTextureMin;
 				}
 			}
-			
-			if (s=="desert") {
-				if (i == 0 && j % 2 == 0 || j == this->max_y - 1 || i== this->max_x - 1) {
-					
+
+			if (s == "desert") {
+				if (i == 0 && j % 2 == 0 || j == this->max_y - 1 || i == this->max_x - 1) {
+
 					Sprite *desert = new Sprite(*pDesertTexture);
-				pCase = new Case(*desert,2,-5,0,20,0);
-				pCase->texture = *pDesertTexture;
+					pCase = new Case(*desert, 2, 0, 20, 0, s);
+					pCase->texture = *pDesertTexture;
 				}
 				else {
 					Sprite *DesertMin = new Sprite(*pDesertTextureMin);
-					pCase = new Case(*DesertMin,2,-5,0,20,0);
+					pCase = new Case(*DesertMin, 2, 0, 20, 0, s);
 					pCase->texture = *pDesertTextureMin;
 				}
-			
-				}
-			if (s == "foret") {
-				if (i == 0 && j % 2 == 0 || j == this->max_y - 1 || i == this->max_x - 1) {
-
-					Sprite *foret = new Sprite(*pForetTexture);
-					pCase = new Case(*foret, 2,0,-1,-10,20);
-					pCase->texture = *pForetTexture;
-				}
-				else {
-					Sprite *ForetMin = new Sprite(*pForetTextureMin);
-					pCase = new Case(*ForetMin, 2,0,-1,-10,20);
-					pCase->texture = *pForetTextureMin;
-				}
-
-
 			}
-			pCase->types = s;
 
-			pTableau[j][i] = pCase;
-		}
+				if (s == "foret") {
+					if (i == 0 && j % 2 == 0 || j == this->max_y - 1 || i == this->max_x - 1) {
+
+						Sprite *foret = new Sprite(*pForetTexture);
+						pCase = new Case(*foret, 2, -1, -10, 20, s);
+						pCase->texture = *pForetTexture;
+					}
+					else {
+						Sprite *ForetMin = new Sprite(*pForetTextureMin);
+						pCase = new Case(*ForetMin, 2, -1, -10, 20, s);
+						pCase->texture = *pForetTextureMin;
+					}
+				}
+
+				if (s == "chemin") {
+					if (i == 0 && j % 2 == 0 || j == this->max_y - 1 || i == this->max_x - 1) {
+
+						Sprite *chemin = new Sprite(*pCheminTexture);
+						pCase = new Case(*chemin, 0.5, 0, 0, 0,s);
+						pCase->texture = *pCheminTexture;
+					}
+					else {
+						Sprite *CheminMin = new Sprite(*pCheminTextureMin);
+						pCase = new Case(*CheminMin, 0.5, 0, 0, 0,s);
+						pCase->texture = *pCheminTextureMin;
+					}
+
+
+				}
+				pCase->types = s;
+
+				pTableau[j][i] = pCase;
+			}
+		
 	}
 
-	pMap->caseJeu = pTableau;
-	this->map = pMap;
-
+		pMap->caseJeu = pTableau;
+		this->map = pMap;
+	
 
 
 	// Chargement des resources PERSONNAGES
@@ -547,7 +574,7 @@ int FenetreYoan::ini_first_tour() {
 	}
 }
 void FenetreYoan::idle() {	
-	
+	PersonnageYoan perso;
 	this->PlacementPersonnage();
 	this->joueur = (this->joueur == 0) ? 1 : 0;
 	this->PlacementPersonnage();
@@ -556,7 +583,7 @@ void FenetreYoan::idle() {
 	this->nbr_tour++;
 	this->players[0].selected = -1;
 	this->players[1].selected = -1;
-	while (1) {
+	while (1) {		
 		if(!this->isWin)
 		this->joueur = (this->joueur == 0) ? 1 : 0;
 
@@ -596,7 +623,7 @@ void FenetreYoan::idle() {
 		}
 
 		this->nbr_tour++;
-
+		
 
 	}
 
@@ -733,19 +760,6 @@ void FenetreYoan::RenderWin() {
 
 	
 }
-
-void FenetreYoan::addCaracCaseOnPerso(PersonnageYoan * p,Case c)
-{
-	p->armure += c.armure;
-	p->degat += c.degat;
-	if (p->type == "archer") {
-		p->range += c.range;
-	}
-	p->vie += c.vie;
-
-	return;
-}
-
 void FenetreYoan::PlacementPersonnage() {
 	this->clear(Color(100, 100, 100));
 	this->render();
@@ -853,9 +867,19 @@ void FenetreYoan::controleur_game(Event event)
 				this->map_clicked = true;
 				this->map_clicked_ij.x = vec->x;
 				this->map_clicked_ij.y = vec->y;
+
+				this->rien_clicked = false;
+
+				this->ennemi_clicked.x = -1;
+				this->ennemi_clicked.y = -1;
 			}
 		}
 		else if (perso != NULL) {
+			this->ennemi_clicked.x = perso->appartenance.x;
+			this->ennemi_clicked.y = perso->appartenance.y;
+			this->map_clicked = false;
+			this->rien_clicked = false;
+
 			if (perso->appartenance.x == this->joueur) {
 				this->players[this->joueur].selected = perso->appartenance.y;
 				Vector2u v;
@@ -878,7 +902,6 @@ void FenetreYoan::controleur_game(Event event)
 
 				}
 				// change stats des perso en fonction de leur case
-				//this->addCaracCaseOnPerso(perso, *this->map->caseJeu[perso->position.x][perso->position.y]);
 
 				this->map->getCasesForDeplacementRecursifNord(this->tabDeplacement[0], this->tabCost[0], v, perso->deplacementRestante, perso->deplacementRestante, 0);
 				this->map->getCasesForDeplacementRecursifSud(this->tabDeplacement[1], this->tabCost[1], v, perso->deplacementRestante, perso->deplacementRestante, 0);
@@ -894,7 +917,10 @@ void FenetreYoan::controleur_game(Event event)
 			else {
 				this->ennemi_clicked.x = perso->appartenance.x;
 				this->ennemi_clicked.y = perso->appartenance.y;
+
 				this->map_clicked = false;
+
+				this->rien_clicked = false;
 				
 				printf("perso ennemi\n");
 				this->clear(Color(50, 50, 50));
@@ -925,6 +951,7 @@ void FenetreYoan::controleur_game(Event event)
 			this->ennemi_clicked.x = perso->appartenance.x;
 			this->ennemi_clicked.y = perso->appartenance.y;
 			this->map_clicked = false;
+			this->rien_clicked = false;
 
 			if (this->players[this->joueur].selected != -1) {
 				for (int l = 0; l < 8; l++) {
@@ -995,7 +1022,7 @@ void FenetreYoan::controleur_game(Event event)
 				}
 				//printf("position perso (%d,%d)\n", v.x, v.y);
 				// change stats des perso en fonction de leur case
-				//this->addCaracCaseOnPerso(perso, *this->map->caseJeu[perso->position.x][perso->position.y]);
+				
 
 				if (this->tabcombatbool[perso->appartenance.x][perso->appartenance.y]) {
 					this->map->getCasesForCombatRecursifNord(this->tabCombat[0], v, perso->range, 0);
@@ -1014,6 +1041,13 @@ void FenetreYoan::controleur_game(Event event)
 		}
 		else if (perso == NULL) {
 			this->players[this->joueur].selected = -1;
+			this->rien_clicked = true;
+
+			this->ennemi_clicked.x = -1;
+			this->ennemi_clicked.y = -1;
+
+			this->map_clicked = false;
+
 		}
 	
 	}
@@ -1245,7 +1279,7 @@ void FenetreYoan::renderTexte() {
 	this->tablo_text[0].setString(this->players[this->joueur].pseudo+"  J"+ std::to_string(this->joueur+1));
 	this->tablo_text[0].setPosition(10, 515);
 	// erreur
-	this->tablo_text[1].setPosition(100, 515);
+	this->tablo_text[1].setPosition(150, 515);
 	//info supp 
 	this->tablo_text[2].setPosition(300, 515);
 	//nbr tour
@@ -1313,7 +1347,7 @@ void FenetreYoan::renderTexteView() {
 	this->tablo_text[0].setString(this->players[this->joueur].pseudo + "  J" + std::to_string(this->joueur + 1));
 	this->tablo_text[0].setPosition(10, 515);
 	// erreur
-	this->tablo_text[1].setPosition(100, 515);
+	this->tablo_text[1].setPosition(150, 515);
 	//info supp 
 	this->tablo_text[2].setPosition(300, 515);
 	//nbr tour
@@ -1330,7 +1364,12 @@ void FenetreYoan::renderTexteView() {
 	{
 		printf("Error load text :%s", font);
 	}
+	int* tab = new int[3];
+	bool* tabb = new bool[3];
 	for (int i = 0; i < 4; i++) {
+		tab = this->players[this->joueur].p_placer[i].getNewCaracwithCase(*this->map);
+		tabb = this->players[this->joueur].p_placer[i].isChangeCarac(*this->map);
+
 		sf::Text type;
 		type.setFont(font);
 		type.setCharacterSize(15);
@@ -1349,17 +1388,29 @@ void FenetreYoan::renderTexteView() {
 		sf::Text degat;
 		degat.setFont(font);
 		degat.setCharacterSize(15);
-		degat.setString(std::to_string(this->players[this->joueur].p_placer[i].degat));
+		degat.setString(std::to_string(tab[1]));
+		if (tabb[1]) {
+			degat.setColor(Color(0, 255, 255));
+
+		}
 		degat.setPosition(300, 375 + (i * 30));
 		sf::Text armor;
 		armor.setFont(font);
 		armor.setCharacterSize(15);
-		armor.setString(std::to_string(this->players[this->joueur].p_placer[i].armure));
+		armor.setString(std::to_string(tab[0]));
+		if (tabb[0]) {
+			armor.setColor(Color(0, 255, 255));
+
+		}
 		armor.setPosition(400, 375 + (i * 30));
 		sf::Text range;
 		range.setFont(font);
 		range.setCharacterSize(15);
-		range.setString(std::to_string(this->players[this->joueur].p_placer[i].range));
+		range.setString(std::to_string(tab[2]));
+		if (tabb[2]) {
+		range.setColor(Color(0, 255, 255));
+
+		}
 		range.setPosition(550, 375 + (i * 30));
 
 		//std::string s = this->personnagesJ1[i].afficher();
@@ -1596,18 +1647,7 @@ void FenetreYoan::renderView() {
 	this->autre[1].setPosition(900, 300);
 	this->draw(autre[1]);
 
-	if (this->map_clicked) {
-		this->ennemi_clicked.x = -1;
-		this->ennemi_clicked.y = -1;
-		Case *c = this->map->caseJeu[this->map_clicked_ij.y][this->map_clicked_ij.x];
-		Sprite *s = new Sprite(c->texture);
-		s->setPosition(750, 380);
-
-		this->tablo_text[4].setString(c->types);
-		this->tablo_text[4].setPosition(750, 360);
-		this->draw(this->tablo_text[4]);
-		this->draw(*s);
-	}
+	
 	sf::Font font;
 	if (!font.loadFromFile("../Fichiers externe/arial.ttf"))
 	{
@@ -1634,18 +1674,57 @@ void FenetreYoan::renderView() {
 	range.setCharacterSize(15);
 	range.setPosition(900, 475);
 	if (this->ennemi_clicked.x != -1 && this->ennemi_clicked.y !=-1) {
-		
+		int* tab = new int[3];
+		bool* tabb = new bool[3];
+		tab = this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].getNewCaracwithCase(*this->map);
+		tabb = this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].isChangeCarac(*this->map);
 		
 		pv.setString(std::to_string(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].vieRestante) + "/" + std::to_string(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].vie));		
 		pm.setString(std::to_string(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].deplacementRestante) + "/" + std::to_string(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].deplacement));		
-		degat.setString(std::to_string(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].degat));
-		armor.setString(std::to_string(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].armure));
-		range.setString(std::to_string(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].range));
-		
+		degat.setString(std::to_string(tab[1]));
+		if (tabb[1]) {
+			degat.setColor(Color(0, 255, 255));
+
+		}
+		armor.setString(std::to_string(tab[0]));
+		if (tabb[0]) {
+			armor.setColor(Color(0, 255, 255));
+
+		}
+		range.setString(std::to_string(tab[2]));
+		if (tabb[2]) {
+			range.setColor(Color(0, 255, 255));
+
+		}
+		Sprite *s = new Sprite(this->getSpritebyname(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].type));
+		s->setPosition(750, 380);
+		this->draw(*s);
+
+
+		this->tablo_text[4].setString(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].type);
+		this->tablo_text[4].setPosition(750, 360);
+		this->draw(this->tablo_text[4]);
 
 		
 	}
-	else {
+
+	else if (this->map_clicked) {
+		Case *c = this->map->caseJeu[this->map_clicked_ij.y][this->map_clicked_ij.x];
+		Sprite *s = new Sprite(c->texture);
+		s->setPosition(750, 380);
+
+		pv.setString("");
+		pm.setString(std::to_string(c->pmCost));
+		degat.setString(std::to_string(c->degat));
+		armor.setString(std::to_string(c->armure));
+		range.setString(std::to_string(c->range));
+
+		this->tablo_text[4].setString(c->types);
+		this->tablo_text[4].setPosition(750, 360);
+		this->draw(this->tablo_text[4]);
+		this->draw(*s);
+	}
+	else if(this->rien_clicked) {
 		pv.setString("");
 		pm.setString("");
 		degat.setString("");
