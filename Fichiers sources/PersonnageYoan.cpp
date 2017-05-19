@@ -27,14 +27,14 @@ PersonnageYoan::PersonnageYoan(std::string typeConstr){
 		this->armure = 0;
 		this->deplacement = 2;
 		this->deplacementRestante = this->deplacement;
-		this->range = 3;
-		this->vie = 80;
+		this->range = 2;
+		this->vie = 50;
 		this->vieRestante = this->vie;
 
 	}
 	if (type == "Paladin") {
-		this->degat = 40;
-		this->armure = 20;
+		this->degat = 20;
+		this->armure = 40;
 		this->deplacement = 4;
 		this->deplacementRestante = this->deplacement;
 		this->range = 1;
@@ -43,18 +43,18 @@ PersonnageYoan::PersonnageYoan(std::string typeConstr){
 
 	}
 	if (type == "Epeiste") {
-		this->degat = 50;
-		this->armure = 20;
+		this->degat = 40;
+		this->armure = 10;
 		this->deplacement = 2;
 		this->deplacementRestante = this->deplacement;
 		this->range = 1;
-		this->vie = 80;
+		this->vie = 90;
 		this->vieRestante = this->vie;
 
 	}
 	if (type == "Lancier") {
-		this->degat = 40;
-		this->armure = 20;
+		this->degat = 30;
+		this->armure = 30;
 		this->deplacement = 3;
 		this->deplacementRestante = this->deplacement;
 		this->range = 1;
@@ -78,9 +78,16 @@ PersonnageYoan::PersonnageYoan() {
 }
 
 int* PersonnageYoan::getNewCaracwithCase(Carte c) {
+	int* tab = new int[3];
+	if (this->isdead) {
+		tab[0] = -1;
+		tab[1] = -1;
+		tab[2] = -1;
+		return tab;
+	}
 	Case* casee=c.caseJeu[this->position.y][this->position.x];
 
-	int* tab = new int[3];
+	
 	tab[0] = this->armure + casee->armure;
 	tab[1] = this->degat + casee->degat;
 	tab[2] = this->range;
@@ -96,9 +103,17 @@ int* PersonnageYoan::getNewCaracwithCase(Carte c) {
 
 }
 bool* PersonnageYoan::isChangeCarac(Carte c) {
-	Case* casee = c.caseJeu[this->position.y][this->position.x];
+	bool* tabb = new bool[3];
 
+	if (this->isdead) {
+		tabb[0] = false;
+		tabb[1] = false;
+		tabb[2] = false;
+		return tabb;
+	}
+	Case* casee = c.caseJeu[this->position.y][this->position.x];
 	int* tab = new int[3];
+
 	tab[0] = this->armure + casee->armure;
 	tab[1] = this->degat + casee->degat;
 	tab[2] = this->range;

@@ -702,8 +702,6 @@ void FenetreYoan::RenderWin() {
 	Sprite *loose = new Sprite(*Loose);
 	Sprite *deadsprite = new Sprite(*dead);
 
-	//sf::RenderWindow* window = new RenderWindow();
-	//window->create(sf::VideoMode(960	, 540), "Win screen");
 	this->clear(Color(50,50,50));
 
 	sf::Font font;
@@ -711,6 +709,11 @@ void FenetreYoan::RenderWin() {
 	{
 		printf("Error load text :%s", font);
 	}
+
+	sf::Text tour;
+	tour.setFont(font);
+	tour.setCharacterSize(15);
+	tour.setString("Fin de la Bataille au Tour : " + this->nbr_tour);
 
 	sf::Text namewin;
 	namewin.setFont(font);
@@ -723,7 +726,7 @@ void FenetreYoan::RenderWin() {
 	nameloose.setCharacterSize(15);
 	nameloose.setString("Defaite de : " + this->players[(this->joueur == 0) ? 1 : 0].pseudo);
 
-
+	tour.setPosition(200,280);
 
 	if (this->joueur==0) {
 		win->setPosition(0, 0);
@@ -787,11 +790,12 @@ void FenetreYoan::RenderWin() {
 			this->draw(spriteperso);
 			this->draw(*arme);
 		}
-
 		this->draw(namewin);
 		this->draw(nameloose);
 		this->draw(*win);
 		this->draw(*loose);
+		this->draw(tour);
+
 		this->display();
 		sf::sleep(sf::milliseconds(100000));
 		//this->close();
@@ -905,7 +909,7 @@ void FenetreYoan::controleur_game(Event event)
 								this->map->caseJeu[vec->y][vec->x]->who = this->joueur;
 								}
 						}
-						this->players[this->joueur].selected = -1;
+						/*this->players[this->joueur].selected = -1;
 						this->map_clicked = true;
 						this->map_clicked_ij.x = vec->x;
 						this->map_clicked_ij.y = vec->y;
@@ -913,7 +917,7 @@ void FenetreYoan::controleur_game(Event event)
 						this->rien_clicked = false;
 
 						this->ennemi_clicked.x = -1;
-						this->ennemi_clicked.y = -1;
+						this->ennemi_clicked.y = -1;*/
 						
 						}
 					}
@@ -1018,14 +1022,14 @@ void FenetreYoan::controleur_game(Event event)
 								printf("\n COMBAT :  Joueur %d , perso %d\n VS\n Joueur %d, perso %d \n", this->joueur, this->players[this->joueur].selected, perso->appartenance.x, perso->appartenance.y);
 
 								if (this->tabcombatbool[this->joueur][this->players[this->joueur].selected]) {
-									this->combat.simulationCombat(&this->players[this->joueur].p_placer[this->players[this->joueur].selected],& this->players[perso->appartenance.x].p_placer[perso->appartenance.y]);
+									this->combat.simulationCombat(&this->players[this->joueur].p_placer[this->players[this->joueur].selected],& this->players[perso->appartenance.x].p_placer[perso->appartenance.y],*this->map);
 									this->tabcombatbool[this->joueur][this->players[this->joueur].selected] = false;
 									this->tablo_text[1].setString("Attaque reussie <3 !");
 									
-									//this->players[perso->appartenance.x].p_placer[0].vieRestante = 0;
-									//this->players[perso->appartenance.x].p_placer[1].vieRestante = 0;
-									//this->players[perso->appartenance.x].p_placer[2].vieRestante = 0;
-									//this->players[perso->appartenance.x].p_placer[3].vieRestante = 0;
+									this->players[perso->appartenance.x].p_placer[0].vieRestante = 0;
+									this->players[perso->appartenance.x].p_placer[1].vieRestante = 0;
+									this->players[perso->appartenance.x].p_placer[2].vieRestante = 0;
+									this->players[perso->appartenance.x].p_placer[3].vieRestante = 0;
 
 									// ici si il es mort mettre isdead=true
 									if (this->players[perso->appartenance.x].p_placer[perso->appartenance.y].vieRestante <= 0) {
@@ -1079,18 +1083,19 @@ void FenetreYoan::controleur_game(Event event)
 				}
 				//printf("position perso (%d,%d)\n", v.x, v.y);
 				// change stats des perso en fonction de leur case
-				
+				int* tab = new int[3];
+			tab=	perso->getNewCaracwithCase(*this->map);
 
 				if (this->tabcombatbool[perso->appartenance.x][perso->appartenance.y]) {
-					this->map->getCasesForCombatRecursifNord(this->tabCombat[0], v, perso->range, 0);
-					this->map->getCasesForCombatRecursifSud(this->tabCombat[1], v, perso->range, 0);
-					this->map->getCasesForCombatRecursifEst(this->tabCombat[2], v, perso->range, 0);
-					this->map->getCasesForCombatRecursifOuest(this->tabCombat[3], v, perso->range, 0);
+					this->map->getCasesForCombatRecursifNord(this->tabCombat[0], v, tab[2], 0);
+					this->map->getCasesForCombatRecursifSud(this->tabCombat[1], v, tab[2], 0);
+					this->map->getCasesForCombatRecursifEst(this->tabCombat[2], v, tab[2], 0);
+					this->map->getCasesForCombatRecursifOuest(this->tabCombat[3], v, tab[2], 0);
 
-					this->map->getCasesForCombatRecursifNordOuest(this->tabCombat[4], v, perso->range, 0);
-					this->map->getCasesForCombatRecursifNordEst(this->tabCombat[5], v, perso->range, 0);
-					this->map->getCasesForCombatRecursifSudOuest(this->tabCombat[6], v, perso->range, 0);
-					this->map->getCasesForCombatRecursifSudEst(this->tabCombat[7], v, perso->range, 0);
+					this->map->getCasesForCombatRecursifNordOuest(this->tabCombat[4], v, tab[2], 0);
+					this->map->getCasesForCombatRecursifNordEst(this->tabCombat[5], v, tab[2], 0);
+					this->map->getCasesForCombatRecursifSudOuest(this->tabCombat[6], v, tab[2], 0);
+					this->map->getCasesForCombatRecursifSudEst(this->tabCombat[7], v, tab[2], 0);
 
 				}
 
@@ -1730,7 +1735,7 @@ void FenetreYoan::renderView() {
 	range.setFont(font);
 	range.setCharacterSize(15);
 	range.setPosition(900, 475);
-	if (this->ennemi_clicked.x != -1 && this->ennemi_clicked.y !=-1) {
+	if (this->ennemi_clicked.x != -1 && this->ennemi_clicked.y !=-1 && !this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].isdead) {
 		int* tab = new int[3];
 		bool* tabb = new bool[3];
 		tab = this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].getNewCaracwithCase(*this->map);

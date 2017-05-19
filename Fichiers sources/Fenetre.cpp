@@ -153,7 +153,7 @@ std::string Fenetre::adversaireEnter() {
 				if (rectValider.getGlobalBounds().contains(mouse_world)) {
 					if (verifNom(joueur2Affichage.getString())) {
 						printf("%s",joueur2Affichage.getString());
-						return joueur2Affichage.getString();
+						return joueur2Affichage.getString();//BUGICI
 					}
 					else
 						joueur2 = "compte inexistant";
