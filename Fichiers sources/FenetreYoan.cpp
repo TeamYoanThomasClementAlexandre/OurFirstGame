@@ -130,7 +130,7 @@ FenetreYoan::FenetreYoan(sf::Vector2u dimension,JoueurYoan* playerss)
 	
 
 	// parametrage fenetre de jeu
-	this->create(VideoMode(dimension.x, dimension.y), "Ages of Strategies",sf::Style::Titlebar);
+	this->create(VideoMode(dimension.x, dimension.y), "Ages of Strategies",sf::Style::Titlebar); // Violation d'acces lors de l'emplacelent 0x00001
 	this->setFramerateLimit(60); // limité a 60fps
 	this->setPosition(sf::Vector2i(960, 0));
 	this->dimension_x = dimension.x;
@@ -680,6 +680,7 @@ void FenetreYoan::idle() {
 }
 
 void FenetreYoan::RenderWin() {
+	
 	printf("Victoire du joueur %d", this->joueur);
 	Texture* Win = new Texture();
 	Texture* Loose = new Texture();
@@ -713,7 +714,7 @@ void FenetreYoan::RenderWin() {
 	sf::Text tour;
 	tour.setFont(font);
 	tour.setCharacterSize(15);
-	tour.setString("Fin de la Bataille au Tour : " + this->nbr_tour);
+	tour.setString("Fin : Tour " + std::to_string(this->nbr_tour));
 
 	sf::Text namewin;
 	namewin.setFont(font);
@@ -726,15 +727,18 @@ void FenetreYoan::RenderWin() {
 	nameloose.setCharacterSize(15);
 	nameloose.setString("Defaite de : " + this->players[(this->joueur == 0) ? 1 : 0].pseudo);
 
-	tour.setPosition(200,280);
+	tour.setPosition(470,280);
 
+	bool isWin;
 	if (this->joueur==0) {
+		isWin = true;
 		win->setPosition(0, 0);
 		loose->setPosition(480, 0);	
 		namewin.setPosition(150, 300);
 		nameloose.setPosition(650, 300);
 	}
 	else {
+		isWin = false;
 		win->setPosition(480, 0);
 		loose->setPosition(0, 0);
 		namewin.setPosition(650, 300);
@@ -742,15 +746,29 @@ void FenetreYoan::RenderWin() {
 	}
 	
 	
-	
+		
 
 		for (int i = 0; i < 4; i++) {
 			sf::Text level;
 			level.setFont(font);
 			level.setCharacterSize(40);
 			level.setString(std::to_string(this->players[0].p_placer[i].level));
-			//level.setColor(Color::Red);
 			level.setPosition(50,350 + (i * 40));
+
+			sf::Text xp;
+			xp.setFont(font);
+			xp.setCharacterSize(15);
+			if (isWin) {
+				xp.setString("+ "+std::to_string(this->players[0].p_placer[i].getExperiencePersonnage(nbr_tour,true))+" xp");
+
+			}
+			else {
+				xp.setString("+ "+std::to_string(this->players[0].p_placer[i].getExperiencePersonnage(nbr_tour, false))+" xp");
+
+			}
+			xp.setPosition(195, 355 + (i * 40));
+
+
 
 
 			std::string name = this->players[0].p_placer[i].type;
@@ -766,14 +784,32 @@ void FenetreYoan::RenderWin() {
 			this->draw(level);
 			this->draw(spriteperso);
 			this->draw(*arme);
+			this->draw(xp);
 		}
 		for (int i = 0; i < 4; i++) {
 			sf::Text level;
 			level.setFont(font);
 			level.setCharacterSize(40);
 			level.setString(std::to_string(this->players[1].p_placer[i].level));
-			//level.setColor(Color::Red);
 			level.setPosition(550, 350 + (i * 40));
+
+
+			sf::Text xp;
+			xp.setFont(font);
+			xp.setCharacterSize(15);
+			if (!isWin) {
+				xp.setString("+ "+std::to_string(this->players[1].p_placer[i].getExperiencePersonnage(nbr_tour, true))+" xp");
+
+			}
+			else {
+				xp.setString("+ "+std::to_string(this->players[1].p_placer[i].getExperiencePersonnage(nbr_tour, false))+" xp");
+
+			}
+			xp.setPosition(695, 352 + (i * 40));
+
+
+
+
 
 			std::string name = this->players[1].p_placer[i].type;
 			Sprite spriteperso = getSpritebyname(name);
@@ -785,7 +821,7 @@ void FenetreYoan::RenderWin() {
 			if (this->players[1].p_placer[i].isdead) {
 				this->draw(*deadsprite);
 			}
-			
+			this->draw(xp);
 			this->draw(level);
 			this->draw(spriteperso);
 			this->draw(*arme);
@@ -797,12 +833,19 @@ void FenetreYoan::RenderWin() {
 		this->draw(tour);
 
 		this->display();
-		sf::sleep(sf::milliseconds(100000));
-		//this->close();
-
-
-
-	
+		Sprite *s = new Sprite(autre[1]);
+		s->setPosition(900, 300);
+		this->draw(*s);
+		bool quitter = false;
+		while (!quitter) {
+			if (event.mouseButton.button == sf::Mouse::Left) //
+			{
+				if (event.mouseButton.x > 900 && event.mouseButton.x < 950 && event.mouseButton.y >= 300 && event.mouseButton.y < 340) { // EXIT
+					quitter = true;
+				}
+			}
+		}
+		
 }
 void FenetreYoan::PlacementPersonnage() {
 	this->clear(Color(100, 100, 100));
@@ -1034,6 +1077,7 @@ void FenetreYoan::controleur_game(Event event)
 									// ici si il es mort mettre isdead=true
 									if (this->players[perso->appartenance.x].p_placer[perso->appartenance.y].vieRestante <= 0) {
 										this->players[perso->appartenance.x].p_placer[perso->appartenance.y].isdead=true;
+										this->players[this->joueur].p_placer[this->players[this->joueur].selected].nbr_tue++;
 										this->map->caseJeu[this->players[perso->appartenance.x].p_placer[perso->appartenance.y].position.x][this->players[perso->appartenance.x].p_placer[perso->appartenance.y].position.y]->who = -1;
 										this->players[perso->appartenance.x].p_placer[perso->appartenance.y].position.x = -1;
 										this->players[perso->appartenance.x].p_placer[perso->appartenance.y].position.y = -1;

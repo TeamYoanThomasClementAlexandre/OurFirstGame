@@ -22,6 +22,7 @@ public:
 	char* id;
 	int* getNewCaracwithCase(Carte c);
 	bool * isChangeCarac(Carte c);
+	int getExperiencePersonnage(int nbr_tour,bool isWin);
 	void setCarac();
 	int vie;
 	int range;
@@ -38,6 +39,7 @@ public:
 	Sprite* sarme;
 	bool isdead;
 	int level;
+	int nbr_tue;
 
 };
 
