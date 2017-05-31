@@ -832,16 +832,21 @@ void FenetreYoan::RenderWin() {
 		this->draw(*loose);
 		this->draw(tour);
 
-		this->display();
 		Sprite *s = new Sprite(autre[1]);
 		s->setPosition(900, 300);
 		this->draw(*s);
+		this->display();
+		
 		bool quitter = false;
 		while (!quitter) {
-			if (event.mouseButton.button == sf::Mouse::Left) //
-			{
-				if (event.mouseButton.x > 900 && event.mouseButton.x < 950 && event.mouseButton.y >= 300 && event.mouseButton.y < 340) { // EXIT
-					quitter = true;
+			printf("wtf\n");
+			while (this->pollEvent(this->event)) {
+				if (this->event.mouseButton.button == sf::Mouse::Left) //
+				{
+					if (this->event.mouseButton.x > 900 && this->event.mouseButton.x < 950 && this->event.mouseButton.y >= 300 && this->event.mouseButton.y < 340) { // EXIT
+						printf("wtf 2\n");
+						quitter = true;
+					}
 				}
 			}
 		}

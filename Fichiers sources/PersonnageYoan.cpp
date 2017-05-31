@@ -144,7 +144,7 @@ bool* PersonnageYoan::isChangeCarac(Carte c) {
 }
 
 int PersonnageYoan::getExperiencePersonnage(int nbr_tour,bool isWin) {
-	int xp_sup = 10; // 10 xp donnée directement   (MAX = 90, MIN = 11)
+	int xp_sup = 5; // 10 xp donnée directement   (MAX = 90, MIN = 11)
 	if (nbr_tour < 10) { 
 		xp_sup+= nbr_tour*2;  // plus il y a de tour plus ya de l'xp
 	}
@@ -152,7 +152,7 @@ int PersonnageYoan::getExperiencePersonnage(int nbr_tour,bool isWin) {
 		xp_sup += 20; // plus de 10 tour = 10 xp
 	}
 	if (isWin) {
-		xp_sup += 20; // victoire = 20 xp
+		xp_sup += 10; // victoire = 20 xp
 	}
 	if (!isdead) {
 		xp_sup += 5;
