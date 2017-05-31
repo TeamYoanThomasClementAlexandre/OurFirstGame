@@ -8,6 +8,7 @@
 #include "..\Fichiers header\Case.h"
 #include "..\Fichiers header\Fichier.h"
 #include "..\Fichiers header\InteractionBDD.h"
+#include "..\Fichiers header\Personnage.h"
 
 #define MAXI 11 //1280 1024
 #define MAXJ 12
@@ -155,7 +156,8 @@ FenetreYoan::FenetreYoan(sf::Vector2u dimension,JoueurYoan* playerss)
 	PersonnageYoan* p_good = new PersonnageYoan[4];
 	PersonnageYoan* p_good2 = new PersonnageYoan[4];
 	for (int i = 0; i < 4; i++) {
-		PersonnageYoan *p = new PersonnageYoan("constr");
+		Personnage tested = Personnage("dragodia","Archer");
+		PersonnageYoan *p = new PersonnageYoan("constr",tested);
 		p_good[i] = *p;
 		p_good2[i] = *p;
 	}
@@ -846,6 +848,8 @@ void FenetreYoan::RenderWin() {
 					if (this->event.mouseButton.x > 900 && this->event.mouseButton.x < 950 && this->event.mouseButton.y >= 300 && this->event.mouseButton.y < 340) { // EXIT
 						printf("wtf 2\n");
 						quitter = true;
+						this->close();
+						this->~FenetreYoan();
 					}
 				}
 			}

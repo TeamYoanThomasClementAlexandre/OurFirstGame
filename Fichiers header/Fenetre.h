@@ -14,14 +14,16 @@ private:
 	int tailleFenetreAccueilX;
 	int tailleFenetreAccueilY;
 	sf::VideoMode Mode;
-
+	sf::Vector2u taille;
 	sf::Vector2u newScreen();
-	std::string adversaireEnter();
+	
 
 public:
 	Fenetre(int tailleFenetreAccueilX, int tailleFenetreAccueilY,string joueur0);
 	~Fenetre();
-	void affichageMenu();
+	int affichageMenu();
+	std::string adversaireEnter();
+	sf::Vector2u getTaille();
 	
 
 };

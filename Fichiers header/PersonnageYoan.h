@@ -6,6 +6,7 @@
 #include <SFML\Window\VideoMode.hpp>
 #include <SFML/Graphics.hpp>
 #include "..\\Fichiers header\Carte.h"
+#include "..\\Fichiers header\Personnage.h"
 
 using namespace std;
 using namespace sf;
@@ -16,7 +17,7 @@ private:
 
 public:
 	// ajouter un id;
-	PersonnageYoan(std::string type);
+	PersonnageYoan(std::string type,Personnage tested);
 	std::string afficher();
 	PersonnageYoan();
 	char* id;

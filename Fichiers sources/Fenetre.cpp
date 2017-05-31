@@ -4,7 +4,8 @@
 #include "..\\Fichiers header\fonctionCalc.h"
 #include"..\\Fichiers header\FenetreYoan.h"
 #include "..\\Fichiers header\Personnage.h"
-#include "..//Fichiers header/FenetreAlex.h"
+
+
 
 #define option_x 930
 #define option_y 0
@@ -32,13 +33,14 @@
 using namespace std;
 using namespace sf;
 
-Fenetre::Fenetre(int tailleFenetreAccueilX0,int tailleFenetreAccueilY0,string joueur0)
+Fenetre::Fenetre(int tailleFenetreAccueilX0, int tailleFenetreAccueilY0, string joueur0)
 {
+
 	this->tailleFenetreAccueilX = tailleFenetreAccueilX0;
 	this->tailleFenetreAccueilY = tailleFenetreAccueilY0;
 	this->joueur1 = joueur0;
 	this->create(VideoMode(tailleFenetreAccueilX, tailleFenetreAccueilY), "Menu d'acceuil", sf::Style::Close);
-	this->affichageMenu();
+	//this->affichageMenu();
 }
 
 Fenetre::~Fenetre()
@@ -48,7 +50,7 @@ Fenetre::~Fenetre()
 std::string Fenetre::adversaireEnter() {
 	sf::Vector2i mouse;
 	sf::Vector2f mouse_world;
-	std::string joueur2="votre nom ici";
+	std::string joueur2 = "votre nom ici";
 	std::string annulation = "null";
 	sf::Text joueur2Affichage;
 	sf::Text joueur1Affichage;
@@ -67,8 +69,8 @@ std::string Fenetre::adversaireEnter() {
 	rectGauche.jeuRectangle(sf::Color::White);
 	RectanglePerso rectDroit = RectanglePerso(tailleFenetreAccueilX / 1.75, tailleFenetreAccueilY / 2.4, tailleFenetreAccueilX / 3.5, 40);
 	rectDroit.jeuRectangle(sf::Color::White);
-	RectanglePerso rectValider = RectanglePerso(tailleFenetreAccueilX / 8,tailleFenetreAccueilY-tailleFenetreAccueilY/5 ,200,50);
-	RectanglePerso rectAnnuler = RectanglePerso(tailleFenetreAccueilX / 2 + tailleFenetreAccueilX / 7, tailleFenetreAccueilY-tailleFenetreAccueilY / 5,200,50);
+	RectanglePerso rectValider = RectanglePerso(tailleFenetreAccueilX / 8, tailleFenetreAccueilY - tailleFenetreAccueilY / 5, 200, 50);
+	RectanglePerso rectAnnuler = RectanglePerso(tailleFenetreAccueilX / 2 + tailleFenetreAccueilX / 7, tailleFenetreAccueilY - tailleFenetreAccueilY / 5, 200, 50);
 	rectValider.dessinRectangle(bleuClair);
 	rectAnnuler.dessinRectangle(bleuClair);
 	terrainComplet.setFillColor(bleuClair);
@@ -79,32 +81,32 @@ std::string Fenetre::adversaireEnter() {
 
 	player2.setStyle(sf::Text::Bold);
 	player2.setCharacterSize(24);
-	player2.setPosition(tailleFenetreAccueilX/2+tailleFenetreAccueilX/6,tailleFenetreAccueilY/3);
+	player2.setPosition(tailleFenetreAccueilX / 2 + tailleFenetreAccueilX / 6, tailleFenetreAccueilY / 3);
 	player2.setFont(font);
 	player2.setString("Player 2");
 
 	player1.setFont(font);
 	player1.setStyle(sf::Text::Bold);
 	player1.setCharacterSize(24);
-	player1.setPosition(tailleFenetreAccueilX / 6,tailleFenetreAccueilY / 3);
+	player1.setPosition(tailleFenetreAccueilX / 6, tailleFenetreAccueilY / 3);
 	player1.setString("Player 1");
 
 	versus.setStyle(sf::Text::Bold);
 	versus.setCharacterSize(100);
-	versus.setPosition(((rectDroit.getPosition().x - (rectGauche.getPosition().x + rectGauche.getSize().x) - 100) / 3)+ rectGauche.getPosition().x + rectGauche.getSize().x, tailleFenetreAccueilY / 3-24);
+	versus.setPosition(((rectDroit.getPosition().x - (rectGauche.getPosition().x + rectGauche.getSize().x) - 100) / 3) + rectGauche.getPosition().x + rectGauche.getSize().x, tailleFenetreAccueilY / 3 - 24);
 	versus.setFont(font);
 	versus.setString("VS");
 
 	joueur2Affichage.setStyle(sf::Text::Bold);
 	joueur2Affichage.setCharacterSize(20);
-	joueur2Affichage.setPosition(rectDroit.getPosition().x+10, rectDroit.getPosition().y+10);
+	joueur2Affichage.setPosition(rectDroit.getPosition().x + 10, rectDroit.getPosition().y + 10);
 	joueur2Affichage.setFont(font);
 	joueur2Affichage.setFillColor(sf::Color::Black);
 
 	joueur1Affichage.setFont(font);
 	joueur1Affichage.setStyle(sf::Text::Bold);
 	joueur1Affichage.setCharacterSize(20);
-	joueur1Affichage.setPosition(rectGauche.getPosition().x+10, rectGauche.getPosition().y+10);
+	joueur1Affichage.setPosition(rectGauche.getPosition().x + 10, rectGauche.getPosition().y + 10);
 	joueur1Affichage.setString(joueur1);
 	joueur1Affichage.setFillColor(sf::Color::Black);
 	/* definition de la policde d'affichage des joueurs */
@@ -112,7 +114,7 @@ std::string Fenetre::adversaireEnter() {
 	valider.setFont(font);
 	valider.setStyle(sf::Text::Bold);
 	valider.setCharacterSize(20);
-	valider.setPosition(rectValider.getPosition().x+65,rectValider.getPosition().y+12);
+	valider.setPosition(rectValider.getPosition().x + 65, rectValider.getPosition().y + 12);
 	valider.setString("Valider");
 
 	annuler.setFont(font);
@@ -126,18 +128,18 @@ std::string Fenetre::adversaireEnter() {
 	{
 		while (window.pollEvent(event))
 		{
-			if (event.type == sf::Event::TextEntered) 
-			{ 
-				if (event.text.unicode == 8 || (event.text.unicode >47 && event.text.unicode <154)) 
+			if (event.type == sf::Event::TextEntered)
+			{
+				if (event.text.unicode == 8 || (event.text.unicode > 47 && event.text.unicode < 154))
 					// 13 touche entrée
 					// 8 touche effacer
 					if (event.text.unicode == 8) {
 						joueur2 = joueur2.substr(0, joueur2.length() - 1);
 					}
 					else {
-						joueur2=joueur2+ static_cast<char>(event.text.unicode);
+						joueur2 = joueur2 + static_cast<char>(event.text.unicode);
 					}
-					 
+
 			}
 			if (event.type == sf::Event::MouseMoved) {
 				//resolution[i].setOutlineThickness(3.0);
@@ -151,10 +153,8 @@ std::string Fenetre::adversaireEnter() {
 				mouse = sf::Mouse::getPosition(window);
 				mouse_world = window.mapPixelToCoords(mouse);
 				if (rectValider.getGlobalBounds().contains(mouse_world)) {
-					if (verifNom(joueur2Affichage.getString())) {
-						printf("%s",joueur2Affichage.getString());
-						return joueur2Affichage.getString();//BUGICI
-					}
+					if (verifNom(joueur2Affichage.getString()))
+						return joueur2Affichage.getString();
 					else
 						joueur2 = "compte inexistant";
 				}
@@ -165,7 +165,7 @@ std::string Fenetre::adversaireEnter() {
 		}
 		joueur2Affichage.setString(joueur2);
 		window.clear();
-		
+
 		window.draw(terrainComplet);
 		window.draw(rectGauche);
 		window.draw(rectDroit);
@@ -199,10 +199,10 @@ sf::Vector2u Fenetre::newScreen() {
 	sf::Font font;
 	font.loadFromFile("..//Fichiers externe/arial.ttf");
 	sf::Text textResolution[3];
-	
+
 
 	for (i = 0; i < 3; i++) {
-		resolution.push_back(RectanglePerso(50, 50+i*125, 200.0f, 75.0f));//carré de redimensionnemt
+		resolution.push_back(RectanglePerso(50, 50 + i * 125, 200.0f, 75.0f));//carré de redimensionnemt
 		textResolution[i].setFont(font);
 		textResolution[i].setCharacterSize(16);
 		textResolution[i].setPosition(pos_x_text, pos_y_text + i * 125);
@@ -279,8 +279,8 @@ sf::Vector2u Fenetre::newScreen() {
 	}
 }
 
-void Fenetre::affichageMenu() {
-	std::string joueur2s;
+int Fenetre::affichageMenu() {
+	std::string joueur2;
 	std::vector<RectanglePerso>choixJeu;
 	sf::Color bleuFonce = sf::Color(0, 163, 253);
 	sf::Color bleuClair = sf::Color(155, 216, 234);
@@ -290,9 +290,8 @@ void Fenetre::affichageMenu() {
 	sf::Sprite sprite1; // c'est le carré de d'option image
 	sf::Texture titre;
 	sf::Sprite sprite2;// image du titre
-	sf::Vector2u taille;
 	sf::Vector2f test;
-	
+
 	static int choixPosX = 164;
 	static int choixPosY = 220;
 	static float option_width_height = 30.0f;
@@ -325,14 +324,14 @@ void Fenetre::affichageMenu() {
 
 
 	if (!testons.loadFromFile("..//Fichiers externe//accueil.jpg"))
-		return exit(0);
+		exit(0);
 	if (!titre.loadFromFile("..//Fichiers externe//titre.png"))
-		return exit(0);
+		exit(0);
 
 	/* l'image n'est pas redimensionné en fonction de fonction de la taille de la fenetre !!*/
 	sprite2.setTexture(titre);
-	
-	sprite2.setScale(this->getSize().x/1920.f,this->getSize().y/1080.f);
+
+	sprite2.setScale(this->getSize().x / 1920.f, this->getSize().y / 1080.f);
 	sprite2.setPosition((this->getSize().x - sprite2.getGlobalBounds().width) / 2, 10);
 	titre.setSmooth(true);
 	sprite1.setTexture(testons);
@@ -380,91 +379,11 @@ void Fenetre::affichageMenu() {
 				if (boundRectangle[i].contains(event.mouseButton.x, event.mouseButton.y)) {
 					if (i == 0) {
 						//on lance joué en local
-						joueur2s=this->adversaireEnter();
-						if (joueur2s != "null") {
-							//FenetreYoan* game = new FenetreYoan(taille); // donner ici les coordonnées
-							//Carte* map = game->load();
-							//game->idle(map);
-							this->close();
-							String map_taille = "petite";
-
-							// RECUPERATION DANS LA BASE DE DONNEE ICI
-							PersonnageYoan* pj1 = new PersonnageYoan[4];
-							PersonnageYoan* p1 = new PersonnageYoan("Archer");
-							PersonnageYoan* p2 = new PersonnageYoan("Paladin");
-							PersonnageYoan* p3 = new PersonnageYoan("Epeiste");
-							PersonnageYoan* p4 = new PersonnageYoan("Lancier");
-
-							pj1[0] = *p1;
-							pj1[1] = *p2;
-							pj1[2] = *p3;
-							pj1[3] = *p4;
-
-							PersonnageYoan* pj2 = new PersonnageYoan[4];
-							PersonnageYoan* p10 = new PersonnageYoan("Archer");
-							PersonnageYoan* p20 = new PersonnageYoan("Paladin");
-							PersonnageYoan* p30 = new PersonnageYoan("Epeiste");
-							PersonnageYoan* p40 = new PersonnageYoan("Lancier");
-
-							InteractionBDD* bdd = InteractionBDD::Ini();
-							
-							pj2[0] = *p10;
-							pj2[1] = *p20;
-							pj2[2] = *p30;
-							pj2[3] = *p40;
-							
-						
-								for (int i = 0; i < 4; i++) {
-
-									int lvl=bdd->requeteParCol(this->joueur1, "Personnages", "level", pj1[i].type);
-									pj1[i].level = lvl;
-									string url = bdd->getUrl(this->joueur1, pj1[i].type);
-									pj1[i].arme = url.c_str();
-								}
-
-								for (int i = 0; i < 4; i++) {
-									int lvl = bdd->requeteParCol(joueur2s, "Personnages", "level", pj1[i].type);
-									pj2[i].level = lvl;
-									string url = bdd->getUrl(joueur2s, pj2[i].type);
-									pj2[i].arme = url.c_str();
-								}
-							
-
-
-
-							JoueurYoan * players = new JoueurYoan[2];
-							JoueurYoan *joueur1 = new JoueurYoan();
-							JoueurYoan *joueur2 = new JoueurYoan();
-							joueur1->pseudo = this->joueur1;
-							joueur2->pseudo = joueur2s;
-							joueur1->p = pj1;
-							joueur2->p = pj2;
-							players[0] = *joueur1;
-							players[1] = *joueur2;
-
-							FenetreYoan* game = new FenetreYoan(taille, players);
-							game->load();
-							game->idle();
-						}
+						return 2;
 					}
 					if (i == 1) {}
 					if (i == 2) {
-
-						InteractionBDD* bdd = InteractionBDD::Ini();
-
-						vector<vector<vector<string>>>* equipPerso = new vector<vector<vector<string>>>[4];
-						vector<vector<string>> itemInvent = bdd->getEquipement("dragodia");
-						equipPerso[0].push_back(bdd->getEquipementEquiped(this->joueur1, "Archer"));
-						equipPerso[1].push_back(bdd->getEquipementEquiped(this->joueur1, "Epeiste"));
-						equipPerso[2].push_back(bdd->getEquipementEquiped(this->joueur1, "Lancier"));
-						equipPerso[3].push_back(bdd->getEquipementEquiped(this->joueur1, "Paladin"));
-						int* carac[4];
-						carac[0] = bdd->getCarac(this->joueur1, "Archer");
-						carac[1] = bdd->getCarac(this->joueur1, "Epeiste");
-						carac[2] = bdd->getCarac(this->joueur1, "Lancier");
-						carac[3] = bdd->getCarac(this->joueur1, "Paladin");
-						FenetreAlex *fenetreAlex = new FenetreAlex(carac, equipPerso, itemInvent);
-						fenetreAlex->game();
+						return 1;
 
 					}
 				}
@@ -477,7 +396,7 @@ void Fenetre::affichageMenu() {
 				//redéfinition des rectangle joué et affiché
 				for (i = 0; i < 3; i++) {
 					//temp_rectangle[i].setSize(sf::Vector2f(taille.x / (oldTailleX / widthh), taille.y / (oldTailleY / heightt)));
-					temp_rectangle[i] = calcRedimension(choixJeu[i], taille, oldTailleX,oldTailleY);
+					temp_rectangle[i] = calcRedimension(choixJeu[i], taille, oldTailleX, oldTailleY);
 					boundRectangle[i] = temp_rectangle[i].getGlobalBounds();
 				}
 				//redéfinition des paramètres 
@@ -499,7 +418,11 @@ void Fenetre::affichageMenu() {
 		this->draw(sprite2);// nameGame
 		this->display();
 	}
-
 }
+
+sf::Vector2u Fenetre::getTaille() {
+	return taille;
+}
+
 
 

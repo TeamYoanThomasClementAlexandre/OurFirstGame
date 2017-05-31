@@ -1,5 +1,6 @@
 #include "..\\Fichiers header\PersonnageYoan.h"
-PersonnageYoan::PersonnageYoan(std::string typeConstr){
+#include "..\\Fichiers header\Personnage.h"
+PersonnageYoan::PersonnageYoan(std::string typeConstr,Personnage tested){
 	this->type = typeConstr;
 
 	char* s = new char[10];
@@ -12,6 +13,22 @@ PersonnageYoan::PersonnageYoan(std::string typeConstr){
 	this->isdead = false;
 	this->level = -1;
 	this->nbr_tue = 0 ;
+
+
+
+	this->degat = tested.getDegat();
+	this->armure = tested.getArmure();
+	this->deplacement = tested.getMouvement();
+	this->deplacementRestante = this->deplacement;
+	if (type == "Archer") {
+		this->range = 3;
+	}else {
+		this->range = 1;
+	}
+	this->vie = tested.getVie();
+	this->vieRestante = this->vie;
+
+	/*
 	if (type == "constr") {
 		this->degat = -1;
 		this->armure = -1;
@@ -63,6 +80,7 @@ PersonnageYoan::PersonnageYoan(std::string typeConstr){
 		this->vieRestante = this->vie;
 
 	}
+	*/
 }
 std::string PersonnageYoan::afficher() {
 	std::string s = this->type +
