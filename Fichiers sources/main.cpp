@@ -53,7 +53,7 @@ int main()
 	if (joueur1 != "null") {
 		Fenetre* fen;
 		while (1) {
-			fen = new Fenetre(960, 540, "dragodia");
+			fen = new Fenetre(960, 540, joueur1);
 			choixMenu = fen->affichageMenu();
 			taille = fen->getTaille();
 			printf("%d voici le choixMenu", choixMenu);

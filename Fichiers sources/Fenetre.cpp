@@ -317,7 +317,7 @@ int Fenetre::affichageMenu() {
 	sf::FloatRect newbound;
 	sf::Font font;
 	font.loadFromFile("..//Fichiers externe/arial.ttf");
-	sf::Text bonjour("Bonjour nom du joueur", font);
+	sf::Text bonjour("Bonjour "+joueur1, font);
 	sf::Text nameGame("My little World", font);
 	sf::Text choix[3];
 

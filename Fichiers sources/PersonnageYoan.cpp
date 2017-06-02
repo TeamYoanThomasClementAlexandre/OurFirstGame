@@ -28,59 +28,7 @@ PersonnageYoan::PersonnageYoan(std::string typeConstr,Personnage tested){
 	this->vie = tested.getVie();
 	this->vieRestante = this->vie;
 
-	/*
-	if (type == "constr") {
-		this->degat = -1;
-		this->armure = -1;
-		this->deplacement = -1;
-		this->deplacementRestante = this->deplacement;
-		this->range = -1;
-		this->vie = -1;
-		this->vieRestante = -1;
-
-	}
-
-	if (type == "Archer") {
-		this->degat = 40;
-		this->armure = 0;
-		this->deplacement = 2;
-		this->deplacementRestante = this->deplacement;
-		this->range = 2;
-		this->vie = 50;
-		this->vieRestante = this->vie;
-
-	}
-	if (type == "Paladin") {
-		this->degat = 20;
-		this->armure = 40;
-		this->deplacement = 4;
-		this->deplacementRestante = this->deplacement;
-		this->range = 1;
-		this->vie = 100;
-		this->vieRestante = this->vie;
-
-	}
-	if (type == "Epeiste") {
-		this->degat = 40;
-		this->armure = 10;
-		this->deplacement = 2;
-		this->deplacementRestante = this->deplacement;
-		this->range = 1;
-		this->vie = 90;
-		this->vieRestante = this->vie;
-
-	}
-	if (type == "Lancier") {
-		this->degat = 30;
-		this->armure = 30;
-		this->deplacement = 3;
-		this->deplacementRestante = this->deplacement;
-		this->range = 1;
-		this->vie = 80;
-		this->vieRestante = this->vie;
-
-	}
-	*/
+	
 }
 std::string PersonnageYoan::afficher() {
 	std::string s = this->type +
