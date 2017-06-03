@@ -35,6 +35,7 @@ private:
 	int nbr_tour;
 	bool findutour;
 	bool exit;
+	bool surrend;
 	bool brouillard_de_guerre;
 	sf::Vector2u** tabDeplacement;
 	int** tabCost;

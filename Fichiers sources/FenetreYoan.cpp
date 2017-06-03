@@ -39,6 +39,8 @@ FenetreYoan::FenetreYoan(sf::Vector2u dimension, JoueurYoan* playerss)
 	Combat *c = new Combat();
 	this->combat = *c;
 
+	//ini surrend
+	this->surrend = false;
 	// ini fin du game
 	this->exit = false;
 	// ini case map cliqued
@@ -373,6 +375,14 @@ void FenetreYoan::load() {
 	this->autre[1] = *exit;
 
 
+	Texture* pSurrendTexture = new Texture();
+	const char* szResourceSurrend = "../Fichiers externe/img/surrend.jpg";
+	if (!pSurrendTexture->loadFromFile(szResourceSurrend)) {
+		printf("Error load sprite %s", szResourceSurrend);
+	}
+	Sprite *surr = new Sprite(*pSurrendTexture);
+	this->autre[2] = *surr;
+
 	// recuperation map
 
 	Fichier* pFichier = new Fichier();
@@ -640,6 +650,12 @@ void FenetreYoan::idle() {
 		}
 
 		this->Game();
+		if (this->surrend) {
+			printf("Surrend\n");
+			this->joueur = (this->joueur == 0) ? 1 : 0;
+			this->RenderWin();
+			this->exit = true;
+		}
 		if (this->isWin) {
 			printf("Win\n");
 			this->RenderWin();
@@ -660,6 +676,13 @@ void FenetreYoan::idle() {
 		}
 
 		this->Game();
+
+		if (this->surrend) {
+			printf("Surrend\n");
+			this->joueur = (this->joueur == 0) ? 1 : 0;
+			this->RenderWin();
+			this->exit = true;
+		}
 
 		if (this->isWin) {
 			printf("Win\n");
@@ -889,6 +912,7 @@ void FenetreYoan::PlacementPersonnage() {
 void FenetreYoan::Game() {
 	this->map_clicked = false;
 	this->findutour = false;
+	this->surrend = false;
 	this->ennemi_clicked.x = -1;
 	this->ennemi_clicked.y = -1;
 	this->clear(Color(50, 50, 50));
@@ -903,6 +927,21 @@ void FenetreYoan::Game() {
 		}
 
 		if (this->exit) {
+			return;
+		}
+
+		if (this->surrend) {
+
+			this->players[this->joueur].p_placer[0].vieRestante = 0;
+			this->players[this->joueur].p_placer[1].vieRestante = 0;
+			this->players[this->joueur].p_placer[2].vieRestante = 0;
+			this->players[this->joueur].p_placer[3].vieRestante = 0;
+
+			this->players[this->joueur].p_placer[0].isdead = true;
+			this->players[this->joueur].p_placer[1].isdead = true;
+			this->players[this->joueur].p_placer[2].isdead = true;
+			this->players[this->joueur].p_placer[3].isdead = true;
+
 			return;
 		}
 		if (this->findutour) {
@@ -935,6 +974,9 @@ void FenetreYoan::controleur_game(Event event)
 		}
 		if (event.mouseButton.x > 870 && event.mouseButton.x < 960 && event.mouseButton.y >= 515 && event.mouseButton.y < 535) {
 			this->findutour = true;
+		}
+		if (event.mouseButton.x > 850 && event.mouseButton.x < 860 && event.mouseButton.y >= 515 && event.mouseButton.y < 535) {
+			this->surrend= true;
 		}
 		Color c;
 		if (event.mouseButton.x != NULL && event.mouseButton.y != NULL && event.mouseButton.x >= 0 && event.mouseButton.x <= 960 && event.mouseButton.y >= 0 && event.mouseButton.y <= 540) {
@@ -1115,11 +1157,7 @@ void FenetreYoan::controleur_game(Event event)
 									this->tabcombatbool[this->joueur][this->players[this->joueur].selected] = false;
 									this->tablo_text[1].setString("Attaque reussie <3 !");
 
-									/*this->players[perso->appartenance.x].p_placer[0].vieRestante = 0;
-									this->players[perso->appartenance.x].p_placer[1].vieRestante = 0;
-									this->players[perso->appartenance.x].p_placer[2].vieRestante = 0;
-									this->players[perso->appartenance.x].p_placer[3].vieRestante = 0;*/
-
+									
 									// ici si il es mort mettre isdead=true
 									if (this->players[perso->appartenance.x].p_placer[perso->appartenance.y].vieRestante <= 0) {
 										this->players[perso->appartenance.x].p_placer[perso->appartenance.y].isdead = true;
@@ -1822,6 +1860,9 @@ void FenetreYoan::renderView() {
 	this->autre[1].setPosition(900, 300);
 	this->draw(autre[1]);
 
+	this->autre[2].setPosition(840, 515);
+	this->draw(autre[2]);
+
 
 	sf::Font font;
 	if (!font.loadFromFile("../Fichiers externe/arial.ttf"))
@@ -1858,17 +1899,32 @@ void FenetreYoan::renderView() {
 		pm.setString(std::to_string(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].deplacementRestante) + "/" + std::to_string(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].deplacement));
 		degat.setString(std::to_string(tab[1]));
 		if (tabb[1]) {
-			degat.setColor(Color(0, 255, 255));
+			if (tab[1] < this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].degat) {
+				degat.setColor(Color(255, 0, 0));
+			}
+			else {
+				degat.setColor(Color(0, 255, 0));
+			}
 
 		}
 		armor.setString(std::to_string(tab[0]));
 		if (tabb[0]) {
-			armor.setColor(Color(0, 255, 255));
+			if (tab[0] < this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].armure) {
+				armor.setColor(Color(255, 0, 0));
+			}
+			else {
+				armor.setColor(Color(0, 255, 0));
+			}
 
 		}
 		range.setString(std::to_string(tab[2]));
 		if (tabb[2]) {
-			range.setColor(Color(0, 255, 255));
+			if (tab[2] < this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].range) {
+				range.setColor(Color(255, 0, 0));
+			}
+			else {
+				range.setColor(Color(0, 255, 0));
+			}
 
 		}
 		Sprite *s = new Sprite(this->getSpritebyname(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].type));
