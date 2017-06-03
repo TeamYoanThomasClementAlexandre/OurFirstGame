@@ -21,7 +21,7 @@ PersonnageYoan::PersonnageYoan(std::string typeConstr,Personnage tested){
 	this->deplacement = tested.getMouvement();
 	this->deplacementRestante = this->deplacement;
 	if (type == "Archer") {
-		this->range = 3;
+		this->range = 2;
 	}else {
 		this->range = 1;
 	}
