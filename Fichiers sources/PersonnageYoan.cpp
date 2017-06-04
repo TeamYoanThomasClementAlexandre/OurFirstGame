@@ -110,22 +110,23 @@ bool* PersonnageYoan::isChangeCarac(Carte c) {
 }
 
 int PersonnageYoan::getExperiencePersonnage(int nbr_tour,bool isWin) {
-	int xp_sup = 5; // 10 xp donnée directement   (MAX = 90, MIN = 11)
-	if (nbr_tour < 10) { 
-		xp_sup+= nbr_tour*2;  // plus il y a de tour plus ya de l'xp
+	float xp_sup = 5.0f; // 10 xp donnée directement   (MAX = 90, MIN = 11)
+	if (nbr_tour < 10.0f) { 
+		xp_sup+= nbr_tour*2.0f;  // plus il y a de tour plus ya de l'xp
 	}
 	else {
-		xp_sup += 20; // plus de 10 tour = 10 xp
+		xp_sup += 20.0f; // plus de 10 tour = 10 xp
 	}
 	if (isWin) {
-		xp_sup += 10; // victoire = 20 xp
+		xp_sup += 10.0f; // victoire = 20 xp
 	}
 	if (!isdead) {
-		xp_sup += 5;
+		xp_sup += 5.0f;
 	}
-	xp_sup += this->nbr_tue * 5; // chaque kill donne 10 xp 
+	xp_sup += this->nbr_tue * 5.0f; // chaque kill donne 10 xp 
 
-	return xp_sup;
+	printf("%f\n", xp_sup*this->gain_xp);
+	return xp_sup*this->gain_xp;
 
 }
 

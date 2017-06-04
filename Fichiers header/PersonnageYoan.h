@@ -41,6 +41,7 @@ public:
 	bool isdead;
 	int level;
 	int nbr_tue;
+	float gain_xp;
 
 };
 

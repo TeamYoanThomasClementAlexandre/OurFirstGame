@@ -48,6 +48,7 @@ private:
 	bool isWin; // c'est gagné ?
 	void RenderWin();
 	sf::Vector2u ennemi_clicked; // get info unité sf::Text
+	void fill_gain_xp(); // rempliur le champ gain_wp dans personnage
 
 	// TODO : faire un gestionnaire des resources
 	sf::Sprite sprite;
@@ -68,6 +69,7 @@ public:
 	void idle(); // instructions principales
 	void PlacementPersonnage(); // boucle de placement
 	void Game(); // boucle de jeu
+	void renderFinDuTour(); // fenetre de fin du tour
 	int ini_first_tour();
 	void player_choice(); // affiche cercle de choix perso
 

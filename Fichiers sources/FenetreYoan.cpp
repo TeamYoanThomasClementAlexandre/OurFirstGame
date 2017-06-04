@@ -383,6 +383,22 @@ void FenetreYoan::load() {
 	Sprite *surr = new Sprite(*pSurrendTexture);
 	this->autre[2] = *surr;
 
+	Texture* pOuiTexture = new Texture();
+	const char* szResourceOui = "../Fichiers externe/img/oui.png";
+	if (!pOuiTexture->loadFromFile(szResourceOui)) {
+		printf("Error load sprite %s", szResourceOui);
+	}
+	Sprite *oui = new Sprite(*pOuiTexture);
+	this->autre[3] = *oui;
+
+	Texture* pNonTexture = new Texture();
+	const char* szResourceNon = "../Fichiers externe/img/non.png";
+	if (!pNonTexture->loadFromFile(szResourceNon)) {
+		printf("Error load sprite %s", szResourceNon);
+	}
+	Sprite *non = new Sprite(*pNonTexture);
+	this->autre[4] = *non;
+
 	// recuperation map
 
 	Fichier* pFichier = new Fichier();
@@ -637,6 +653,10 @@ void FenetreYoan::idle() {
 	this->joueur = (this->joueur == 0) ? 1 : 0;
 	this->PlacementPersonnage();
 
+	
+		this->fill_gain_xp();
+	
+
 	this->joueur = this->ini_first_tour();
 	this->nbr_tour++;
 	this->players[0].selected = -1;
@@ -874,12 +894,10 @@ void FenetreYoan::RenderWin() {
 
 	bool quitter = false;
 	while (!quitter) {
-		printf("wtf\n");
 		while (this->pollEvent(this->event)) {
 			if (this->event.mouseButton.button == sf::Mouse::Left) //
 			{
 				if (this->event.mouseButton.x > 900 && this->event.mouseButton.x < 950 && this->event.mouseButton.y >= 300 && this->event.mouseButton.y < 340) { // EXIT
-					printf("wtf 2\n");
 					quitter = true;
 					this->close();
 					this->~FenetreYoan();
@@ -910,6 +928,9 @@ void FenetreYoan::PlacementPersonnage() {
 }
 
 void FenetreYoan::Game() {
+
+	this->renderFinDuTour();
+
 	this->map_clicked = false;
 	this->findutour = false;
 	this->surrend = false;
@@ -959,10 +980,133 @@ void FenetreYoan::Game() {
 			printf("Fin du tour de joueur %d !\n", this->joueur);
 			this->findutour = false;
 			return;
+
+
 		}
 	}
 }
 
+void FenetreYoan::renderFinDuTour()
+{
+	this->clear(Color(50, 50, 50));
+	this->tablo_text[3].setString("Tour " + std::to_string(this->nbr_tour) + " ," + this->players[this->joueur].pseudo);
+	this->tablo_text[3].setPosition(100, 100);
+	this->autre[3].setPosition(400, 200);
+	this->draw(autre[3]);
+	this->draw(this->tablo_text[3]);
+	this->display();
+	//ajouter text nbr tour , plus a qui de jouer ?
+	while (1) {
+		while (this->pollEvent(this->event)) {
+			if (this->event.mouseButton.button == sf::Mouse::Left) //Oui
+			{
+				if (this->event.mouseButton.x > 400 && this->event.mouseButton.x < 600 && this->event.mouseButton.y >= 200 && this->event.mouseButton.y < 300) { // Oui
+					return;
+				}
+			}
+		}
+	}
+}
+
+void FenetreYoan::fill_gain_xp() {
+	if (this->players[0].pseudo != this->players[1].pseudo) {
+		int archer1 = 0;
+		int paladin1 = 0;
+		int epeiste1 = 0;
+		int lancier1 = 0;
+
+		int archer2 = 0;
+		int paladin2 = 0;
+		int epeiste2 = 0;
+		int lancier2 = 0;
+			for (int j = 0; j < 4; j++) {
+				if (this->players[0].p_placer[j].type == "Archer") {
+					archer1++;
+				}
+				if (this->players[0].p_placer[j].type == "Paladin") {
+					paladin1++;
+				}
+				if (this->players[0].p_placer[j].type == "Lancier") {
+					lancier1++;
+				}
+				if (this->players[0].p_placer[j].type == "Epeiste") {
+					epeiste1++;
+				}
+			}
+		
+			for (int j = 0; j < 4; j++) {
+				if (this->players[0].p_placer[j].type == "Archer") {
+					this->players[0].p_placer[j].gain_xp = 1.0 / archer1;
+					archer1--;
+				}
+				if (this->players[0].p_placer[j].type == "Paladin") {
+					this->players[0].p_placer[j].gain_xp = 1.0 / paladin1;
+					paladin1--;
+				}
+				if (this->players[0].p_placer[j].type == "Lancier") {
+					this->players[0].p_placer[j].gain_xp = 1.0 / lancier1;
+					lancier1--;
+				}
+				if (this->players[0].p_placer[j].type == "Epeiste") {
+					this->players[0].p_placer[j].gain_xp = 1.0 / epeiste1;
+					epeiste1--;
+				}
+
+			}
+
+			for (int j = 0; j < 4; j++) {
+				if (this->players[1].p_placer[j].type == "Archer") {
+					archer2++;
+				}
+				if (this->players[1].p_placer[j].type == "Paladin") {
+					paladin2++;
+				}
+				if (this->players[1].p_placer[j].type == "Lancier") {
+					lancier2++;
+				}
+				if (this->players[1].p_placer[j].type == "Epeiste") {
+					epeiste2++;
+				}
+			}
+
+			for (int j = 0; j < 4; j++) {
+				if (this->players[1].p_placer[j].type == "Archer") {
+					this->players[1].p_placer[j].gain_xp = 1.0 / archer2;
+					archer2--;
+				}
+				if (this->players[1].p_placer[j].type == "Paladin") {
+					this->players[1].p_placer[j].gain_xp = 1.0 / paladin2;
+					paladin2--;
+				}
+				if (this->players[1].p_placer[j].type == "Lancier") {
+					this->players[1].p_placer[j].gain_xp = 1.0 / lancier2;
+					lancier2--;
+				}
+				if (this->players[1].p_placer[j].type == "Epeiste") {
+					this->players[1].p_placer[j].gain_xp = 1.0 / epeiste2;
+					epeiste2--;
+				}
+
+			}
+		
+
+	}
+	else {
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; j < 4; j++) {
+				this->players[i].p_placer[j].gain_xp = 0.1;
+			}
+		}
+	}
+
+	for (int i = 0; i < 2; i++) {
+		for (int j = 0; j < 4; j++) {
+			printf("lolllllll\n");
+			printf("%f\n", this->players[i].p_placer[j].gain_xp);
+		}
+	}
+
+}
 
 void FenetreYoan::controleur_game(Event event)
 {
@@ -976,7 +1120,7 @@ void FenetreYoan::controleur_game(Event event)
 			this->findutour = true;
 		}
 		if (event.mouseButton.x > 850 && event.mouseButton.x < 860 && event.mouseButton.y >= 515 && event.mouseButton.y < 535) {
-			this->surrend= true;
+			this->surrend = true;
 		}
 		Color c;
 		if (event.mouseButton.x != NULL && event.mouseButton.y != NULL && event.mouseButton.x >= 0 && event.mouseButton.x <= 960 && event.mouseButton.y >= 0 && event.mouseButton.y <= 540) {
@@ -1157,7 +1301,7 @@ void FenetreYoan::controleur_game(Event event)
 									this->tabcombatbool[this->joueur][this->players[this->joueur].selected] = false;
 									this->tablo_text[1].setString("Attaque reussie <3 !");
 
-									
+
 									// ici si il es mort mettre isdead=true
 									if (this->players[perso->appartenance.x].p_placer[perso->appartenance.y].vieRestante <= 0) {
 										this->players[perso->appartenance.x].p_placer[perso->appartenance.y].isdead = true;
