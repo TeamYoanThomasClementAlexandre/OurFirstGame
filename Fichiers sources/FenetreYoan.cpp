@@ -99,7 +99,7 @@ FenetreYoan::FenetreYoan(sf::Vector2u dimension, JoueurYoan* playerss)
 	this->tabCombat = comb;
 
 
-	this->setFramerateLimit(30); // limit framerate
+	//this->setFramerateLimit(30); // limit framerate
 	// ini brouillard placement
 	this->brouillard_de_guerre = true;
 
@@ -112,9 +112,9 @@ FenetreYoan::FenetreYoan(sf::Vector2u dimension, JoueurYoan* playerss)
 		printf("Error load text :%s", font);
 	}
 	//
-	sf::Text* tablo_texte = new sf::Text[5];
+	sf::Text* tablo_texte = new sf::Text[6];
 	this->tablo_text = tablo_texte;
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < 6; i++) {
 		tablo_text[i].setCharacterSize(20);
 		tablo_text[i].setFont(*font);
 		tablo_text[i].setString("");
@@ -398,6 +398,14 @@ void FenetreYoan::load() {
 	}
 	Sprite *non = new Sprite(*pNonTexture);
 	this->autre[4] = *non;
+
+	Texture* dead = new Texture();
+	const char* deads = "../Fichiers externe/img/dead.jpg";
+	if (!dead->loadFromFile(deads)) {
+		printf("Error load sprite %s", deads);
+	}
+	Sprite *deadsprite = new Sprite(*dead);
+	this->autre[5] = *deadsprite;
 
 	// recuperation map
 
@@ -739,12 +747,7 @@ void FenetreYoan::RenderWin() {
 	printf("Victoire du joueur %d", this->joueur);
 	Texture* Win = new Texture();
 	Texture* Loose = new Texture();
-	Texture* dead = new Texture();
-
-	const char* deads = "../Fichiers externe/img/dead.jpg";
-	if (!dead->loadFromFile(deads)) {
-		printf("Error load sprite %s", deads);
-	}
+	
 
 	const char* szwin = "../Fichiers externe/img/victory.jpg";
 	if (!Win->loadFromFile(szwin)) {
@@ -756,7 +759,7 @@ void FenetreYoan::RenderWin() {
 	}
 	Sprite *win = new Sprite(*Win);
 	Sprite *loose = new Sprite(*Loose);
-	Sprite *deadsprite = new Sprite(*dead);
+	
 
 	this->clear(Color(50, 50, 50));
 
@@ -832,9 +835,9 @@ void FenetreYoan::RenderWin() {
 
 		spriteperso.setPosition(100, 350 + (i * 40));
 		arme->setPosition(spriteperso.getPosition());
-		deadsprite->setPosition(160, 350 + (i * 40));
+		this->autre[5].setPosition(160, 350 + (i * 40));
 		if (this->players[0].p_placer[i].isdead) {
-			this->draw(*deadsprite);
+			this->draw(this->autre[5]);
 		}
 		this->draw(level);
 		this->draw(spriteperso);
@@ -872,9 +875,9 @@ void FenetreYoan::RenderWin() {
 
 		spriteperso.setPosition(600, 350 + (i * 40));
 		arme->setPosition(spriteperso.getPosition());
-		deadsprite->setPosition(660, 350 + (i * 40));
+		this->autre[5].setPosition(660, 350 + (i * 40));
 		if (this->players[1].p_placer[i].isdead) {
-			this->draw(*deadsprite);
+			this->draw(this->autre[5]);
 		}
 		this->draw(xp);
 		this->draw(level);
@@ -1305,6 +1308,7 @@ void FenetreYoan::controleur_game(Event event)
 									// ici si il es mort mettre isdead=true
 									if (this->players[perso->appartenance.x].p_placer[perso->appartenance.y].vieRestante <= 0) {
 										this->players[perso->appartenance.x].p_placer[perso->appartenance.y].isdead = true;
+
 										this->players[this->joueur].p_placer[this->players[this->joueur].selected].nbr_tue++;
 										this->map->caseJeu[this->players[perso->appartenance.x].p_placer[perso->appartenance.y].position.x][this->players[perso->appartenance.x].p_placer[perso->appartenance.y].position.y]->who = -1;
 										this->players[perso->appartenance.x].p_placer[perso->appartenance.y].position.x = -1;
@@ -1520,6 +1524,7 @@ void FenetreYoan::render() {
 
 	this->player_choice();
 
+
 	// affichage des perso des joueurs
 	//for(int j = 0;j<2;j++) {
 	for (int i = 0; i < 4; i++) {
@@ -1628,7 +1633,10 @@ void FenetreYoan::renderTexte() {
 	this->tablo_text[3].setPosition(870, 5);
 	this->tablo_text[3].setString("Tour :" + std::to_string(this->nbr_tour));
 
-	for (int i = 0; i < 4; i++) {
+	this->tablo_text[5].setString(std::to_string(4 - this->players[this->joueur].personnage_placer));
+	this->tablo_text[5].setPosition(920, 200);
+
+	for (int i = 0; i < 6; i++) {
 		this->draw(this->tablo_text[i]);
 	}
 
@@ -1785,7 +1793,7 @@ void FenetreYoan::renderTexteView() {
 }
 
 void FenetreYoan::renderView() {
-	Color *c = new Color(251, 190, 16);
+	Color *c = new Color(217, 100, 60);
 	Color *c2 = new Color(165, 21, 25);
 	/* SHADER */
 	sf::Shader shader;
@@ -1900,6 +1908,16 @@ void FenetreYoan::renderView() {
 	sMenuBas->scale(this->scaleMenuBasX, this->scaleMenuBasY);
 
 	this->player_choice();
+
+	// if mort => tete de mort à coté
+	for (int i = 0; i < 4; i++) {
+		if (this->players[this->joueur].p_placer[i].isdead) {
+			this->autre[5].setPosition(650, 377 + i * 30);
+			this->autre[5].setScale(0.6,0.6);
+			this->draw(this->autre[5]);
+		}
+
+	}
 
 	// affichage des perso des joueurs
 	for (int j = 0; j < 2; j++) {

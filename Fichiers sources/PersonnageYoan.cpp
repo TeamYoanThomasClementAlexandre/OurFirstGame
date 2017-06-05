@@ -117,9 +117,6 @@ int PersonnageYoan::getExperiencePersonnage(int nbr_tour,bool isWin) {
 	else {
 		xp_sup += 20.0f; // plus de 10 tour = 10 xp
 	}
-	if (isWin) {
-		xp_sup += 10.0f; // victoire = 20 xp
-	}
 	if (!isdead) {
 		xp_sup += 5.0f;
 	}
