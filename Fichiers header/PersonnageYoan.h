@@ -17,6 +17,7 @@ private:
 
 public:
 	// ajouter un id;
+	~PersonnageYoan();
 	PersonnageYoan(std::string type,Personnage tested);
 	std::string afficher();
 	PersonnageYoan();

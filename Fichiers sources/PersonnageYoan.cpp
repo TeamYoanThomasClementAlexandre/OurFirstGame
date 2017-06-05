@@ -43,6 +43,9 @@ std::string PersonnageYoan::afficher() {
 PersonnageYoan::PersonnageYoan() {
 
 }
+PersonnageYoan::~PersonnageYoan() {
+
+}
 
 int* PersonnageYoan::getNewCaracwithCase(Carte c) {
 	int* tab = new int[3];

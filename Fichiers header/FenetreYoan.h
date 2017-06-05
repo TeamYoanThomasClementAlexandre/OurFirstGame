@@ -49,6 +49,7 @@ private:
 	void RenderWin();
 	sf::Vector2u ennemi_clicked; // get info unité sf::Text
 	void fill_gain_xp(); // rempliur le champ gain_wp dans personnage
+	void destroyAll();
 
 	// TODO : faire un gestionnaire des resources
 	sf::Sprite sprite;
@@ -60,7 +61,7 @@ public:
 	void controleur_game(Event event);
 
 
-	
+	sf::Font font;
 	bool verifContrainte(sf::Vector2u* vec,char* s); // verif contrainte de positionnement perso
 	Sprite getSpritebyname(std::string str);
 	Sprite getSpritecbyname(std::string str);

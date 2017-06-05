@@ -29,6 +29,13 @@ using namespace sf;
 
 FenetreYoan::FenetreYoan(sf::Vector2u dimension, JoueurYoan* playerss)
 {
+	sf::Font fontt;
+	if (!fontt.loadFromFile("../Fichiers externe/arial.ttf"))
+	{
+		printf("Error load text :%s", fontt);
+	}
+	this->font = fontt;
+
 	this->setKeyRepeatEnabled(false); //only one click
 
 	this->ennemi_clicked.x = -1;
@@ -269,6 +276,9 @@ void FenetreYoan::controleur_placement(Event event) {
 
 	if (event.mouseButton.button == sf::Mouse::Left) //
 	{
+		if (event.mouseButton.x > 900 && event.mouseButton.x < 950 && event.mouseButton.y >= 300 && event.mouseButton.y < 340) { // EXIT
+			this->exit = true;
+		}
 		Color c;
 		if (event.mouseButton.x != NULL && event.mouseButton.y != NULL && event.mouseButton.x >= 0 && event.mouseButton.x <= 960 && event.mouseButton.y >= 0 && event.mouseButton.y <= 540) {
 			c = this->bm.image.getPixel(event.mouseButton.x, 540 - event.mouseButton.y);
@@ -406,6 +416,15 @@ void FenetreYoan::load() {
 	}
 	Sprite *deadsprite = new Sprite(*dead);
 	this->autre[5] = *deadsprite;
+
+	Texture* pMenuBas = new Texture();
+	const char* szResourceMenuBas = "../Fichiers externe/img/menu_bas.png";
+	if (!pMenuBas->loadFromFile(szResourceMenuBas)) {
+		printf("Error load sprite %s", szResourceMenuBas);
+	}
+
+	Sprite *sMenuBas = new Sprite(*pMenuBas);
+	this->autre[6] = *sMenuBas;
 
 	// recuperation map
 
@@ -655,12 +674,46 @@ int FenetreYoan::ini_first_tour() {
 		return 1;
 	}
 }
+
+void FenetreYoan::destroyAll() {
+	this->bm.~BlendModee();
+	this->combat.~Combat();
+	for (int j = 0; j < 2; j++) {
+		for (int i = 0; i < 4; i++) {
+			this->players[j].p_placer[i].~PersonnageYoan();
+			this->players[j].p[i].~PersonnageYoan();
+		}
+	}
+	this->players[0].~JoueurYoan();
+	this->players[1].~JoueurYoan();
+
+	for (int j = 0; j < 12; j++) {
+		for (int i = 0; i < 11; i++) {
+			this->map->caseJeu[j][i]->~Case();
+		}
+	}
+	this->map->~Carte();
+	this->~FenetreYoan();
+
+}
 void FenetreYoan::idle() {
 	PersonnageYoan perso;
 	this->PlacementPersonnage();
+	if (this->exit) {
+		printf("FIN DU GAME\n");
+		this->close();
+		this->destroyAll();
+		return;
+	}
 	this->joueur = (this->joueur == 0) ? 1 : 0;
 	this->PlacementPersonnage();
-
+	if (this->exit) {
+		printf("FIN DU GAME\n");
+		this->close();
+		
+		this->destroyAll();
+		return;
+	}
 	
 		this->fill_gain_xp();
 	
@@ -693,7 +746,7 @@ void FenetreYoan::idle() {
 		if (this->exit) {
 			printf("FIN DU GAME\n");
 			this->close();
-			this->~FenetreYoan();
+			this->destroyAll();
 			return;
 		}
 
@@ -721,7 +774,7 @@ void FenetreYoan::idle() {
 		if (this->exit) {
 			printf("FIN DU GAME\n");
 			this->close();
-			this->~FenetreYoan();
+			this->destroyAll();
 			return;
 		}
 
@@ -744,7 +797,6 @@ void FenetreYoan::idle() {
 
 void FenetreYoan::RenderWin() {
 
-	printf("Victoire du joueur %d", this->joueur);
 	Texture* Win = new Texture();
 	Texture* Loose = new Texture();
 	
@@ -762,12 +814,6 @@ void FenetreYoan::RenderWin() {
 	
 
 	this->clear(Color(50, 50, 50));
-
-	sf::Font font;
-	if (!font.loadFromFile("../Fichiers externe/arial.ttf"))
-	{
-		printf("Error load text :%s", font);
-	}
 
 	sf::Text tour;
 	tour.setFont(font);
@@ -921,8 +967,11 @@ void FenetreYoan::PlacementPersonnage() {
 			this->controleur_placement(this->event);
 		}
 
+		if (this->exit) {
+			return;
+		}
+
 		if (this->players[this->joueur].personnage_placer == 4) {
-			printf("Joueur %d, a terminer de placer !", this->joueur + 1);
 			return;
 		}
 	}
@@ -974,13 +1023,7 @@ void FenetreYoan::Game() {
 				this->tabcombatbool[this->joueur][j] = true;
 			}
 
-			for (int u = 0; u < 2; u++)
-				for (int j = 0; j < 4; j++) {
-					printf("%d %s\n", j, this->players[u].p_placer[j].arme.c_str());
-				}
-
-
-			printf("Fin du tour de joueur %d !\n", this->joueur);
+			
 			this->findutour = false;
 			return;
 
@@ -1102,20 +1145,12 @@ void FenetreYoan::fill_gain_xp() {
 		}
 	}
 
-	for (int i = 0; i < 2; i++) {
-		for (int j = 0; j < 4; j++) {
-			printf("lolllllll\n");
-			printf("%f\n", this->players[i].p_placer[j].gain_xp);
-		}
-	}
-
 }
 
 void FenetreYoan::controleur_game(Event event)
 {
 	if (event.mouseButton.button == sf::Mouse::Left) //
 	{
-		printf("lol");
 		if (event.mouseButton.x > 900 && event.mouseButton.x < 950 && event.mouseButton.y >= 300 && event.mouseButton.y < 340) { // EXIT
 			this->exit = true;
 		}
@@ -1151,7 +1186,6 @@ void FenetreYoan::controleur_game(Event event)
 								this->players[this->joueur].p_placer[this->players[this->joueur].selected].position.y = vec->y;
 								//savoir de combien de case il c'est deplacer ,metre dans x;
 								int x = this->tabCost[l][k];
-								printf("COST PM : %d\n", x);
 								this->players[this->joueur].p_placer[this->players[this->joueur].selected].deplacementRestante = this->players[this->joueur].p_placer[this->players[this->joueur].selected].deplacementRestante - x;
 								this->map->caseJeu[vec->y][vec->x]->who = this->joueur;
 
@@ -1233,17 +1267,7 @@ void FenetreYoan::controleur_game(Event event)
 				this->map->getCasesForDeplacementRecursifSudEst(this->tabDeplacement[7], this->tabCost[7], v, perso->deplacementRestante, perso->deplacementRestante, 0);
 
 
-				for (int i = 0; i < 8; i++) {
-					for (int j = 0; j < 10; j++) {
-						if (this->tabDeplacement[i][j].x != 100) {
-							printf("(%d:%d) : ", this->tabDeplacement[i][j].x, this->tabDeplacement[i][j].y);
-							printf("%d\n", tabCost[i][j]);
 
-						}
-					}
-
-				}
-				printf("\n");
 			}
 			else {
 				this->ennemi_clicked.x = perso->appartenance.x;
@@ -1253,7 +1277,6 @@ void FenetreYoan::controleur_game(Event event)
 
 				this->rien_clicked = false;
 
-				printf("perso ennemi\n");
 				this->clear(Color(50, 50, 50));
 				this->renderView();
 
@@ -1275,7 +1298,6 @@ void FenetreYoan::controleur_game(Event event)
 	}
 	if (event.mouseButton.button == sf::Mouse::Right) //
 	{
-		printf("loool");
 		Color c;
 		if (event.mouseButton.x != NULL && event.mouseButton.y != NULL  && event.mouseButton.x >= 0 && event.mouseButton.x <= 960 && event.mouseButton.y >= 0 && event.mouseButton.y <= 540) {
 			c = this->bm.image.getPixel(event.mouseButton.x, 540 - event.mouseButton.y);
@@ -1297,7 +1319,6 @@ void FenetreYoan::controleur_game(Event event)
 					for (int k = 0; k < 10; k++) {
 						if (this->tabCombat[l][k].x == perso->position.x && this->tabCombat[l][k].y == perso->position.y) {
 							if (this->joueur != perso->appartenance.x) {
-								printf("\n COMBAT :  Joueur %d , perso %d\n VS\n Joueur %d, perso %d \n", this->joueur, this->players[this->joueur].selected, perso->appartenance.x, perso->appartenance.y);
 
 								if (this->tabcombatbool[this->joueur][this->players[this->joueur].selected]) {
 									this->combat.simulationCombat(&this->players[this->joueur].p_placer[this->players[this->joueur].selected], &this->players[perso->appartenance.x].p_placer[perso->appartenance.y], *this->map);
@@ -1365,7 +1386,6 @@ void FenetreYoan::controleur_game(Event event)
 					}
 
 				}
-				//printf("position perso (%d,%d)\n", v.x, v.y);
 				// change stats des perso en fonction de leur case
 				int* tab = new int[3];
 				tab = perso->getNewCaracwithCase(*this->map);
@@ -1511,16 +1531,9 @@ void FenetreYoan::render() {
 
 
 	// rendu du menu du bas
-	Texture* pMenuBas = new Texture();
-	const char* szResourceMenuBas = "../Fichiers externe/img/menu_bas.png";
-	if (!pMenuBas->loadFromFile(szResourceMenuBas)) {
-		printf("Error load sprite %s", szResourceMenuBas);
-	}
-
-	Sprite *sMenuBas = new Sprite(*pMenuBas);
-	sMenuBas->setPosition(0, 360);
-	this->draw(*sMenuBas);
-	sMenuBas->scale(this->scaleMenuBasX, this->scaleMenuBasY);
+	
+	this->autre[6].setPosition(0, 360);
+	this->draw(this->autre[6]);
 
 	this->player_choice();
 
@@ -1569,9 +1582,6 @@ void FenetreYoan::render() {
 			PersonnageYoan * p_tmp = &(this->players[this->joueur].p_placer[i]);
 			this->bm.dicoPersonnagesIJ->insert(std::pair<char*, PersonnageYoan*>(couleurname, p_tmp));
 
-			//char* id = new char[10];
-			//id = this->players[j].p_placer[i].id;
-			//sf::Vector2u* res1 = (*.(this->bm.dicoPersonnagesIJ))[id];
 
 			float offsetPosX = this->players[this->joueur].p_placer[i].position.x % 2 == 0 ? offsetX : offsetX + tileWidth2;
 
@@ -1607,6 +1617,8 @@ void FenetreYoan::render() {
 		}
 	}
 
+	this->autre[1].setPosition(900, 300);
+	this->draw(autre[1]);
 
 	this->renderTexte();
 
@@ -1640,40 +1652,34 @@ void FenetreYoan::renderTexte() {
 		this->draw(this->tablo_text[i]);
 	}
 
-	// rendu des infos personnages
-	sf::Font font;
-	if (!font.loadFromFile("../Fichiers externe/arial.ttf"))
-	{
-		printf("Error load text :%s", font);
-	}
 	for (int i = 0; i < 4; i++) {
 		sf::Text type;
-		type.setFont(font);
+		type.setFont(this->font);
 		type.setCharacterSize(15);
 		type.setString(this->players[this->joueur].p[i].type);
 		type.setPosition(20, 375 + (i * 30));
 		sf::Text pv;
-		pv.setFont(font);
+		pv.setFont(this->font);
 		pv.setCharacterSize(12);
 		pv.setString(std::to_string(this->players[this->joueur].p[i].vieRestante) + "/" + std::to_string(this->players[this->joueur].p[i].vie));
 		pv.setPosition(125, 375 + (i * 30));
 		sf::Text pm;
-		pm.setFont(font);
+		pm.setFont(this->font);
 		pm.setCharacterSize(15);
 		pm.setString(std::to_string(this->players[this->joueur].p[i].deplacementRestante) + "/" + std::to_string(this->players[this->joueur].p[i].deplacement));
 		pm.setPosition(220, 375 + (i * 30));
 		sf::Text degat;
-		degat.setFont(font);
+		degat.setFont(this->font);
 		degat.setCharacterSize(15);
 		degat.setString(std::to_string(this->players[this->joueur].p[i].degat));
 		degat.setPosition(300, 375 + (i * 30));
 		sf::Text armor;
-		armor.setFont(font);
+		armor.setFont(this->font);
 		armor.setCharacterSize(15);
 		armor.setString(std::to_string(this->players[this->joueur].p[i].armure));
 		armor.setPosition(400, 375 + (i * 30));
 		sf::Text range;
-		range.setFont(font);
+		range.setFont(this->font);
 		range.setCharacterSize(15);
 		range.setString(std::to_string(this->players[this->joueur].p[i].range));
 		range.setPosition(550, 375 + (i * 30));
@@ -1709,11 +1715,6 @@ void FenetreYoan::renderTexteView() {
 	}
 
 	// rendu des infos personnages
-	sf::Font font;
-	if (!font.loadFromFile("../Fichiers externe/arial.ttf"))
-	{
-		printf("Error load text :%s", font);
-	}
 	int* tab = new int[3];
 	bool* tabb = new bool[3];
 	for (int i = 0; i < 4; i++) {
@@ -1721,22 +1722,22 @@ void FenetreYoan::renderTexteView() {
 		tabb = this->players[this->joueur].p_placer[i].isChangeCarac(*this->map);
 
 		sf::Text type;
-		type.setFont(font);
+		type.setFont(this->font);
 		type.setCharacterSize(15);
 		type.setString(this->players[this->joueur].p_placer[i].type);
 		type.setPosition(20, 375 + (i * 30));
 		sf::Text pv;
-		pv.setFont(font);
+		pv.setFont(this->font);
 		pv.setCharacterSize(12);
 		pv.setString(std::to_string(this->players[this->joueur].p_placer[i].vieRestante) + "/" + std::to_string(this->players[this->joueur].p_placer[i].vie));
 		pv.setPosition(125, 375 + (i * 30));
 		sf::Text pm;
-		pm.setFont(font);
+		pm.setFont(this->font);
 		pm.setCharacterSize(15);
 		pm.setString(std::to_string(this->players[this->joueur].p_placer[i].deplacementRestante) + "/" + std::to_string(this->players[this->joueur].p_placer[i].deplacement));
 		pm.setPosition(220, 375 + (i * 30));
 		sf::Text degat;
-		degat.setFont(font);
+		degat.setFont(this->font);
 		degat.setCharacterSize(15);
 		degat.setString(std::to_string(tab[1]));
 		if (tabb[1]) {
@@ -1750,7 +1751,7 @@ void FenetreYoan::renderTexteView() {
 		}
 		degat.setPosition(300, 375 + (i * 30));
 		sf::Text armor;
-		armor.setFont(font);
+		armor.setFont(this->font);
 		armor.setCharacterSize(15);
 		armor.setString(std::to_string(tab[0]));
 		if (tabb[0]) {
@@ -1764,7 +1765,7 @@ void FenetreYoan::renderTexteView() {
 		}
 		armor.setPosition(400, 375 + (i * 30));
 		sf::Text range;
-		range.setFont(font);
+		range.setFont(this->font);
 		range.setCharacterSize(15);
 		range.setString(std::to_string(tab[2]));
 		if (tabb[2]) {
@@ -1896,16 +1897,9 @@ void FenetreYoan::renderView() {
 
 
 	// rendu du menu du bas
-	Texture* pMenuBas = new Texture();
-	const char* szResourceMenuBas = "../Fichiers externe/img/menu_bas.png";
-	if (!pMenuBas->loadFromFile(szResourceMenuBas)) {
-		printf("Error load sprite %s", szResourceMenuBas);
-	}
-
-	Sprite *sMenuBas = new Sprite(*pMenuBas);
-	sMenuBas->setPosition(0, 360);
-	this->draw(*sMenuBas);
-	sMenuBas->scale(this->scaleMenuBasX, this->scaleMenuBasY);
+	
+	this->autre[6].setPosition(0, 360);
+	this->draw(this->autre[6]);
 
 	this->player_choice();
 
@@ -1959,13 +1953,7 @@ void FenetreYoan::renderView() {
 					char* couleurname = new char[10];
 					memset(couleurname, 0, 10);
 					sprintf_s(couleurname, 10, "%00d%00d%00d\0", r, g, b);
-					//
-					Texture* pepe = new Texture();
-					const char* szResourceepe = "../Fichiers externe/img/epe.png";
-					if (!pepe->loadFromFile(szResourceepe)) {
-						printf("Error load sprite %s", szResourceepe);
-					}
-
+					
 
 					Vector2u *v = new Vector2u();
 					v->x = this->players[j].p_placer[i].position.x;
@@ -2025,30 +2013,24 @@ void FenetreYoan::renderView() {
 	this->autre[2].setPosition(840, 515);
 	this->draw(autre[2]);
 
-
-	sf::Font font;
-	if (!font.loadFromFile("../Fichiers externe/arial.ttf"))
-	{
-		printf("Error load text :%s", font);
-	}
 	sf::Text pv;
-	pv.setFont(font);
+	pv.setFont(this->font);
 	pv.setCharacterSize(12);
 	pv.setPosition(900, 375);
 	sf::Text pm;
-	pm.setFont(font);
+	pm.setFont(this->font);
 	pm.setCharacterSize(15);
 	pm.setPosition(900, 400);
 	sf::Text degat;
-	degat.setFont(font);
+	degat.setFont(this->font);
 	degat.setCharacterSize(15);
 	degat.setPosition(900, 425);
 	sf::Text armor;
-	armor.setFont(font);
+	armor.setFont(this->font);
 	armor.setCharacterSize(15);
 	armor.setPosition(900, 450);
 	sf::Text range;
-	range.setFont(font);
+	range.setFont(this->font);
 	range.setCharacterSize(15);
 	range.setPosition(900, 475);
 	if (this->ennemi_clicked.x != -1 && this->ennemi_clicked.y != -1 && !this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].isdead) {
