@@ -31,7 +31,7 @@ int main()
 {
 	string joueur1;
 	string joueur2;
-	int choixMenu;
+	int choixMenu=5;
 	char commande[100] = "java -cp \"mariadb-client.jar;.\" Main";
 	sf::Vector2u taille;
 	InteractionBDD* bdd = InteractionBDD::Ini();
@@ -52,7 +52,7 @@ int main()
 
 	if (joueur1 != "null") {
 		Fenetre* fen;
-		while (1) {
+		while (choixMenu!=3) {
 			fen = new Fenetre(960, 540, joueur1);
 			choixMenu = fen->affichageMenu();
 			taille = fen->getTaille();
@@ -91,24 +91,6 @@ int main()
 					pj2[1] = *p20;
 					pj2[2] = *p30;
 					pj2[3] = *p40;
-
-					for (int i = 0; i < 4; i++) {
-
-						int lvl = bdd->requeteParCol(joueur1, "Personnages", "level", pj1[i].type);
-						pj1[i].level = lvl;
-						string url = bdd->getUrl(joueur1, pj1[i].type);
-						pj1[i].arme = url.c_str();
-					}
-
-					for (int i = 0; i < 4; i++) {
-						int lvl = bdd->requeteParCol(joueur2, "Personnages", "level", pj1[i].type);
-						pj2[i].level = lvl;
-						string url = bdd->getUrl(joueur2, pj2[i].type);
-						pj2[i].arme = url.c_str();
-					}
-
-
-
 					JoueurYoan * players = new JoueurYoan[2];
 					JoueurYoan *player1 = new JoueurYoan();
 					JoueurYoan *player2 = new JoueurYoan();
@@ -130,6 +112,9 @@ int main()
 			else if (choixMenu == 1) {// on appel la fenetre d'alex
 				//on détruit l'objet fenetre
 				delete fen;
+				//bdd->setEquipementOnChar("lance en fer","armure",joueur1,"Archer");
+				bdd->setXP(10,joueur1,"Archer");
+				/*string* armeDropped;
 				vector<vector<string>> itemInvent = bdd->getEquipement("dragodia");
 				vector<vector<vector<string>>>* equipPerso = new vector<vector<vector<string>>>[4];
 				equipPerso[0].push_back(bdd->getEquipementEquiped("dragodia", "Archer"));
@@ -144,6 +129,12 @@ int main()
 				FenetreAlex *fenetreAlex = new FenetreAlex(carac, equipPerso, itemInvent);
 				fenetreAlex->game();
 				bdd->getCarac("dragodia", "Archer");
+				/*armeDropped=bdd->dropEquipement("dragodia");
+				if (armeDropped[0] != "null") {
+					printf("%s\n", armeDropped[0].c_str());
+					printf("%s\n", armeDropped[1].c_str());
+					printf("%s\n", armeDropped[2].c_str());
+				}*/
 			}
 		}
 	}

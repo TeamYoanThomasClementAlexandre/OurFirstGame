@@ -941,6 +941,15 @@ void FenetreYoan::RenderWin() {
 	this->draw(*s);
 	this->display();
 
+
+	//envoi xp BD
+
+	for (int j = 0; j < 2; j++) {
+		for (int i = 0; i < 4; i++) {
+			//methodeclement(this->players[j].pseudo,this->players[j].p_placer[i].types,(int)this->players[j].p_placer[i].getExperiencePersonnage(nbr_tour, true));
+		}
+	}
+
 	bool quitter = false;
 	while (!quitter) {
 		while (this->pollEvent(this->event)) {
