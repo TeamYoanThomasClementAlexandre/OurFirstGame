@@ -39,7 +39,7 @@ Fenetre::Fenetre(int tailleFenetreAccueilX0, int tailleFenetreAccueilY0, string 
 	this->tailleFenetreAccueilX = tailleFenetreAccueilX0;
 	this->tailleFenetreAccueilY = tailleFenetreAccueilY0;
 	this->joueur1 = joueur0;
-	this->create(VideoMode(tailleFenetreAccueilX, tailleFenetreAccueilY), "Menu d'acceuil", sf::Style::Close);
+	this->create(VideoMode(tailleFenetreAccueilX, tailleFenetreAccueilY), "Ages of Strategies", sf::Style::Titlebar);
 	//this->affichageMenu();
 }
 
@@ -187,7 +187,7 @@ std::string Fenetre::adversaireEnter() {
 sf::Vector2u Fenetre::newScreen() {
 	std::vector<RectanglePerso>resolution;
 	sf::Event event;
-	sf::RenderWindow window(sf::VideoMode(width_fen_resolution, height_fen_resolution), "Changement de résolution");
+	sf::RenderWindow window(sf::VideoMode(width_fen_resolution, height_fen_resolution), "Changement de résolution",sf::Style::Close);
 	window.setPosition(sf::Vector2i(this->getSize().x - width_fen_resolution, 30));
 	sf::Sprite sprite1;
 	sf::Texture testons;
@@ -350,8 +350,8 @@ int Fenetre::affichageMenu() {
 		choix[i].setFont(font);
 	}
 	choix[0].setString("Jouer en local");
-	choix[1].setString("Jouer en réseau");
-	choix[2].setString("Afficher l'inventaire");
+	choix[1].setString("Afficher l'inventaire"); 
+	choix[2].setString("Quitter");
 	option.setPosition(930, 0);
 	tempOption.setPosition(930, 0);
 	boundOption = option.getGlobalBounds();
@@ -381,9 +381,11 @@ int Fenetre::affichageMenu() {
 						//on lance joué en local
 						return 2;
 					}
-					if (i == 1) {}
-					if (i == 2) {
+					if (i == 1) {
 						return 1;
+					}
+					if (i == 2) {
+						this->close();
 
 					}
 				}
