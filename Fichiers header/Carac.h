@@ -14,6 +14,7 @@ public:
 	void setPosition(float x, float y);
 	void setTitle(sf::String nom);
 	void setAttributs(int* attribut);
+	void updateCarac();
 	~Carac();
 
 private:
@@ -23,6 +24,7 @@ private:
 	sf::Text desc[6];
 	sf::Text attributs[4];
 	sf::Font police;
+	int attrib[4];
 	int tailleAttributs;
 };
 

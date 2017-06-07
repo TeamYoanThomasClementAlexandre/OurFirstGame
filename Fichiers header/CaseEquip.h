@@ -12,7 +12,9 @@ public:
 	void draw(sf::RenderWindow &fen);
 	void setEquipement(std::string url, std::string* carac);
 	std::string* getCarac();
+	std::string getUrl();
 	void clean();
+	bool isEmpty();
 	~CaseEquip();	
 
 private:
@@ -20,6 +22,7 @@ private:
 	sf::Sprite equipement;
 	std::string caracEquip[6];
 	bool cleanbool;
+	std::string url;
 };
 
 

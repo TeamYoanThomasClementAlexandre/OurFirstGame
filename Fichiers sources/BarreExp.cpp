@@ -7,7 +7,7 @@ BarreExp::BarreExp(float width,float height, float posX, float posY) {
 	this->setSize(sf::Vector2f(width, height));
 	this->setOutlineThickness(-1);
 	this->setOutlineColor(sf::Color(0, 0, 0, 255));
-	police.loadFromFile("arial_black.ttf");
+	police.loadFromFile("../Fichiers externe/arial_black.ttf");
 	pourcentageT = sf::Text("0%", police, 15);	
 	pourcentageT.setPosition((width - pourcentageT.getGlobalBounds().width) / 2+posX, (height - pourcentageT.getGlobalBounds().height) / 2+posY- pourcentageT.getGlobalBounds().height/4);
 	level = sf::Text("Niveau 1", police, 20);

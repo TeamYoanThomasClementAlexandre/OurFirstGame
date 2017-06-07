@@ -13,8 +13,8 @@
 class ControlSouris {
 public:
 	ControlSouris();
-	void gererChoix(GestionTroupes *troupes,sf::RenderWindow &fen);
-	void gererInventaire(Inventaire *inventaire, sf::RenderWindow &fen);
+	int gererChoix(GestionTroupes *troupes,sf::RenderWindow &fen, sf::Event evenement);
+	void gererInventaire(Inventaire *inventaire, GestionTroupes *troupes, sf::RenderWindow &fen, sf::Event evenement);
 	~ControlSouris();
 };
 

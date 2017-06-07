@@ -13,10 +13,13 @@ class Inventaire {
 public:	
 	Inventaire(float ratioX, float ratioY);
 	void draw(sf::RenderWindow &fen);
-	void onMouse(float x,float y);
+	bool onMouse(float x,float y);
 	void update(int classe);
 	void setItems(std::vector<std::vector<std::string>> itemInvent);
 	void setPosition(float x, float y);
+	void retirerItem(std::string nomItem);
+	void addItem(std::string* carac);
+	CaseEquip* getCaseOnMouse();
 	~Inventaire();
 	static const int Largeur = 13;
 	static const int Hauteur = 5;	
@@ -28,6 +31,7 @@ private:
 	CaseEquip* cases[Largeur][Hauteur];
 	CaracEquip* viewCarac;
 	bool viewC;
+	CaseEquip* caseOnMouse;
 	std::vector<std::vector<std::string>> itemInvent;
 };
 

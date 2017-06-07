@@ -37,12 +37,17 @@ void Carac::draw(sf::RenderWindow &fen) {
 }
 
 void Carac::setAttributs(int* attribut) {
-	for (int i = 0; i < 4; i++) {		
-		this->attributs[i]= sf::Text(std::to_string(attribut[i]), police, tailleAttributs);
+	for (int i = 0; i < 4; i++)	
+		this->attrib[i] = attribut[i];
+	updateCarac();
+}
+
+void Carac::updateCarac() {
+	for (int i = 0; i < 4; i++) {
+		this->attributs[i] = sf::Text(std::to_string(attrib[i]), police, tailleAttributs);
 		this->attributs[i].setPosition(caracteristiques[1].position.x*0.75f, desc[i + 1].getPosition().y);
 	}
 }
-
 void Carac::setPosition(float x, float y) {
 	caracteristiques[0].position = sf::Vector2f(x*ratioX, y*ratioY);
 	caracteristiques[1].position = sf::Vector2f((x+770.f)*ratioX, y*ratioY);

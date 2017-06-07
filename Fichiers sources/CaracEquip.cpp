@@ -35,8 +35,8 @@ void CaracEquip::setAttributs(std::string* carac) {
 	this->attributs[1].setString(carac[0]);
 	this->attributs[2].setString(carac[2]);
 	this->attributs[3].setString(carac[3]);
-	this->attributs[4].setString(carac[5]);
-	this->attributs[5].setString(carac[4]);
+	this->attributs[4].setString(carac[4]);
+	this->attributs[5].setString(carac[5]);
 }
 
 void CaracEquip::draw(sf::RenderWindow &fen) {

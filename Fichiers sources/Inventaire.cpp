@@ -33,29 +33,41 @@ void Inventaire::update(int classe) {
 		}
 	}
 	std::string carac[6];
-	int ligne=0, colonne=0;
-	for (int i = 0; i < itemInvent.size(); i++) {
+	int ligne=0, colonne=0,nb=0;
+	for (int i = 0; i < itemInvent.size(); i++) {		
 		carac[0] = itemInvent[i][0];
 		carac[1] = itemInvent[i][1];
 		carac[2] = itemInvent[i][3];
 		carac[3] = itemInvent[i][4];
 		carac[4] = itemInvent[i][5];
 		carac[5] = itemInvent[i][6];
-		if (classe == 0 && carac[0] != "epee" && carac[0] != "lance" && carac[0] != "marteau")
-			cases[ligne][colonne]->setEquipement(itemInvent[i][2], carac);			
-		
-		if (classe == 1 && carac[0] != "arc" && carac[0] != "lance" && carac[0] != "marteau")
-			cases[ligne][colonne]->setEquipement(itemInvent[i][2], carac);
-		
-		if (classe == 2 && carac[0] != "epee" && carac[0] != "arc" && carac[0] != "marteau")
-			cases[ligne][colonne]->setEquipement(itemInvent[i][2], carac);
-
-		if (classe == 3 && carac[0] != "epee" && carac[0] != "lance" && carac[0] != "arc")
-			cases[ligne][colonne]->setEquipement(itemInvent[i][2], carac);
-		colonne++;
+		if (carac[0] != "" ) {
+			
+			if (classe == 0 && carac[0] != "epee" && carac[0] != "lance" && carac[0] != "marteau") {
+				cases[ligne][colonne]->setEquipement(itemInvent[i][2], carac);
+				nb++;
+				colonne++;
+			}
+			else if (classe == 1 && carac[0] != "arc" && carac[0] != "lance" && carac[0] != "marteau") {
+				cases[ligne][colonne]->setEquipement(itemInvent[i][2], carac);
+				nb++;
+				colonne++;
+			}
+			else if (classe == 2 && carac[0] != "epee" && carac[0] != "arc" && carac[0] != "marteau") {
+				cases[ligne][colonne]->setEquipement(itemInvent[i][2], carac);
+				nb++;
+				colonne++;
+			}
+			else if (classe == 3 && carac[0] != "epee" && carac[0] != "lance" && carac[0] != "arc") {
+				cases[ligne][colonne]->setEquipement(itemInvent[i][2], carac);
+				nb++;
+				colonne++;
+			}		
+		}
 		if (colonne == this->Largeur)
 			ligne++;
 	}
+	std::cout << "il y a " << nb << "item" << std::endl;
 }
 
 void Inventaire::setItems(std::vector<std::vector<std::string>> itemInvent) {
@@ -74,7 +86,26 @@ void Inventaire::setPosition(float x, float y) {
 	}
 }
 
-void Inventaire::onMouse(float x,float y) {
+void Inventaire::addItem(std::string* carac) {
+	bool verif = false;
+	for (int i = 0; i < itemInvent.size(); i++) {
+		if (itemInvent[i][0] == "") {
+			verif = true;
+			for (int i2 = 0; i2 < 7; i2++)
+				itemInvent[i][i2] = carac[i2];
+			break;
+		}
+	}
+	if (!verif) {
+		std::vector<std::string> caracTemp;
+		for (int i2 = 0; i2 < 7; i2++)
+			caracTemp.push_back(carac[i2]);
+		itemInvent.push_back(caracTemp);
+	}
+
+}
+
+bool Inventaire::onMouse(float x,float y) {
 	float height, left, top, width;
 	bool verif=false;
 	for (int l = 0; l < Largeur; l++) {
@@ -88,6 +119,8 @@ void Inventaire::onMouse(float x,float y) {
 				viewCarac->setPosition(cases[l][c]->getPosition().x- 3.f*cases[l][c]->getGlobalBounds().width, cases[l][c]->getPosition().y- 2* cases[l][c]->getGlobalBounds().height);
 				viewCarac->setAttributs(cases[l][c]->getCarac());
 				verif = true;
+				this->caseOnMouse = cases[l][c];
+				
 			}
 			else {
 				cases[l][c]->setFillColor(sf::Color(0, 0, 0, 0));
@@ -96,8 +129,12 @@ void Inventaire::onMouse(float x,float y) {
 	}	
 
 	this->viewC = verif;
+	return verif;
 }
 
+CaseEquip* Inventaire::getCaseOnMouse() {
+	return caseOnMouse;
+}
 void Inventaire::draw(sf::RenderWindow &fen) {
 	fen.draw(inventaire);
 	for (int l = 0; l < Largeur; l++) {
@@ -108,6 +145,17 @@ void Inventaire::draw(sf::RenderWindow &fen) {
 	
 	if(this->viewC)
 		viewCarac->draw(fen);
+}
+
+void Inventaire::retirerItem(std::string nomItem) {
+
+	for (int i = 0; i < itemInvent.size(); i++) {
+		if (itemInvent[i][1] == nomItem) {
+			for (int i2 = 0; i2 < 7; i2++) 
+				itemInvent[i][i2] = "";		
+			break;
+		}
+	}
 }
 
 Inventaire::~Inventaire() {

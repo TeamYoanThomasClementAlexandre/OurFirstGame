@@ -141,9 +141,9 @@ FenetreYoan::FenetreYoan(sf::Vector2u dimension, JoueurYoan* playerss)
 
 
 	// parametrage fenetre de jeu
-	this->create(VideoMode(dimension.x, dimension.y), "Ages of Strategies", sf::Style::Titlebar); // Violation d'acces lors de l'emplacelent 0x00001
+	this->create(VideoMode(960, 540), "Ages of Strategies", sf::Style::Titlebar); // Violation d'acces lors de l'emplacelent 0x00001
 	this->setFramerateLimit(60); // limité a 60fps
-	this->setPosition(sf::Vector2i(960, 0));
+	this->setPosition(sf::Vector2i(0, 0));
 	this->dimension_x = dimension.x;
 	this->dimension_y = dimension.y;
 	this->max_x = (dimension.x / TAILLESPRITE_X) - 1;
@@ -941,15 +941,29 @@ void FenetreYoan::RenderWin() {
 	this->draw(*s);
 	this->display();
 
-
+	InteractionBDD* bdd = InteractionBDD::Ini();
 	//envoi xp BD
-
-	for (int j = 0; j < 2; j++) {
+	if (isWin) {
 		for (int i = 0; i < 4; i++) {
-			//methodeclement(this->players[j].pseudo,this->players[j].p_placer[i].types,(int)this->players[j].p_placer[i].getExperiencePersonnage(nbr_tour, true));
+			bdd->setXP((int)this->players[0].p_placer[i].getExperiencePersonnage(nbr_tour, true), this->players[0].pseudo, this->players[0].p_placer[i].type);
 		}
 	}
-
+	else {
+		for (int i = 0; i < 4; i++) {
+			bdd->setXP((int)this->players[0].p_placer[i].getExperiencePersonnage(nbr_tour, false), this->players[0].pseudo, this->players[0].p_placer[i].type);
+		}
+	}
+	
+	if (!isWin) {
+		for (int i = 0; i < 4; i++) {
+			bdd->setXP((int)this->players[1].p_placer[i].getExperiencePersonnage(nbr_tour, true), this->players[1].pseudo, this->players[1].p_placer[i].type);
+		}
+	}
+	else {
+		for (int i = 0; i < 4; i++) {
+			bdd->setXP((int)this->players[1].p_placer[i].getExperiencePersonnage(nbr_tour, false), this->players[1].pseudo, this->players[1].p_placer[i].type);
+		}
+	}
 	bool quitter = false;
 	while (!quitter) {
 		while (this->pollEvent(this->event)) {

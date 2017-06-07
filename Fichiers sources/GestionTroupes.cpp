@@ -10,6 +10,8 @@ GestionTroupes::GestionTroupes(float width,float height)	{
 	textureChoix[5].loadFromFile("../Fichiers externe/img/equip/choix_epeiste2.png");
 	textureChoix[6].loadFromFile("../Fichiers externe/img/equip/choix_lancier2.png");
 	textureChoix[7].loadFromFile("../Fichiers externe/img/equip/choix_paladin2.png");
+	textureBack[0].loadFromFile("../Fichiers externe/img/equip/retour.png");
+	textureBack[1].loadFromFile("../Fichiers externe/img/equip/retour2.png");
 	texturePerso.loadFromFile("../Fichiers externe/img/equip/personnage.png");
 	textLogo.loadFromFile("../Fichiers externe/img/Age_of_Strategy.png");
 	textLogo.setSmooth(true);
@@ -55,12 +57,26 @@ GestionTroupes::GestionTroupes(float width,float height)	{
 	
 	//experience
 	exp = new BarreExp(500 * ratioX, 20 * ratioY, 1350*ratioX, 550 * ratioY);
-	exp->setExp(55);
-	exp->setLvl(2);
+
+	//sauvegarde
+	back.setTexture(textureBack[0]);
+	back.setScale(ratioX, ratioY);
+	back.setPosition(30.f*ratioX, 50.f*ratioY);
+
+
 
 }
 
-void GestionTroupes::setSelected(float x,float y) {
+int GestionTroupes::setSelected(float x,float y) {
+	//retour
+	float height = back.getGlobalBounds().height;
+	float left = back.getGlobalBounds().left;
+	float top = back.getGlobalBounds().top;
+	float width = back.getGlobalBounds().width;
+	if (x <= (left + width) && x >= left && y >= top && y <= (top + height)) {
+		return 0;
+	}
+
 	for (int i = 0; i < 4; i++) {
 		float height= choix[i].getGlobalBounds().height;
 		float left = choix[i].getGlobalBounds().left;
@@ -75,7 +91,7 @@ void GestionTroupes::setSelected(float x,float y) {
 
 				if (i == 0) {
 					caracteristique->setTitle("Caractéristiques de l'archer");
-					caracteristique->setAttributs(this->carac[0]);
+					caracteristique->setAttributs(this->carac[0]);					
 				}
 				if (i == 1) {
 					caracteristique->setTitle("Caractéristiques de l'epeiste");
@@ -89,15 +105,18 @@ void GestionTroupes::setSelected(float x,float y) {
 					caracteristique->setTitle("Caractéristiques du paladin");
 					caracteristique->setAttributs(this->carac[3]);
 				}
+				this->exp->setLvl(lvlClasse[i]);
+				this->exp->setExp(expClasse[i]);
 				choixSelected = i;
-				this->updateItems(choixSelected);
+				this->updateItems();
 				inventaire->update(choixSelected);
 			}
 		}
 	}
+	return 1;
 }
 
-void GestionTroupes::onMouse(float x, float y) {
+bool GestionTroupes::onMouse(float x, float y) {
 	//choix classes
 	for (int i = 0; i < 4; i++) {
 		float height = choix[i].getGlobalBounds().height;
@@ -114,8 +133,20 @@ void GestionTroupes::onMouse(float x, float y) {
 		}
 	}
 
+	//sauvegarder
+	float height = back.getGlobalBounds().height;
+	float left = back.getGlobalBounds().left;
+	float top = back.getGlobalBounds().top;
+	float width = back.getGlobalBounds().width;
+	if (x <= (left + width) && x >= left && y >= top && y <= (top + height)) {
+		back.setTexture(textureBack[1]);
+	}
+	else {
+		back.setTexture(textureBack[0]);
+	}
 	//equipements	
-	int verif = false;
+	bool verif = false;
+	this->caseOnMouse = -1;
 	for (int i = 0; i < 3; i++) {
 		float height = equip[i]->getGlobalBounds().height;
 		float left = equip[i]->getGlobalBounds().left;
@@ -124,14 +155,49 @@ void GestionTroupes::onMouse(float x, float y) {
 		if (x <= (left + width) && x >= left && y >= top && y <= (top + height)) {
 			verif = true;
 			equip[i]->setFillColor(sf::Color(242, 146, 22, 150));
+			this->caseOnMouse =i;
 			viewCarac->setPosition(equip[i]->getPosition().x - 3 * equip[i]->getGlobalBounds().width, equip[i]->getPosition().y - 2 * equip[i]->getGlobalBounds().height);
-			viewCarac->setAttributs(equip[i]->getCarac());
+			viewCarac->setAttributs(equip[i]->getCarac());	
 		}
 		else {
 			equip[i]->setFillColor(sf::Color(20, 182, 227,150));
 		}
 	}
 	affichageView = verif;
+	return verif;
+}
+
+void GestionTroupes::delEquipementSelected() {	
+	
+	if (this->caseOnMouse != -1 && !equip[caseOnMouse]->isEmpty()) {
+		std::string* caracEquip = equip[caseOnMouse]->getCarac();
+		std::string carac[7];
+		carac[0] = caracEquip[0];
+		carac[1] = caracEquip[1];
+		carac[2] = this->equip[caseOnMouse]->getUrl();
+		carac[3] = caracEquip[2];
+		carac[4] = caracEquip[3];
+		carac[5] = caracEquip[4];
+		carac[6] = caracEquip[5];
+		int stats[4];
+		stats[0] = atoi(carac[3].c_str());
+		stats[1] = atoi(carac[4].c_str());
+		stats[2] = atoi(carac[6].c_str());
+		stats[3] = atoi(carac[5].c_str());
+		std::string statsBefore[7];
+		for (int i2 = 0; i2 < 4; i2++)
+			this->carac[choixSelected][i2] -= stats[i2];
+		inventaire->addItem(carac);
+		caracteristique->setAttributs(this->carac[choixSelected]);
+		inventaire->update(choixSelected);
+		for (int i = 0; i < equipPerso[choixSelected][0].size(); i++)
+			if (equipPerso[choixSelected][0][i][0] == carac[0]) {
+				equipPerso[choixSelected][0][i][0] = "";
+			}
+		this->updateItems();
+		std::cout << caseOnMouse << std::endl;
+		this->caseOnMouse = -1;
+	}
 }
 
 void GestionTroupes::setCarac(int** carac) {
@@ -141,32 +207,109 @@ void GestionTroupes::setCarac(int** carac) {
 
 void GestionTroupes::setEquipement(std::vector<std::vector<std::vector<std::string>>>* equipPerso) {
 	this->equipPerso = equipPerso;
-	this->updateItems(0);
+	this->updateItems();
 }
 
-void GestionTroupes::updateItems(int choixClasse) {
+void GestionTroupes::updateItems() {
 	for (int i = 0; i < 3; i++) {
 		equip[i]->clean();
 	}
 	std::string carac[6];
-	for (int i = 0; i < equipPerso[choixClasse].size(); i++) {
-		for (int i2 = 0; i2 < equipPerso[choixClasse][0].size();i2++) {
-			carac[0] = equipPerso[choixClasse][0][i2][0];
-			carac[1] = equipPerso[choixClasse][0][i2][1];
-			carac[2] = equipPerso[choixClasse][0][i2][3];
-			carac[3] = equipPerso[choixClasse][0][i2][4];
-			carac[4] = equipPerso[choixClasse][0][i2][5];
-			carac[5] = equipPerso[choixClasse][0][i2][6];
-			if (carac[0] == "armure")
-				equip[1]->setEquipement(equipPerso[choixClasse][0][i2][2],carac);
-			else if (carac[0] == "arc" || carac[0] == "epee" || carac[0] == "lance" || carac[0] == "marteau")
-				equip[0]->setEquipement(equipPerso[choixClasse][0][i2][2], carac);
-			else 
-				equip[2]->setEquipement(equipPerso[choixClasse][0][i2][2], carac);
-			
-			
+	for (int i = 0; i < equipPerso[choixSelected].size(); i++) {
+		for (int i2 = 0; i2 < equipPerso[choixSelected][0].size();i2++) {
+			if (equipPerso[choixSelected][0][i2][0] != "") {
+				carac[0] = equipPerso[choixSelected][0][i2][0];
+				carac[1] = equipPerso[choixSelected][0][i2][1];
+				carac[2] = equipPerso[choixSelected][0][i2][3];
+				carac[3] = equipPerso[choixSelected][0][i2][4];
+				carac[4] = equipPerso[choixSelected][0][i2][6];
+				carac[5] = equipPerso[choixSelected][0][i2][5];
+				for (int i = 0; i < 7; i++)
+					std::cout << i2 << std::endl;
+				if (carac[0] == "armure")
+					equip[1]->setEquipement(equipPerso[choixSelected][0][i2][2], carac);
+				else if (carac[0] == "arc" || carac[0] == "epee" || carac[0] == "lance" || carac[0] == "marteau")
+					equip[0]->setEquipement(equipPerso[choixSelected][0][i2][2], carac);
+				else
+					equip[2]->setEquipement(equipPerso[choixSelected][0][i2][2], carac);
+			}
 		}
 	}
+}
+
+void GestionTroupes::setEquipementSelected(CaseEquip* equipement) {	
+	std::string* caracEquip = equipement->getCarac();
+	int stats[4];	 // recuperation des stats de l'equip pour mettre a jour
+	std::string carac[7]; //tableau qui va remplacer l'equipement
+	carac[0] = caracEquip[0];
+	carac[1] = caracEquip[1];
+	carac[2] = equipement->getUrl();
+	carac[3] = caracEquip[2];
+	carac[4] = caracEquip[3];
+	carac[5] = caracEquip[5];
+	carac[6] = caracEquip[4];
+
+	stats[0] = atoi(carac[3].c_str());
+	stats[1] = atoi(carac[4].c_str());
+	stats[2] = atoi(carac[5].c_str());
+	stats[3] = atoi(carac[6].c_str());
+	bool existe=false;
+	int i = 0;
+	for (i = 0; i < equipPerso[choixSelected][0].size(); i++) {			
+		if (equipPerso[choixSelected][0][i][0] == carac[0]) {
+			existe = true;		
+			break;
+		}
+	}
+
+	if (!existe) {
+		bool verif = false;
+		for (i = 0; i < equipPerso[choixSelected][0].size(); i++) {
+			if (equipPerso[choixSelected][0][i][0] == "") {
+				verif = true;
+				for (int i2 = 0; i2 < 7; i2++)
+					equipPerso[choixSelected][0][i][i2]= carac[i2];
+				break;
+			}
+		}
+		if (!verif) {
+			std::vector<std::string> caracTemp;
+			for (int i2 = 0; i2 < 7; i2++)
+				caracTemp.push_back(carac[i2]);
+			equipPerso[choixSelected][0].push_back(caracTemp);
+		}
+		for (int i2 = 0; i2 < 4; i2++)
+			this->carac[choixSelected][i2] += stats[i2];//augmentation des stats du perso	
+	}		
+	else {
+		std::string statsBefore[7];
+		for (int i2 = 0; i2 < 7; i2++) {
+			statsBefore[i2] = equipPerso[choixSelected][0][i][i2];
+		}
+		for (int i2 = 0; i2 < 7; i2++) {
+			equipPerso[choixSelected][0][i][i2] = carac[i2];
+		}
+		for (int i2 = 0; i2 < 4; i2++)
+			this->carac[choixSelected][i2] += stats[i2] - atoi(statsBefore[i2+3].c_str());
+		statsBefore[5] = equipPerso[choixSelected][0][i][6];
+		statsBefore[6] = equipPerso[choixSelected][0][i][5];
+		inventaire->addItem(statsBefore);
+	}
+	caracteristique->setAttributs(this->carac[choixSelected]);
+	this->updateItems();
+	inventaire->retirerItem(carac[1]);
+	inventaire->update(choixSelected);
+}
+
+void GestionTroupes::setLvlClasses(int* lvl) {
+	for(int i=0;i<4;i++)
+		lvlClasse[i] = lvl[i];	
+	this->exp->setLvl(lvlClasse[choixSelected]);
+}
+void GestionTroupes::setExpClasses(int* exp) {
+	for (int i = 0; i<4; i++)
+		expClasse[i] = exp[i];
+	this->exp->setExp(expClasse[choixSelected]);
 }
 
 void GestionTroupes::draw(sf::RenderWindow &fen) {
@@ -179,12 +322,11 @@ void GestionTroupes::draw(sf::RenderWindow &fen) {
 		fen.draw(choix[i]);
 	}	
 	caracteristique->draw(fen);
+	fen.draw(back);
 	exp->draw(fen);
 	inventaire->draw(fen);
 	if (affichageView)
 		viewCarac->draw(fen);
-	
-	
 }
 
 Inventaire** GestionTroupes::getInventaire() {

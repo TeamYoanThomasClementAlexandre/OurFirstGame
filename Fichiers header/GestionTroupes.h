@@ -16,20 +16,28 @@ public:
 	GestionTroupes(float width, float height);
 	~GestionTroupes();
 	void draw(sf::RenderWindow &fen);
-	void onMouse(float x, float y);
-	void setSelected(float x, float y);
+	bool onMouse(float x, float y);
+	int setSelected(float x, float y);
 	void setCarac(int** carac);
 	void setEquipement(std::vector<std::vector<std::vector<std::string>>>* equipPerso);
-	void GestionTroupes::updateItems(int choixClasse);
+	void setEquipementSelected(CaseEquip* equipement);
+	void GestionTroupes::updateItems();
+	void delEquipementSelected();
 	Inventaire** getInventaire();
+	void setLvlClasses(int* lvl);
+	void setExpClasses(int* exp);
 
 private:
 	sf::Sprite choix[4];	
 	sf::Sprite persoChoix;	
 	sf::Sprite logo;
+	sf::Sprite back;
+	sf::Texture textureBack[2];
 	sf::Texture textLogo;
 	sf::Texture textureChoix[8];
 	sf::Texture texturePerso;
+	int lvlClasse[4];
+	int expClasse[4];
 	int choixSelected;
 	Inventaire *inventaire;
 	Carac *caracteristique;
@@ -38,6 +46,7 @@ private:
 	BarreExp *exp;
 	CaracEquip* viewCarac;
 	bool affichageView;
+	int caseOnMouse;
 	std::vector<std::vector<std::vector<std::string>>>* equipPerso;	
 };
 

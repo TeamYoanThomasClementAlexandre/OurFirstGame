@@ -1,25 +1,37 @@
 #pragma once
 #include "..//Fichiers header/ControlSouris.h"
+#include <math.h> 
 
 
 ControlSouris::ControlSouris()
 {
-	
 }
 
-void ControlSouris::gererChoix(GestionTroupes *troupes, sf::RenderWindow &fen) {
-	sf::Vector2i mouse = sf::Mouse::getPosition(fen);
+int ControlSouris::gererChoix(GestionTroupes *troupes, sf::RenderWindow &fen, sf::Event evenement) {
+	int quitter = 1;
+	sf::Vector2i mouse = sf::Mouse::getPosition(fen); 
 	sf::Vector2f mouse_world = fen.mapPixelToCoords(mouse);
-	troupes->onMouse(mouse_world.x, mouse_world.y);	
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-		troupes->setSelected(mouse_world.x, mouse_world.y);	
+	bool isOnCase=troupes->onMouse(mouse_world.x, mouse_world.y);
+	if (evenement.type == sf::Event::MouseButtonReleased ) {
+			quitter=troupes->setSelected(mouse_world.x, mouse_world.y);
 	}
+	if (evenement.type == sf::Event::MouseButtonReleased) {
+		if (isOnCase ) {
+			troupes->delEquipementSelected();
+		}
+	}
+	return quitter;
 }
 
-void ControlSouris::gererInventaire(Inventaire *inventaire, sf::RenderWindow &fen) {
+void ControlSouris::gererInventaire(Inventaire *inventaire,GestionTroupes *troupes, sf::RenderWindow &fen, sf::Event evenement) {
 	sf::Vector2i mouse = sf::Mouse::getPosition(fen);
 	sf::Vector2f mouse_world = fen.mapPixelToCoords(mouse);
-	inventaire->onMouse(mouse_world.x, mouse_world.y);
+	bool isOnCase= inventaire->onMouse(mouse_world.x, mouse_world.y);
+	if (evenement.type == sf::Event::MouseButtonReleased) {
+		if (isOnCase && !inventaire->getCaseOnMouse()->isEmpty()) {
+			troupes->setEquipementSelected(inventaire->getCaseOnMouse());
+		}
+	}
 }
 
 ControlSouris::~ControlSouris() {

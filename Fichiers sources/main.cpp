@@ -91,6 +91,21 @@ int main()
 					pj2[1] = *p20;
 					pj2[2] = *p30;
 					pj2[3] = *p40;
+					for (int i = 0; i < 4; i++) {
+
+						int lvl = bdd->requeteParCol(joueur1, "Personnages", "level", pj1[i].type);
+						pj1[i].level = lvl;
+						string url = bdd->getUrl(joueur1, pj1[i].type);
+						pj1[i].arme = url.c_str();
+					}
+
+					for (int i = 0; i < 4; i++) {
+						int lvl = bdd->requeteParCol(joueur2, "Personnages", "level", pj1[i].type);
+						pj2[i].level = lvl;
+						string url = bdd->getUrl(joueur2, pj2[i].type);
+						pj2[i].arme = url.c_str();
+					}
+
 					JoueurYoan * players = new JoueurYoan[2];
 					JoueurYoan *player1 = new JoueurYoan();
 					JoueurYoan *player2 = new JoueurYoan();
@@ -113,28 +128,36 @@ int main()
 				//on détruit l'objet fenetre
 				delete fen;
 				//bdd->setEquipementOnChar("lance en fer","armure",joueur1,"Archer");
-				bdd->setXP(10,joueur1,"Archer");
-				/*string* armeDropped;
-				vector<vector<string>> itemInvent = bdd->getEquipement("dragodia");
+				string* armeDropped;
+				vector<vector<string>> itemInvent = bdd->getEquipement(joueur1);
 				vector<vector<vector<string>>>* equipPerso = new vector<vector<vector<string>>>[4];
-				equipPerso[0].push_back(bdd->getEquipementEquiped("dragodia", "Archer"));
-				equipPerso[1].push_back(bdd->getEquipementEquiped("dragodia", "Epeiste"));
-				equipPerso[2].push_back(bdd->getEquipementEquiped("dragodia", "Lancier"));
-				equipPerso[3].push_back(bdd->getEquipementEquiped("dragodia", "Paladin"));
+				equipPerso[0].push_back(bdd->getEquipementEquiped(joueur1, "Archer"));
+				equipPerso[1].push_back(bdd->getEquipementEquiped(joueur1, "Epeiste"));
+				equipPerso[2].push_back(bdd->getEquipementEquiped(joueur1, "Lancier"));
+				equipPerso[3].push_back(bdd->getEquipementEquiped(joueur1, "Paladin"));
 				int* carac[4];
-				carac[0] = bdd->getCarac("dragodia", "Archer");
-				carac[1] = bdd->getCarac("dragodia", "Epeiste");
-				carac[2] = bdd->getCarac("dragodia", "Lancier");
-				carac[3] = bdd->getCarac("dragodia", "Paladin");
-				FenetreAlex *fenetreAlex = new FenetreAlex(carac, equipPerso, itemInvent);
+				carac[0] = bdd->getCarac(joueur1, "Archer");
+				carac[1] = bdd->getCarac(joueur1, "Epeiste");
+				carac[2] = bdd->getCarac(joueur1, "Lancier");
+				carac[3] = bdd->getCarac(joueur1, "Paladin"); int lvlClasse[4];
+				lvlClasse[0] = bdd->requeteParCol(joueur1, "Personnages", "level", "Archer");
+				lvlClasse[1] = bdd->requeteParCol(joueur1, "Personnages", "level", "Epeiste");
+				lvlClasse[2] = bdd->requeteParCol(joueur1, "Personnages", "level", "Lancier");
+				lvlClasse[3] = bdd->requeteParCol(joueur1, "Personnages", "level", "Paladin");
+				int expClasse[4];
+				expClasse[0] = bdd->requeteParCol(joueur1, "Personnages", "experience", "Archer");
+				expClasse[1] = bdd->requeteParCol(joueur1, "Personnages", "experience", "Epeiste");
+				expClasse[2] = bdd->requeteParCol(joueur1, "Personnages", "experience", "Lancier");
+				expClasse[3] = bdd->requeteParCol(joueur1, "Personnages", "experience", "Paladin");
+				FenetreAlex *fenetreAlex = new FenetreAlex(carac, equipPerso, itemInvent, lvlClasse, expClasse, taille.x, taille.y, joueur1);
 				fenetreAlex->game();
-				bdd->getCarac("dragodia", "Archer");
-				/*armeDropped=bdd->dropEquipement("dragodia");
+				bdd->getCarac(joueur1, "Archer");
+				armeDropped=bdd->dropEquipement(joueur1);
 				if (armeDropped[0] != "null") {
 					printf("%s\n", armeDropped[0].c_str());
 					printf("%s\n", armeDropped[1].c_str());
 					printf("%s\n", armeDropped[2].c_str());
-				}*/
+				}
 			}
 		}
 	}

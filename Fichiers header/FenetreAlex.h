@@ -6,14 +6,11 @@
 
 #ifndef FENETREALEX_H
 #define FENETREALEX_H
-#define WIDTH 1920.f	
-#define HEIGHT 1080.f
 
 class FenetreAlex : public sf::RenderWindow {
 	public:
 		void game();
-		void gestionTroupes();		
-		FenetreAlex(int** carac,vector<vector<vector<string>>>* equipPerso, vector<vector<string>> itemInvent);
+		FenetreAlex(int** carac,vector<vector<vector<string>>>* equipPerso, vector<vector<string>> itemInvent,int lvlClasse[4],int expClasse[4],float width,float height,string joueur);
 		~FenetreAlex();
 
 	private:
