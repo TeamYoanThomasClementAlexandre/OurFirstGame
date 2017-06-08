@@ -278,6 +278,7 @@ void FenetreYoan::controleur_placement(Event event) {
 	{
 		if (event.mouseButton.x > 900 && event.mouseButton.x < 950 && event.mouseButton.y >= 300 && event.mouseButton.y < 340) { // EXIT
 			this->exit = true;
+			return;
 		}
 		Color c;
 		if (event.mouseButton.x != NULL && event.mouseButton.y != NULL && event.mouseButton.x >= 0 && event.mouseButton.x <= 960 && event.mouseButton.y >= 0 && event.mouseButton.y <= 540) {
@@ -288,6 +289,7 @@ void FenetreYoan::controleur_placement(Event event) {
 		memset(s, 0, 10);
 		sprintf_s(s, 10, "%00d%00d%00d\0", c.r, c.g, c.b);
 		sf::Vector2u* vec = (*(this->bm.dico))[s];
+		PersonnageYoan* perso = (*(this->bm.dicoPersonnagesIJ))[s];
 
 		if (this->players[this->joueur].selected != -1 && this->verifContrainte(vec, s)) {
 			this->tablo_text[1].setString("");
@@ -301,9 +303,35 @@ void FenetreYoan::controleur_placement(Event event) {
 
 			this->players[this->joueur].personnage_placer++;
 		}
+		else if (perso != NULL) {
+			this->ennemi_clicked.x = perso->appartenance.x;
+			this->ennemi_clicked.y = perso->appartenance.y;
+			this->map_clicked = false;
+			this->rien_clicked = false;
+		}
+		else if (perso == NULL && vec != NULL) {
+			this->players[this->joueur].selected = -1;
+			this->map_clicked = true;
+			this->map_clicked_ij.x = vec->x;
+			this->map_clicked_ij.y = vec->y;
+
+			this->rien_clicked = false;
+
+			this->ennemi_clicked.x = -1;
+			this->ennemi_clicked.y = -1;
+		}
+		else {
+			this->players[this->joueur].selected = -1;
+			this->map_clicked = false;
+			this->map_clicked_ij.x = -1;
+			this->map_clicked_ij.y = -1;
+
+			this->rien_clicked = false;
+
+			this->ennemi_clicked.x = -1;
+			this->ennemi_clicked.y = -1;
+		}
 		this->players[this->joueur].selected = -1;
-		this->clear(Color(100, 100, 100));
-		this->render();
 
 	}
 	if (event.mouseButton.button == sf::Mouse::Right)
@@ -325,11 +353,10 @@ void FenetreYoan::controleur_placement(Event event) {
 		else {
 		sur une case ou il y a un personnage alors ça le retire
 		}
-		*/
-		this->clear(Color(100, 100, 100));
-		this->render();
+		*/	
 	}
-
+	this->clear(Color(100, 100, 100));
+	this->render();
 
 }
 
@@ -710,13 +737,13 @@ void FenetreYoan::idle() {
 	if (this->exit) {
 		printf("FIN DU GAME\n");
 		this->close();
-		
+
 		this->destroyAll();
 		return;
 	}
-	
-		this->fill_gain_xp();
-	
+
+	this->fill_gain_xp();
+
 
 	this->joueur = this->ini_first_tour();
 	this->nbr_tour++;
@@ -799,7 +826,7 @@ void FenetreYoan::RenderWin() {
 
 	Texture* Win = new Texture();
 	Texture* Loose = new Texture();
-	
+
 
 	const char* szwin = "../Fichiers externe/img/victory.jpg";
 	if (!Win->loadFromFile(szwin)) {
@@ -811,7 +838,7 @@ void FenetreYoan::RenderWin() {
 	}
 	Sprite *win = new Sprite(*Win);
 	Sprite *loose = new Sprite(*Loose);
-	
+
 
 	this->clear(Color(50, 50, 50));
 
@@ -831,17 +858,24 @@ void FenetreYoan::RenderWin() {
 	nameloose.setCharacterSize(15);
 	nameloose.setString("Defaite de : " + this->players[(this->joueur == 0) ? 1 : 0].pseudo);
 
+	sf::Text drop;
+	drop.setFont(font);
+	drop.setCharacterSize(10);
+
 	tour.setPosition(470, 280);
 
 	bool isWin;
+	int winner = -1;
 	if (this->joueur == 0) {
 		isWin = true;
+		winner = 0;
 		win->setPosition(0, 0);
 		loose->setPosition(480, 0);
 		namewin.setPosition(150, 300);
 		nameloose.setPosition(650, 300);
 	}
 	else {
+		winner = 1;
 		isWin = false;
 		win->setPosition(480, 0);
 		loose->setPosition(0, 0);
@@ -930,40 +964,93 @@ void FenetreYoan::RenderWin() {
 		this->draw(spriteperso);
 		this->draw(*arme);
 	}
+
+	sf::RectangleShape line(sf::Vector2f(400, 5));
+	line.setPosition(480, 300);
+	line.setFillColor(Color::Black);
+	line.setRotation(90);
+
 	this->draw(namewin);
 	this->draw(nameloose);
 	this->draw(*win);
 	this->draw(*loose);
+	this->draw(line);
 	this->draw(tour);
 
 	Sprite *s = new Sprite(autre[1]);
 	s->setPosition(900, 300);
 	this->draw(*s);
+	InteractionBDD* bdd = InteractionBDD::Ini();
+
+	//drop
+	if (this->players[0].pseudo == this->players[1].pseudo) {
+
+		string* armeDropped;
+		armeDropped = bdd->dropEquipement(this->players[this->joueur].pseudo);
+		drop.setString("Vous avez gagné un/une");
+		drop.setPosition(260, 400);
+		this->draw(drop);
+		if (armeDropped[0] != "null") {
+			printf("%s\n", armeDropped[0].c_str());
+			printf("%s\n", armeDropped[1].c_str());
+			printf("%s\n", armeDropped[2].c_str());
+
+			drop.setString("Vous avez gagné un/une :\n " + armeDropped[0] + ",\n" + armeDropped[1].c_str());
+
+			Texture* ps = new Texture();
+			char c[100];
+			sprintf_s(c, "../Fichiers externe/img/equip/%s.png", armeDropped[2].c_str());
+			if (!ps->loadFromFile(c)) {
+				printf("Error load sprite %s", c);
+			}
+			Sprite *img = new Sprite(*ps);
+			if (this->joueur == 0) {
+				img->setPosition(260, 450);
+				drop.setPosition(260, 400);
+			}
+			else {
+				img->setPosition(800, 450);
+				drop.setPosition(800, 400);
+			}
+
+			this->draw(drop);
+			this->draw(*img);
+
+		}
+	}
+	
+
+	 // AFFICHER
 	this->display();
 
-	InteractionBDD* bdd = InteractionBDD::Ini();
 	//envoi xp BD
 	if (isWin) {
 		for (int i = 0; i < 4; i++) {
 			bdd->setXP((int)this->players[0].p_placer[i].getExperiencePersonnage(nbr_tour, true), this->players[0].pseudo, this->players[0].p_placer[i].type);
+
 		}
+
 	}
 	else {
 		for (int i = 0; i < 4; i++) {
 			bdd->setXP((int)this->players[0].p_placer[i].getExperiencePersonnage(nbr_tour, false), this->players[0].pseudo, this->players[0].p_placer[i].type);
 		}
 	}
-	
+
 	if (!isWin) {
 		for (int i = 0; i < 4; i++) {
 			bdd->setXP((int)this->players[1].p_placer[i].getExperiencePersonnage(nbr_tour, true), this->players[1].pseudo, this->players[1].p_placer[i].type);
 		}
+		
 	}
 	else {
 		for (int i = 0; i < 4; i++) {
 			bdd->setXP((int)this->players[1].p_placer[i].getExperiencePersonnage(nbr_tour, false), this->players[1].pseudo, this->players[1].p_placer[i].type);
 		}
 	}
+
+	
+
 	bool quitter = false;
 	while (!quitter) {
 		while (this->pollEvent(this->event)) {
@@ -1046,7 +1133,7 @@ void FenetreYoan::Game() {
 				this->tabcombatbool[this->joueur][j] = true;
 			}
 
-			
+
 			this->findutour = false;
 			return;
 
@@ -1058,7 +1145,7 @@ void FenetreYoan::Game() {
 void FenetreYoan::renderFinDuTour()
 {
 	this->clear(Color(50, 50, 50));
-	this->tablo_text[3].setString("Tour " + std::to_string(this->nbr_tour) + " ," + this->players[this->joueur].pseudo);
+	this->tablo_text[3].setString("Tour " + std::to_string(this->nbr_tour) + " , J" + std::to_string(this->joueur + 1) + " " + this->players[this->joueur].pseudo);
 	this->tablo_text[3].setPosition(100, 100);
 	this->autre[3].setPosition(400, 200);
 	this->draw(autre[3]);
@@ -1088,76 +1175,76 @@ void FenetreYoan::fill_gain_xp() {
 		int paladin2 = 0;
 		int epeiste2 = 0;
 		int lancier2 = 0;
-			for (int j = 0; j < 4; j++) {
-				if (this->players[0].p_placer[j].type == "Archer") {
-					archer1++;
-				}
-				if (this->players[0].p_placer[j].type == "Paladin") {
-					paladin1++;
-				}
-				if (this->players[0].p_placer[j].type == "Lancier") {
-					lancier1++;
-				}
-				if (this->players[0].p_placer[j].type == "Epeiste") {
-					epeiste1++;
-				}
+		for (int j = 0; j < 4; j++) {
+			if (this->players[0].p_placer[j].type == "Archer") {
+				archer1++;
 			}
-		
-			for (int j = 0; j < 4; j++) {
-				if (this->players[0].p_placer[j].type == "Archer") {
-					this->players[0].p_placer[j].gain_xp = 1.0 / archer1;
-					archer1--;
-				}
-				if (this->players[0].p_placer[j].type == "Paladin") {
-					this->players[0].p_placer[j].gain_xp = 1.0 / paladin1;
-					paladin1--;
-				}
-				if (this->players[0].p_placer[j].type == "Lancier") {
-					this->players[0].p_placer[j].gain_xp = 1.0 / lancier1;
-					lancier1--;
-				}
-				if (this->players[0].p_placer[j].type == "Epeiste") {
-					this->players[0].p_placer[j].gain_xp = 1.0 / epeiste1;
-					epeiste1--;
-				}
+			if (this->players[0].p_placer[j].type == "Paladin") {
+				paladin1++;
+			}
+			if (this->players[0].p_placer[j].type == "Lancier") {
+				lancier1++;
+			}
+			if (this->players[0].p_placer[j].type == "Epeiste") {
+				epeiste1++;
+			}
+		}
 
+		for (int j = 0; j < 4; j++) {
+			if (this->players[0].p_placer[j].type == "Archer") {
+				this->players[0].p_placer[j].gain_xp = 1.0 / archer1;
+				archer1--;
+			}
+			if (this->players[0].p_placer[j].type == "Paladin") {
+				this->players[0].p_placer[j].gain_xp = 1.0 / paladin1;
+				paladin1--;
+			}
+			if (this->players[0].p_placer[j].type == "Lancier") {
+				this->players[0].p_placer[j].gain_xp = 1.0 / lancier1;
+				lancier1--;
+			}
+			if (this->players[0].p_placer[j].type == "Epeiste") {
+				this->players[0].p_placer[j].gain_xp = 1.0 / epeiste1;
+				epeiste1--;
 			}
 
-			for (int j = 0; j < 4; j++) {
-				if (this->players[1].p_placer[j].type == "Archer") {
-					archer2++;
-				}
-				if (this->players[1].p_placer[j].type == "Paladin") {
-					paladin2++;
-				}
-				if (this->players[1].p_placer[j].type == "Lancier") {
-					lancier2++;
-				}
-				if (this->players[1].p_placer[j].type == "Epeiste") {
-					epeiste2++;
-				}
+		}
+
+		for (int j = 0; j < 4; j++) {
+			if (this->players[1].p_placer[j].type == "Archer") {
+				archer2++;
+			}
+			if (this->players[1].p_placer[j].type == "Paladin") {
+				paladin2++;
+			}
+			if (this->players[1].p_placer[j].type == "Lancier") {
+				lancier2++;
+			}
+			if (this->players[1].p_placer[j].type == "Epeiste") {
+				epeiste2++;
+			}
+		}
+
+		for (int j = 0; j < 4; j++) {
+			if (this->players[1].p_placer[j].type == "Archer") {
+				this->players[1].p_placer[j].gain_xp = 1.0 / archer2;
+				archer2--;
+			}
+			if (this->players[1].p_placer[j].type == "Paladin") {
+				this->players[1].p_placer[j].gain_xp = 1.0 / paladin2;
+				paladin2--;
+			}
+			if (this->players[1].p_placer[j].type == "Lancier") {
+				this->players[1].p_placer[j].gain_xp = 1.0 / lancier2;
+				lancier2--;
+			}
+			if (this->players[1].p_placer[j].type == "Epeiste") {
+				this->players[1].p_placer[j].gain_xp = 1.0 / epeiste2;
+				epeiste2--;
 			}
 
-			for (int j = 0; j < 4; j++) {
-				if (this->players[1].p_placer[j].type == "Archer") {
-					this->players[1].p_placer[j].gain_xp = 1.0 / archer2;
-					archer2--;
-				}
-				if (this->players[1].p_placer[j].type == "Paladin") {
-					this->players[1].p_placer[j].gain_xp = 1.0 / paladin2;
-					paladin2--;
-				}
-				if (this->players[1].p_placer[j].type == "Lancier") {
-					this->players[1].p_placer[j].gain_xp = 1.0 / lancier2;
-					lancier2--;
-				}
-				if (this->players[1].p_placer[j].type == "Epeiste") {
-					this->players[1].p_placer[j].gain_xp = 1.0 / epeiste2;
-					epeiste2--;
-				}
+		}
 
-			}
-		
 
 	}
 	else {
@@ -1176,12 +1263,15 @@ void FenetreYoan::controleur_game(Event event)
 	{
 		if (event.mouseButton.x > 900 && event.mouseButton.x < 950 && event.mouseButton.y >= 300 && event.mouseButton.y < 340) { // EXIT
 			this->exit = true;
+			return;
 		}
 		if (event.mouseButton.x > 870 && event.mouseButton.x < 960 && event.mouseButton.y >= 515 && event.mouseButton.y < 535) {
 			this->findutour = true;
+			return;
 		}
 		if (event.mouseButton.x > 850 && event.mouseButton.x < 860 && event.mouseButton.y >= 515 && event.mouseButton.y < 535) {
 			this->surrend = true;
+			return;
 		}
 		Color c;
 		if (event.mouseButton.x != NULL && event.mouseButton.y != NULL && event.mouseButton.x >= 0 && event.mouseButton.x <= 960 && event.mouseButton.y >= 0 && event.mouseButton.y <= 540) {
@@ -1316,6 +1406,7 @@ void FenetreYoan::controleur_game(Event event)
 
 			this->ennemi_clicked.x = -1;
 			this->ennemi_clicked.y = -1;
+			this->tablo_text[1].setString("");
 
 		}
 	}
@@ -1354,9 +1445,7 @@ void FenetreYoan::controleur_game(Event event)
 										this->players[perso->appartenance.x].p_placer[perso->appartenance.y].isdead = true;
 
 										this->players[this->joueur].p_placer[this->players[this->joueur].selected].nbr_tue++;
-										this->map->caseJeu[this->players[perso->appartenance.x].p_placer[perso->appartenance.y].position.x][this->players[perso->appartenance.x].p_placer[perso->appartenance.y].position.y]->who = -1;
-										this->players[perso->appartenance.x].p_placer[perso->appartenance.y].position.x = -1;
-										this->players[perso->appartenance.x].p_placer[perso->appartenance.y].position.y = -1;
+										this->map->caseJeu[this->players[perso->appartenance.x].p_placer[perso->appartenance.y].position.y][this->players[perso->appartenance.x].p_placer[perso->appartenance.y].position.x]->who = -1;
 									}
 
 									if (this->players[perso->appartenance.x].p_placer[0].vieRestante <= 0 && this->players[perso->appartenance.x].p_placer[1].vieRestante <= 0 && this->players[perso->appartenance.x].p_placer[2].vieRestante <= 0 && this->players[perso->appartenance.x].p_placer[3].vieRestante <= 0) {
@@ -1554,7 +1643,7 @@ void FenetreYoan::render() {
 
 
 	// rendu du menu du bas
-	
+
 	this->autre[6].setPosition(0, 360);
 	this->draw(this->autre[6]);
 
@@ -1644,6 +1733,118 @@ void FenetreYoan::render() {
 	this->draw(autre[1]);
 
 	this->renderTexte();
+
+	sf::Text pv;
+	pv.setFont(this->font);
+	pv.setCharacterSize(12);
+	pv.setPosition(900, 375);
+	sf::Text pm;
+	pm.setFont(this->font);
+	pm.setCharacterSize(15);
+	pm.setPosition(900, 400);
+	sf::Text degat;
+	degat.setFont(this->font);
+	degat.setCharacterSize(15);
+	degat.setPosition(900, 425);
+	sf::Text armor;
+	armor.setFont(this->font);
+	armor.setCharacterSize(15);
+	armor.setPosition(900, 450);
+	sf::Text range;
+	range.setFont(this->font);
+	range.setCharacterSize(15);
+	range.setPosition(900, 475);
+	if (this->ennemi_clicked.x != -1 && this->ennemi_clicked.y != -1 && !this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].isdead) {
+		int* tab = new int[3];
+		bool* tabb = new bool[3];
+		tab = this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].getNewCaracwithCase(*this->map);
+		tabb = this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].isChangeCarac(*this->map);
+
+		pv.setString(std::to_string(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].vieRestante) + "/" + std::to_string(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].vie));
+		pm.setString(std::to_string(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].deplacementRestante) + "/" + std::to_string(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].deplacement));
+		degat.setString(std::to_string(tab[1]));
+		if (tabb[1]) {
+			if (tab[1] < this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].degat) {
+				degat.setColor(Color(255, 0, 0));
+			}
+			else {
+				degat.setColor(Color(0, 255, 0));
+			}
+
+		}
+		armor.setString(std::to_string(tab[0]));
+		if (tabb[0]) {
+			if (tab[0] < this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].armure) {
+				armor.setColor(Color(255, 0, 0));
+			}
+			else {
+				armor.setColor(Color(0, 255, 0));
+			}
+
+		}
+		range.setString(std::to_string(tab[2]));
+		if (tabb[2]) {
+			if (tab[2] < this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].range) {
+				range.setColor(Color(255, 0, 0));
+			}
+			else {
+				range.setColor(Color(0, 255, 0));
+			}
+
+		}
+		Sprite *s = new Sprite(this->getSpritebyname(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].type));
+		//Case *c = this->map->caseJeu[ennemi_clicked.y][ennemi_clicked.x];
+		Sprite *sarme = this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].sarme;
+
+		Sprite *s2 = new Sprite(this->getSpritecbyname(this->map->caseJeu[this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].position.y][this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].position.x]->types));
+		//printf("%d/ %dmap = %s\n", ennemi_clicked.y, ennemi_clicked.x, &this->map->caseJeu[ennemi_clicked.y][ennemi_clicked.x]->types);
+		s->setPosition(750, 380);
+		s2->setPosition(780, 420);
+		s2->setScale(sf::Vector2f(0.8, 0.8));
+		sarme->setPosition(775, 385);
+		this->draw(*s);
+		this->draw(*s2);//BUGICI 
+		this->draw(*sarme);
+
+		this->tablo_text[4].setString(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].type + "  J" + std::to_string(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].appartenance.x + 1) + "/" + std::to_string(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].appartenance.y));
+		this->tablo_text[4].setPosition(750, 360);
+		this->draw(this->tablo_text[4]);
+
+
+	}
+
+	else if (this->map_clicked) {
+		Case *c = this->map->caseJeu[this->map_clicked_ij.y][this->map_clicked_ij.x];
+		Sprite *s = new Sprite(this->getSpritecbyname(c->types));
+		s->setPosition(750, 380);
+
+		pv.setString("");
+		pm.setString(std::to_string(c->pmCost));
+		degat.setString(std::to_string(c->degat));
+		armor.setString(std::to_string(c->armure));
+		range.setString(std::to_string(c->range));
+
+		this->tablo_text[4].setString(c->types);
+		this->tablo_text[4].setPosition(750, 360);
+		this->draw(this->tablo_text[4]);
+		this->draw(*s);
+	}
+	else if (this->rien_clicked) {
+		pv.setString("");
+		pm.setString("");
+		degat.setString("");
+		armor.setString("");
+		range.setString("");
+	}
+
+
+	this->draw(pv);
+	this->draw(pm);
+	this->draw(degat);
+	this->draw(armor);
+	this->draw(range);
+
+
 
 	//DEBUG	
 	const sf::Texture& texture = renderTexture.getTexture();
@@ -1806,11 +2007,14 @@ void FenetreYoan::renderTexteView() {
 
 		//	text.setColor(sf::Color::Red);
 		this->draw(type);
-		this->draw(pv);
-		this->draw(pm);
-		this->draw(degat);
-		this->draw(armor);
-		this->draw(range);
+		if (!this->players[this->joueur].p_placer[i].isdead) {
+			this->draw(pv);
+			this->draw(pm);
+			this->draw(degat);
+			this->draw(armor);
+			this->draw(range);
+		}
+
 
 	}
 	//
@@ -1920,7 +2124,7 @@ void FenetreYoan::renderView() {
 
 
 	// rendu du menu du bas
-	
+
 	this->autre[6].setPosition(0, 360);
 	this->draw(this->autre[6]);
 
@@ -1930,7 +2134,7 @@ void FenetreYoan::renderView() {
 	for (int i = 0; i < 4; i++) {
 		if (this->players[this->joueur].p_placer[i].isdead) {
 			this->autre[5].setPosition(650, 377 + i * 30);
-			this->autre[5].setScale(0.6,0.6);
+			this->autre[5].setScale(0.6, 0.6);
 			this->draw(this->autre[5]);
 		}
 
@@ -1976,7 +2180,7 @@ void FenetreYoan::renderView() {
 					char* couleurname = new char[10];
 					memset(couleurname, 0, 10);
 					sprintf_s(couleurname, 10, "%00d%00d%00d\0", r, g, b);
-					
+
 
 					Vector2u *v = new Vector2u();
 					v->x = this->players[j].p_placer[i].position.x;
@@ -2119,7 +2323,6 @@ void FenetreYoan::renderView() {
 		Case *c = this->map->caseJeu[this->map_clicked_ij.y][this->map_clicked_ij.x];
 		Sprite *s = new Sprite(this->getSpritecbyname(c->types));
 		s->setPosition(750, 380);
-
 		pv.setString("");
 		pm.setString(std::to_string(c->pmCost));
 		degat.setString(std::to_string(c->degat));

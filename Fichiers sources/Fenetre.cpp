@@ -385,7 +385,7 @@ int Fenetre::affichageMenu() {
 						return 1;
 					}
 					if (i == 2) {
-						this->close();
+						return 3;
 
 					}
 				}

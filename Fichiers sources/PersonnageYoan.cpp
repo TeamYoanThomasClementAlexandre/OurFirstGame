@@ -49,12 +49,6 @@ PersonnageYoan::~PersonnageYoan() {
 
 int* PersonnageYoan::getNewCaracwithCase(Carte c) {
 	int* tab = new int[3];
-	if (this->isdead) {
-		tab[0] = -1;
-		tab[1] = -1;
-		tab[2] = -1;
-		return tab;
-	}
 	Case* casee=c.caseJeu[this->position.y][this->position.x];
 
 	
