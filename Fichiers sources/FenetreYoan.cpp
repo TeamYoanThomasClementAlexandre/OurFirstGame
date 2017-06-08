@@ -236,34 +236,34 @@ bool FenetreYoan::verifContrainte(sf::Vector2u *vec, char* s) {
 		else {
 			this->tablo_text[1].setString("Action Impossible, Hors map !");
 		}
-		this->clear(Color(100, 100, 100));
+		this->clear(Color(50, 50, 50));
 		this->render();
 		return false;
 	}
 
 	if (this->joueur == 0 && vec->x > 4) {
 		this->tablo_text[1].setString("Action Impossible, Spawn ennemi !");
-		this->clear(Color(100, 100, 100));
+		this->clear(Color(50, 50, 50));
 		this->render();
 		return false;
 	}
 	if (this->joueur == 1 && vec->x < 6) {
 		this->tablo_text[1].setString("Action Impossible, Spawn ennemi !");
-		this->clear(Color(100, 100, 100));
+		this->clear(Color(50, 50, 50));
 		this->render();
 		return false;
 	}
 
 	if (this->map->caseJeu[vec->y][vec->x]->who != -1) {
 		this->tablo_text[1].setString("Action Impossible,Unité déjà présente!");
-		this->clear(Color(100, 100, 100));
+		this->clear(Color(50, 50, 50));
 		this->render();
 		return false;
 	}
 	std::string str = this->map->caseJeu[vec->y][vec->x]->types;
 	if (str == "eau") {
 		this->tablo_text[1].setString("Action Impossible, Case eau selectionné !");
-		this->clear(Color(100, 100, 100));
+		this->clear(Color(50, 50, 50));
 		this->render();
 		return false;
 
@@ -276,6 +276,7 @@ void FenetreYoan::controleur_placement(Event event) {
 
 	if (event.mouseButton.button == sf::Mouse::Left) //
 	{
+		this->clear(Color(50, 50, 50));
 		if (event.mouseButton.x > 900 && event.mouseButton.x < 950 && event.mouseButton.y >= 300 && event.mouseButton.y < 340) { // EXIT
 			this->exit = true;
 			return;
@@ -308,12 +309,18 @@ void FenetreYoan::controleur_placement(Event event) {
 			this->ennemi_clicked.y = perso->appartenance.y;
 			this->map_clicked = false;
 			this->rien_clicked = false;
+
+			this->tablo_text[4].setString("");
+			this->draw(this->tablo_text[4]);
 		}
 		else if (perso == NULL && vec != NULL) {
 			this->players[this->joueur].selected = -1;
 			this->map_clicked = true;
 			this->map_clicked_ij.x = vec->x;
 			this->map_clicked_ij.y = vec->y;
+
+			this->tablo_text[4].setString("");
+			this->draw(this->tablo_text[4]);
 
 			this->rien_clicked = false;
 
@@ -353,9 +360,9 @@ void FenetreYoan::controleur_placement(Event event) {
 		else {
 		sur une case ou il y a un personnage alors ça le retire
 		}
-		*/	
+		*/
 	}
-	this->clear(Color(100, 100, 100));
+	this->clear(Color(50, 50, 50));
 	this->render();
 
 }
@@ -689,15 +696,12 @@ int FenetreYoan::ini_first_tour() {
 
 		srand(time(NULL));
 		int rando = rand() % 2;
-		printf("RANDOM.. J%d COMMENCE", rando);
 		return rando;
 	}
 	else if (vitesse_dattaque_j1 > vitesse_dattaque_j2) {
-		printf("J1 COMMENCE");
 		return 0;
 	}
 	else if (vitesse_dattaque_j2 > vitesse_dattaque_j1) {
-		printf("J2 COMMENCE");
 		return 1;
 	}
 }
@@ -727,7 +731,6 @@ void FenetreYoan::idle() {
 	PersonnageYoan perso;
 	this->PlacementPersonnage();
 	if (this->exit) {
-		printf("FIN DU GAME\n");
 		this->close();
 		this->destroyAll();
 		return;
@@ -735,7 +738,6 @@ void FenetreYoan::idle() {
 	this->joueur = (this->joueur == 0) ? 1 : 0;
 	this->PlacementPersonnage();
 	if (this->exit) {
-		printf("FIN DU GAME\n");
 		this->close();
 
 		this->destroyAll();
@@ -759,19 +761,16 @@ void FenetreYoan::idle() {
 
 		this->Game();
 		if (this->surrend) {
-			printf("Surrend\n");
 			this->joueur = (this->joueur == 0) ? 1 : 0;
 			this->RenderWin();
 			this->exit = true;
 		}
 		if (this->isWin) {
-			printf("Win\n");
 			this->RenderWin();
 			this->exit = true;
 
 		}
 		if (this->exit) {
-			printf("FIN DU GAME\n");
 			this->close();
 			this->destroyAll();
 			return;
@@ -786,20 +785,17 @@ void FenetreYoan::idle() {
 		this->Game();
 
 		if (this->surrend) {
-			printf("Surrend\n");
 			this->joueur = (this->joueur == 0) ? 1 : 0;
 			this->RenderWin();
 			this->exit = true;
 		}
 
 		if (this->isWin) {
-			printf("Win\n");
 			this->RenderWin();
 			this->exit = true;
 
 		}
 		if (this->exit) {
-			printf("FIN DU GAME\n");
 			this->close();
 			this->destroyAll();
 			return;
@@ -985,15 +981,9 @@ void FenetreYoan::RenderWin() {
 	//drop
 	if (this->players[0].pseudo == this->players[1].pseudo) {
 
-		string* armeDropped;
-		armeDropped = bdd->dropEquipement(this->players[this->joueur].pseudo);
-		drop.setString("Vous avez gagné un/une");
-		drop.setPosition(260, 400);
+		string* armeDropped = NULL;
 		this->draw(drop);
 		if (armeDropped[0] != "null") {
-			printf("%s\n", armeDropped[0].c_str());
-			printf("%s\n", armeDropped[1].c_str());
-			printf("%s\n", armeDropped[2].c_str());
 
 			drop.setString("Vous avez gagné un/une :\n " + armeDropped[0] + ",\n" + armeDropped[1].c_str());
 
@@ -1018,9 +1008,9 @@ void FenetreYoan::RenderWin() {
 
 		}
 	}
-	
 
-	 // AFFICHER
+
+	// AFFICHER
 	this->display();
 
 	//envoi xp BD
@@ -1041,7 +1031,7 @@ void FenetreYoan::RenderWin() {
 		for (int i = 0; i < 4; i++) {
 			bdd->setXP((int)this->players[1].p_placer[i].getExperiencePersonnage(nbr_tour, true), this->players[1].pseudo, this->players[1].p_placer[i].type);
 		}
-		
+
 	}
 	else {
 		for (int i = 0; i < 4; i++) {
@@ -1049,7 +1039,7 @@ void FenetreYoan::RenderWin() {
 		}
 	}
 
-	
+
 
 	bool quitter = false;
 	while (!quitter) {
@@ -1067,9 +1057,8 @@ void FenetreYoan::RenderWin() {
 
 }
 void FenetreYoan::PlacementPersonnage() {
-	this->clear(Color(100, 100, 100));
+	this->clear(Color(50, 50, 50));
 	this->render();
-	//PersonnageYoan** persos = new PersonnageYoan*[2]; // tableau de perso a remplir 
 	while (1) {
 
 		while (this->pollEvent(this->event))
@@ -1435,9 +1424,10 @@ void FenetreYoan::controleur_game(Event event)
 							if (this->joueur != perso->appartenance.x) {
 
 								if (this->tabcombatbool[this->joueur][this->players[this->joueur].selected]) {
-									this->combat.simulationCombat(&this->players[this->joueur].p_placer[this->players[this->joueur].selected], &this->players[perso->appartenance.x].p_placer[perso->appartenance.y], *this->map);
+									int dmg;
+									dmg = this->combat.simulationCombat(&this->players[this->joueur].p_placer[this->players[this->joueur].selected], &this->players[perso->appartenance.x].p_placer[perso->appartenance.y], *this->map);
 									this->tabcombatbool[this->joueur][this->players[this->joueur].selected] = false;
-									this->tablo_text[1].setString("Attaque reussie <3 !");
+									this->tablo_text[1].setString("Attaque reussie <3 ! -" + std::to_string(dmg));
 
 
 									// ici si il es mort mettre isdead=true
@@ -1797,7 +1787,6 @@ void FenetreYoan::render() {
 		Sprite *sarme = this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].sarme;
 
 		Sprite *s2 = new Sprite(this->getSpritecbyname(this->map->caseJeu[this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].position.y][this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].position.x]->types));
-		//printf("%d/ %dmap = %s\n", ennemi_clicked.y, ennemi_clicked.x, &this->map->caseJeu[ennemi_clicked.y][ennemi_clicked.x]->types);
 		s->setPosition(750, 380);
 		s2->setPosition(780, 420);
 		s2->setScale(sf::Vector2f(0.8, 0.8));
@@ -2299,17 +2288,15 @@ void FenetreYoan::renderView() {
 
 		}
 		Sprite *s = new Sprite(this->getSpritebyname(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].type));
-		//Case *c = this->map->caseJeu[ennemi_clicked.y][ennemi_clicked.x];
 		Sprite *sarme = this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].sarme;
 
 		Sprite *s2 = new Sprite(this->getSpritecbyname(this->map->caseJeu[this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].position.y][this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].position.x]->types));
-		//printf("%d/ %dmap = %s\n", ennemi_clicked.y, ennemi_clicked.x, &this->map->caseJeu[ennemi_clicked.y][ennemi_clicked.x]->types);
 		s->setPosition(750, 380);
 		s2->setPosition(780, 420);
 		s2->setScale(sf::Vector2f(0.8, 0.8));
 		sarme->setPosition(775, 385);
 		this->draw(*s);
-		this->draw(*s2);//BUGICI 
+		this->draw(*s2);
 		this->draw(*sarme);
 
 		this->tablo_text[4].setString(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].type + "  J" + std::to_string(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].appartenance.x + 1) + "/" + std::to_string(this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].appartenance.y));

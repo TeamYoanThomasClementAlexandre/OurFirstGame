@@ -13,24 +13,19 @@ void Personnage::InitialisationCarac() {
 	int *tableauCarac =interactionBDD->getCarac(nomJoueur, typePersonnage);
 	
 	this->degat = tableauCarac[0];
-	printf("mes dommages sont de %d\n",this->degat );
 
 	this->vie = tableauCarac[1];
-	printf("mes vies sont de %d\n", this->vie);
 
 	this->mouvement = tableauCarac[2];
-	printf("mes mouvements sont de %d\n", this->mouvement);
 
 	this->armure = tableauCarac[3];
-	printf("mes armures sont de %d\n", this->armure);
 
-	printf("\n\n");
 }
 int Personnage::getMouvement(){
 	return this->mouvement;
 }
 int Personnage::getArmure() {
-	interactionBDD->getEquipement("dragodia");
+	//interactionBDD->getEquipement("dragodia");
 	return this->armure;
 }
 int Personnage::getDegat() {

@@ -153,11 +153,6 @@ int main()
 				fenetreAlex->game();
 				bdd->getCarac(joueur1, "Archer");
 				armeDropped=bdd->dropEquipement(joueur1);
-				if (armeDropped[0] != "null") {
-					printf("%s\n", armeDropped[0].c_str());
-					printf("%s\n", armeDropped[1].c_str());
-					printf("%s\n", armeDropped[2].c_str());
-				}
 			}
 		}
 	}

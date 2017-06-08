@@ -11,7 +11,7 @@ Combat::~Combat()
 {
 }
 
-void Combat::simulationCombat(PersonnageYoan* attaquant, PersonnageYoan* victime, Carte c) {
+int Combat::simulationCombat(PersonnageYoan* attaquant, PersonnageYoan* victime, Carte c) {
 	int* tab_attaquant = new int[3];
 	tab_attaquant = attaquant->getNewCaracwithCase(c);
 	int* tab_victime = new int[3];
@@ -19,12 +19,13 @@ void Combat::simulationCombat(PersonnageYoan* attaquant, PersonnageYoan* victime
 
 	if (coupCritique()) {
 		victime->vieRestante = victime->vieRestante - tab_attaquant[1];
-		//printf("coup critique, il ignore la defense HUHEUE");
+		return tab_attaquant[1];
 	}
 	else
 		victime->vieRestante=victime->vieRestante-(tab_attaquant[1]- tab_victime[0]);
-		//printf(" la vie du personnage attaqué est de %d", victime->vieRestante);
-		
+	
+
+	return tab_attaquant[1] - tab_victime[0];
 }
 bool Combat::coupCritique() {
 	int echec = 0;

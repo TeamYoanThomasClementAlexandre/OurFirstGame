@@ -123,7 +123,6 @@ int PersonnageYoan::getExperiencePersonnage(int nbr_tour,bool isWin) {
 		xp_sup += 5;
 	}
 
-	printf("%f\n", xp_sup*this->gain_xp);
 	return xp_sup*this->gain_xp;
 
 }

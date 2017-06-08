@@ -96,7 +96,6 @@ int* InteractionBDD::getCarac(string joueur, string classe) {
 								tableauCarac[n] = std::stoi(row2[n]) + (levelPersonnage * 5);// on le fait que pr dgt et vie
 							else {
 								tableauCarac[n] = std::stoi(row2[n]);
-								printf("on fait pas lel \n");
 							}
 						}
 					}
@@ -174,7 +173,6 @@ vector<vector <string>> InteractionBDD::getEquipement(string joueur) {
 		result = mysql_store_result(&mysql);
 		while (row = mysql_fetch_row(result)) {
 			if (row[0] != NULL) {
-				printf("%d walah\n => ",std::stoi(row[0]));
 				//refEquipement = std::stoi(row[y]);
 				//printf("loooool %d\n", refEquipement);
 
@@ -195,7 +193,6 @@ vector<vector <string>> InteractionBDD::getEquipement(string joueur) {
 						}
 						else {
 							for (i = 0; i < nbr_champs; i++) {// toutes les cols
-								printf("%s\n", row3[i]);
 								tableauCarac[n][i] = row3[i];
 								if (i == 3) {
 									sprintf(requeteInt, "Select degat,vie,armure,mouvement from Carac where idCarac=%d", std::stoi(row3[i]));
@@ -205,7 +202,6 @@ vector<vector <string>> InteractionBDD::getEquipement(string joueur) {
 									nbr_champs2 = mysql_num_fields(result2);
 									row2 = mysql_fetch_row(result2);
 									for (z = 0; z < nbr_champs2; z++) {
-										printf("%s\n", row2[z]);
 										tableauCarac[n][z + 3] = row2[z];
 									}
 									mysql_free_result(result2);
@@ -240,7 +236,6 @@ bool InteractionBDD::exist(string joueur2) {
 	mysql_options(&mysql, MYSQL_READ_DEFAULT_GROUP, "option");
 	if (mysql_real_connect(&mysql, "dwarves.iut-fbleau.fr", "barbier", "barbier", "barbier", 0, NULL, 0) != NULL)
 	{
-		printf("%s\n", joueur2.c_str());
 		requeteString = "Select compte.login from compte where compte.login='" + joueur2 + "';";
 		mysql_query(&mysql, requeteString.c_str());
 
@@ -309,7 +304,6 @@ vector<vector <string>> InteractionBDD::getEquipementEquiped(string joueur, stri
 				// on est aux idEquipement
 				if (row[i] != NULL) {// il a un equipement
 					tableauCarac.push_back(vector<string>(7)); // on ajoute une ligne à notre tableau dynamique !!
-					printf("il y a un equipement");
 					sprintf(requeteInt, "Select typeEquipement,nomEquipement,url,idCarac0 from Equipements where idEquipement=%d", std::stoi(row[i]));
 					mysql_query(&mysql, requeteInt);
 					result2 = mysql_store_result(&mysql);
@@ -324,7 +318,6 @@ vector<vector <string>> InteractionBDD::getEquipementEquiped(string joueur, stri
 								while (row3 = mysql_fetch_row(result3)) {
 									nbr_champs3 = mysql_num_fields(result3);
 									for (z = 0; z < nbr_champs3; z++) {
-										printf("=>%d\n", z);
 										tableauCarac[nbr_ligne][z + 3] = row3[z];
 									}
 								}
@@ -406,17 +399,13 @@ void InteractionBDD::setEquipementOnChar(string nomEquipement, string typeEquipe
 		mysql_query(&mysql, requeteString.c_str());
 		result = mysql_store_result(&mysql);
 		row = mysql_fetch_row(result); // on a l'id de l'equipement en question
-		printf("\n %d", std::stoi(row[0]));
 		if (typeEquipement == "armure") {
-			printf("armure");
 			sprintf(requeteInt, "Update Personnages set idEquipement2=%d where loginUser='%s' and typePersonnage='%s'", std::stoi(row[0]), joueur.c_str(), classe.c_str());
 		}
 		else if (typeEquipement == "autre") {
-			printf("autre");
 			sprintf(requeteInt, "Update Personnages set idEquipement3=%d where loginUser='%s' and typePersonnage='%s'", std::stoi(row[0]), joueur.c_str(), classe.c_str());
 		}
 		else {
-			printf("arme");
 			sprintf(requeteInt, "Update Personnages set idEquipement=%d where loginUser='%s' and typePersonnage='%s'", std::stoi(row[0]), joueur.c_str(), classe.c_str());
 		}
 		mysql_query(&mysql, requeteInt);
@@ -481,12 +470,10 @@ string* InteractionBDD::dropEquipement(string joueur) {
 		if (rand() % 100 + 1 < stoi(row2[0])) {// si txDrop =80 et le rand est 81 on gagne pas l'item
 			// on est dans le cas ou on a gagné l'item
 			armeDropped[0] = row2[1];
-			printf("\n OUI \n");
 			armeDropped[1] = row2[2];
 			armeDropped[2] = row2[3];
 		}
 		else {
-			printf("\n non \n");
 			armeDropped[0] = "null";
 			armeDropped[1] = "null";
 			armeDropped[2] = "null";
