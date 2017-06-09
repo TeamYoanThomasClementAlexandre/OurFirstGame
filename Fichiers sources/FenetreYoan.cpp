@@ -106,7 +106,7 @@ FenetreYoan::FenetreYoan(sf::Vector2u dimension, JoueurYoan* playerss)
 	this->tabCombat = comb;
 
 
-	this->setFramerateLimit(30); // limit framerate
+	this->setFramerateLimit(60); // limit framerate
 	// ini brouillard placement
 	this->brouillard_de_guerre = true;
 
@@ -236,35 +236,25 @@ bool FenetreYoan::verifContrainte(sf::Vector2u *vec, char* s) {
 		else {
 			this->tablo_text[1].setString("Action Impossible, Hors map !");
 		}
-		this->clear(Color(50, 50, 50));
-		this->render();
 		return false;
 	}
 
 	if (this->joueur == 0 && vec->x > 4) {
 		this->tablo_text[1].setString("Action Impossible, Spawn ennemi !");
-		this->clear(Color(50, 50, 50));
-		this->render();
 		return false;
 	}
 	if (this->joueur == 1 && vec->x < 6) {
 		this->tablo_text[1].setString("Action Impossible, Spawn ennemi !");
-		this->clear(Color(50, 50, 50));
-		this->render();
 		return false;
 	}
 
 	if (this->map->caseJeu[vec->y][vec->x]->who != -1) {
 		this->tablo_text[1].setString("Action Impossible,Unité déjà présente!");
-		this->clear(Color(50, 50, 50));
-		this->render();
 		return false;
 	}
 	std::string str = this->map->caseJeu[vec->y][vec->x]->types;
 	if (str == "eau") {
 		this->tablo_text[1].setString("Action Impossible, Case eau selectionné !");
-		this->clear(Color(50, 50, 50));
-		this->render();
 		return false;
 
 	}
@@ -274,9 +264,8 @@ bool FenetreYoan::verifContrainte(sf::Vector2u *vec, char* s) {
 
 void FenetreYoan::controleur_placement(Event event) {
 
-	if (event.mouseButton.button == sf::Mouse::Left) //
+	if (event.mouseButton.button == sf::Mouse::Left && event.type == event.MouseButtonPressed) 
 	{
-		this->clear(Color(50, 50, 50));
 		if (event.mouseButton.x > 900 && event.mouseButton.x < 950 && event.mouseButton.y >= 300 && event.mouseButton.y < 340) { // EXIT
 			this->exit = true;
 			return;
@@ -303,6 +292,9 @@ void FenetreYoan::controleur_placement(Event event) {
 			this->players[this->joueur].p_placer[this->players[this->joueur].personnage_placer].appartenance.y = this->players[this->joueur].personnage_placer;
 
 			this->players[this->joueur].personnage_placer++;
+			this->players[this->joueur].selected = -1;
+			this->clear(Color(50, 50, 50));
+			this->render();
 		}
 		else if (perso != NULL) {
 			this->ennemi_clicked.x = perso->appartenance.x;
@@ -312,6 +304,9 @@ void FenetreYoan::controleur_placement(Event event) {
 
 			this->tablo_text[4].setString("");
 			this->draw(this->tablo_text[4]);
+
+			this->clear(Color(50, 50, 50));
+			this->render();
 		}
 		else if (perso == NULL && vec != NULL) {
 			this->players[this->joueur].selected = -1;
@@ -326,6 +321,9 @@ void FenetreYoan::controleur_placement(Event event) {
 
 			this->ennemi_clicked.x = -1;
 			this->ennemi_clicked.y = -1;
+
+			this->clear(Color(50, 50, 50));
+			this->render();
 		}
 		else {
 			this->players[this->joueur].selected = -1;
@@ -337,37 +335,39 @@ void FenetreYoan::controleur_placement(Event event) {
 
 			this->ennemi_clicked.x = -1;
 			this->ennemi_clicked.y = -1;
+			this->clear(Color(50, 50, 50));
+			this->render();
 		}
-		this->players[this->joueur].selected = -1;
 
 	}
-	else if (event.mouseButton.button == sf::Mouse::Right)
+	else if (event.mouseButton.button == sf::Mouse::Right && event.type == event.MouseButtonPressed)
 	{
 		//printf("%d , %d\n", event.mouseButton.x, event.mouseButton.y);
 		if (event.mouseButton.x > 7 && event.mouseButton.x < 714 && event.mouseButton.y >= 370 && event.mouseButton.y < 400) {
 			this->players[this->joueur].selected = 0;
+			this->clear(Color(50, 50, 50));
+			this->render();
 		}
 		else if (event.mouseButton.x > 7 && event.mouseButton.x < 714 && event.mouseButton.y >= 400 && event.mouseButton.y < 430) {
 			this->players[this->joueur].selected = 1;
+			this->clear(Color(50, 50, 50));
+			this->render();
 		}
 		else if (event.mouseButton.x > 7 && event.mouseButton.x < 714 && event.mouseButton.y >= 430 && event.mouseButton.y < 460) {
 			this->players[this->joueur].selected = 2;
+			this->clear(Color(50, 50, 50));
+			this->render();
 		}
 		else if (event.mouseButton.x > 7 && event.mouseButton.x < 714 && event.mouseButton.y >= 460 && event.mouseButton.y < 490) {
 			this->players[this->joueur].selected = 3;
+			this->clear(Color(50, 50, 50));
+			this->render();
 		}
-		/*
-		else {
-		sur une case ou il y a un personnage alors ça le retire
-		}
-		*/
 	}
 	else {
 		return;
 	}
-	this->clear(Color(50, 50, 50));
-	this->render();
-
+	
 }
 
 
@@ -1551,7 +1551,8 @@ void FenetreYoan::player_choice() {
 
 
 void FenetreYoan::render() {
-
+	clock_t t;
+	t = clock();
 	/* SHADER */
 	sf::Shader shader;
 
@@ -1857,6 +1858,9 @@ void FenetreYoan::render() {
 	this->bm.image = texture.copyToImage();
 	this->display();
 
+	t = clock() - t;
+	printf("It took me %d clicks (%f seconds).\n", t, ((float)t) / CLOCKS_PER_SEC);
+
 }
 
 void FenetreYoan::renderTexte() {
@@ -2023,6 +2027,10 @@ void FenetreYoan::renderTexteView() {
 }
 
 void FenetreYoan::renderView() {
+
+	clock_t t;
+	t = clock();
+
 	Color *c = new Color(217, 100, 60);
 	Color *c2 = new Color(165, 21, 25);
 	/* SHADER */
@@ -2358,4 +2366,6 @@ void FenetreYoan::renderView() {
 	this->bm.image = texture.copyToImage();
 	this->display();
 
+	t = clock() - t;
+	printf("It took me %d clicks (%f seconds).\n", t, ((float)t) / CLOCKS_PER_SEC);
 }
