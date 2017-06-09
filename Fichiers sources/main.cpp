@@ -149,7 +149,9 @@ int main()
 				expClasse[1] = bdd->requeteParCol(joueur1, "Personnages", "experience", "Epeiste");
 				expClasse[2] = bdd->requeteParCol(joueur1, "Personnages", "experience", "Lancier");
 				expClasse[3] = bdd->requeteParCol(joueur1, "Personnages", "experience", "Paladin");
-				FenetreAlex *fenetreAlex = new FenetreAlex(carac, equipPerso, itemInvent, lvlClasse, expClasse, taille.x, taille.y, joueur1);
+				FenetreAlex *fenetreAlex = new FenetreAlex(carac, equipPerso, itemInvent, lvlClasse, expClasse, 1920, 1050, joueur1);
+				printf("%d ", taille.x);
+				printf("%d\n", taille.y);
 				fenetreAlex->game();
 				bdd->getCarac(joueur1, "Archer");
 				armeDropped=bdd->dropEquipement(joueur1);

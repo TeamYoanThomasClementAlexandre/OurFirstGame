@@ -463,7 +463,7 @@ string* InteractionBDD::dropEquipement(string joueur) {
 		nbrAlea = rand() % stoi(row[0]) + 1;// on a un nbr d'equipement aléa il faut regarder son ratio pour le drop
 		mysql_free_result(result);
 
-		sprintf(requeteInt, "select txDrop,typeEquipement,nomEquipement,url from Equipements where idEquipement=%d;", nbrAlea);
+		sprintf(requeteInt, "select txDrop,typeEquipement,nomEquipement,url,idEquipement from Equipements where idEquipement=%d;", nbrAlea);
 		mysql_query(&mysql, requeteInt);
 		result2= mysql_store_result(&mysql);
 		row2 = mysql_fetch_row(result2); // on a les infos sur l'equipement en question
@@ -471,6 +471,11 @@ string* InteractionBDD::dropEquipement(string joueur) {
 			// on est dans le cas ou on a gagné l'item
 			armeDropped[0] = row2[1];
 			armeDropped[1] = row2[2];
+
+			sprintf(requeteInt, "insert into Possede values('%s',%d,NULL);", joueur.c_str(), stoi(row2[4]));
+			//INSERT INTO `Possede` (`refLogin`, `refIdEquipement`, `idPossede`) VALUES ('dragodia', '1', NULL);
+			mysql_query(&mysql, requeteInt);
+
 			armeDropped[2] = row2[3];
 		}
 		else {

@@ -106,7 +106,7 @@ FenetreYoan::FenetreYoan(sf::Vector2u dimension, JoueurYoan* playerss)
 	this->tabCombat = comb;
 
 
-	//this->setFramerateLimit(30); // limit framerate
+	this->setFramerateLimit(30); // limit framerate
 	// ini brouillard placement
 	this->brouillard_de_guerre = true;
 
@@ -341,7 +341,7 @@ void FenetreYoan::controleur_placement(Event event) {
 		this->players[this->joueur].selected = -1;
 
 	}
-	if (event.mouseButton.button == sf::Mouse::Right)
+	else if (event.mouseButton.button == sf::Mouse::Right)
 	{
 		//printf("%d , %d\n", event.mouseButton.x, event.mouseButton.y);
 		if (event.mouseButton.x > 7 && event.mouseButton.x < 714 && event.mouseButton.y >= 370 && event.mouseButton.y < 400) {
@@ -361,6 +361,9 @@ void FenetreYoan::controleur_placement(Event event) {
 		sur une case ou il y a un personnage alors ça le retire
 		}
 		*/
+	}
+	else {
+		return;
 	}
 	this->clear(Color(50, 50, 50));
 	this->render();
@@ -979,9 +982,12 @@ void FenetreYoan::RenderWin() {
 	InteractionBDD* bdd = InteractionBDD::Ini();
 
 	//drop
-	if (this->players[0].pseudo == this->players[1].pseudo) {
+	if (!this->players[0].pseudo.compare(this->players[1].pseudo)) {
+
 
 		string* armeDropped = NULL;
+
+		armeDropped = bdd->dropEquipement(this->players[this->joueur].pseudo);
 		this->draw(drop);
 		if (armeDropped[0] != "null") {
 
@@ -1003,12 +1009,15 @@ void FenetreYoan::RenderWin() {
 				drop.setPosition(800, 400);
 			}
 
-			this->draw(drop);
+
 			this->draw(*img);
 
 		}
 	}
-
+	else {
+		drop.setString("Mode entrainement\n Donc aucun drop");
+	}
+	this->draw(drop);
 
 	// AFFICHER
 	this->display();
@@ -1060,19 +1069,20 @@ void FenetreYoan::PlacementPersonnage() {
 	this->clear(Color(50, 50, 50));
 	this->render();
 	while (1) {
+		if (this->players[this->joueur].personnage_placer < 4) {
+			if (this->pollEvent(this->event))
+			{
+				this->controleur_placement(this->event);
 
-		while (this->pollEvent(this->event))
-		{
-			this->controleur_placement(this->event);
+			}
 		}
-
+		else {
+			return;
+		}
 		if (this->exit) {
 			return;
 		}
 
-		if (this->players[this->joueur].personnage_placer == 4) {
-			return;
-		}
 	}
 
 	return;
@@ -1399,7 +1409,7 @@ void FenetreYoan::controleur_game(Event event)
 
 		}
 	}
-	if (event.mouseButton.button == sf::Mouse::Right) //
+	else if (event.mouseButton.button == sf::Mouse::Right) //
 	{
 		Color c;
 		if (event.mouseButton.x != NULL && event.mouseButton.y != NULL  && event.mouseButton.x >= 0 && event.mouseButton.x <= 960 && event.mouseButton.y >= 0 && event.mouseButton.y <= 540) {
@@ -1519,6 +1529,9 @@ void FenetreYoan::controleur_game(Event event)
 		}
 
 	}
+else {
+	return;
+}
 	this->clear(Color(50, 50, 50));
 	this->renderView();
 }
