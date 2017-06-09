@@ -274,6 +274,7 @@ void FenetreYoan::controleur_placement(Event event) {
 		Color c;
 		if (event.mouseButton.x != NULL && event.mouseButton.y != NULL && event.mouseButton.x >= 0 && event.mouseButton.x <= 960 && event.mouseButton.y >= 0 && event.mouseButton.y <= 540) {
 			c = this->bm.image.getPixel(event.mouseButton.x, 540 - event.mouseButton.y);
+			
 		}
 
 		char* s = new char[10];
@@ -1589,41 +1590,66 @@ void FenetreYoan::render() {
 		for (int i = 0; i < this->max_x; i++) {
 			this->map->caseJeu[j][i]->sprite.setPosition(offsetPosX + i * tileWidth, offsetPosY + j * tileHeight);
 
+			Sprite* a = &this->map->caseJeu[j][i]->sprite;
+
 			if (this->joueur == 0 && i > 4) {
 				this->map->caseJeu[j][i]->sprite.setColor(Color::Black);
 			}
 			else if (this->joueur == 0 && i < 5) {
 				this->map->caseJeu[j][i]->sprite.setColor(Color::White);
+
+				
+
+				unsigned int r = i * 23;
+				unsigned int g = j * 12;
+				unsigned int b = 100;
+
+				char* s = new char[10];
+				memset(s, 0, 10);
+				sprintf_s(s, 10, "%00u%00u%00u\0", r, g, b);
+				Vector2u *v = new Vector2u();
+				v->x = i;
+				v->y = j;
+
+				this->bm.dico->insert(std::pair<char*, sf::Vector2u*>(s, v));
+
+				float fr = (float)r / 255.0;
+				float fg = (float)g / 255.0;
+				float fb = (float)b / 255.0;
+				shader.setUniform("color", Glsl::Vec3(fr, fg, fb));
+				RenderStates rs(&shader);
+				renderTexture.draw(*a, rs);
 			}
 			if (this->joueur == 1 && i < 6) {
 				this->map->caseJeu[j][i]->sprite.setColor(Color::Black);
 			}
 			else if (this->joueur == 1 && i > 5) {
 				this->map->caseJeu[j][i]->sprite.setColor(Color::White);
+
+
+				unsigned int r = i * 23;
+				unsigned int g = j * 12;
+				unsigned int b = 100;
+
+				char* s = new char[10];
+				memset(s, 0, 10);
+				sprintf_s(s, 10, "%00u%00u%00u\0", r, g, b);
+				Vector2u *v = new Vector2u();
+				v->x = i;
+				v->y = j;
+
+				this->bm.dico->insert(std::pair<char*, sf::Vector2u*>(s, v));
+
+				float fr = (float)r / 255.0;
+				float fg = (float)g / 255.0;
+				float fb = (float)b / 255.0;
+				shader.setUniform("color", Glsl::Vec3(fr, fg, fb));
+				RenderStates rs(&shader);
+				renderTexture.draw(*a, rs);
 			}
 
 
-			Sprite* a = &this->map->caseJeu[j][i]->sprite;
-
-			unsigned int r = i * 23;
-			unsigned int g = j * 12;
-			unsigned int b = 100;
-
-			char* s = new char[10];
-			memset(s, 0, 10);
-			sprintf_s(s, 10, "%00u%00u%00u\0", r, g, b);
-			Vector2u *v = new Vector2u();
-			v->x = i;
-			v->y = j;
-
-			this->bm.dico->insert(std::pair<char*, sf::Vector2u*>(s, v));
-
-			float fr = (float)r / 255.0;
-			float fg = (float)g / 255.0;
-			float fb = (float)b / 255.0;
-			shader.setUniform("color", Glsl::Vec3(fr, fg, fb));
-			RenderStates rs(&shader);
-			renderTexture.draw(*a, rs); // rendu dans une texture shader
+			 // rendu dans une texture shader
 			this->draw(*a); // rendu dans une fenetre
 
 
