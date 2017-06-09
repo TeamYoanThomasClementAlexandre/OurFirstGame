@@ -264,6 +264,7 @@ bool FenetreYoan::verifContrainte(sf::Vector2u *vec, char* s) {
 
 void FenetreYoan::controleur_placement(Event event) {
 
+
 	if (event.mouseButton.button == sf::Mouse::Left && event.type == event.MouseButtonPressed) 
 	{
 		if (event.mouseButton.x > 900 && event.mouseButton.x < 950 && event.mouseButton.y >= 300 && event.mouseButton.y < 340) { // EXIT
@@ -292,9 +293,10 @@ void FenetreYoan::controleur_placement(Event event) {
 			this->players[this->joueur].p_placer[this->players[this->joueur].personnage_placer].appartenance.y = this->players[this->joueur].personnage_placer;
 
 			this->players[this->joueur].personnage_placer++;
-			this->players[this->joueur].selected = -1;
-			this->clear(Color(50, 50, 50));
-			this->render();
+			this->players[this->joueur].selected = -1; 
+
+			
+		this->render();   
 		}
 		else if (perso != NULL) {
 			this->ennemi_clicked.x = perso->appartenance.x;
@@ -305,7 +307,6 @@ void FenetreYoan::controleur_placement(Event event) {
 			this->tablo_text[4].setString("");
 			this->draw(this->tablo_text[4]);
 
-			this->clear(Color(50, 50, 50));
 			this->render();
 		}
 		else if (perso == NULL && vec != NULL) {
@@ -322,7 +323,6 @@ void FenetreYoan::controleur_placement(Event event) {
 			this->ennemi_clicked.x = -1;
 			this->ennemi_clicked.y = -1;
 
-			this->clear(Color(50, 50, 50));
 			this->render();
 		}
 		else {
@@ -335,7 +335,6 @@ void FenetreYoan::controleur_placement(Event event) {
 
 			this->ennemi_clicked.x = -1;
 			this->ennemi_clicked.y = -1;
-			this->clear(Color(50, 50, 50));
 			this->render();
 		}
 
@@ -345,22 +344,18 @@ void FenetreYoan::controleur_placement(Event event) {
 		//printf("%d , %d\n", event.mouseButton.x, event.mouseButton.y);
 		if (event.mouseButton.x > 7 && event.mouseButton.x < 714 && event.mouseButton.y >= 370 && event.mouseButton.y < 400) {
 			this->players[this->joueur].selected = 0;
-			this->clear(Color(50, 50, 50));
 			this->render();
 		}
 		else if (event.mouseButton.x > 7 && event.mouseButton.x < 714 && event.mouseButton.y >= 400 && event.mouseButton.y < 430) {
 			this->players[this->joueur].selected = 1;
-			this->clear(Color(50, 50, 50));
 			this->render();
 		}
 		else if (event.mouseButton.x > 7 && event.mouseButton.x < 714 && event.mouseButton.y >= 430 && event.mouseButton.y < 460) {
 			this->players[this->joueur].selected = 2;
-			this->clear(Color(50, 50, 50));
 			this->render();
 		}
 		else if (event.mouseButton.x > 7 && event.mouseButton.x < 714 && event.mouseButton.y >= 460 && event.mouseButton.y < 490) {
 			this->players[this->joueur].selected = 3;
-			this->clear(Color(50, 50, 50));
 			this->render();
 		}
 	}
@@ -731,6 +726,8 @@ void FenetreYoan::destroyAll() {
 
 }
 void FenetreYoan::idle() {
+
+
 	PersonnageYoan perso;
 	this->PlacementPersonnage();
 	if (this->exit) {
@@ -822,7 +819,7 @@ void FenetreYoan::idle() {
 }
 
 void FenetreYoan::RenderWin() {
-
+	this->clear(Color(50, 50, 50));
 	Texture* Win = new Texture();
 	Texture* Loose = new Texture();
 
@@ -837,9 +834,6 @@ void FenetreYoan::RenderWin() {
 	}
 	Sprite *win = new Sprite(*Win);
 	Sprite *loose = new Sprite(*Loose);
-
-
-	this->clear(Color(50, 50, 50));
 
 	sf::Text tour;
 	tour.setFont(font);
@@ -982,7 +976,7 @@ void FenetreYoan::RenderWin() {
 	InteractionBDD* bdd = InteractionBDD::Ini();
 
 	//drop
-	if (!this->players[0].pseudo.compare(this->players[1].pseudo)) {
+	if (this->players[0].pseudo == this->players[1].pseudo ) {
 
 
 		string* armeDropped = NULL;
@@ -1053,7 +1047,7 @@ void FenetreYoan::RenderWin() {
 	bool quitter = false;
 	while (!quitter) {
 		while (this->pollEvent(this->event)) {
-			if (this->event.mouseButton.button == sf::Mouse::Left) //
+			if (this->event.mouseButton.button == sf::Mouse::Left && event.type == event.MouseButtonPressed) //
 			{
 				if (this->event.mouseButton.x > 900 && this->event.mouseButton.x < 950 && this->event.mouseButton.y >= 300 && this->event.mouseButton.y < 340) { // EXIT
 					quitter = true;
@@ -1066,7 +1060,6 @@ void FenetreYoan::RenderWin() {
 
 }
 void FenetreYoan::PlacementPersonnage() {
-	this->clear(Color(50, 50, 50));
 	this->render();
 	while (1) {
 		if (this->players[this->joueur].personnage_placer < 4) {
@@ -1097,7 +1090,6 @@ void FenetreYoan::Game() {
 	this->surrend = false;
 	this->ennemi_clicked.x = -1;
 	this->ennemi_clicked.y = -1;
-	this->clear(Color(50, 50, 50));
 	this->renderView();
 	while (1) {
 		while (this->pollEvent(this->event))
@@ -1153,7 +1145,7 @@ void FenetreYoan::renderFinDuTour()
 	//ajouter text nbr tour , plus a qui de jouer ?
 	while (1) {
 		while (this->pollEvent(this->event)) {
-			if (this->event.mouseButton.button == sf::Mouse::Left) //Oui
+			if (this->event.mouseButton.button == sf::Mouse::Left && event.type == event.MouseButtonPressed) //Oui
 			{
 				if (this->event.mouseButton.x > 400 && this->event.mouseButton.x < 600 && this->event.mouseButton.y >= 200 && this->event.mouseButton.y < 300) { // Oui
 					return;
@@ -1258,7 +1250,7 @@ void FenetreYoan::fill_gain_xp() {
 
 void FenetreYoan::controleur_game(Event event)
 {
-	if (event.mouseButton.button == sf::Mouse::Left) //
+	if (event.mouseButton.button == sf::Mouse::Left && event.type == event.MouseButtonPressed) //
 	{
 		if (event.mouseButton.x > 900 && event.mouseButton.x < 950 && event.mouseButton.y >= 300 && event.mouseButton.y < 340) { // EXIT
 			this->exit = true;
@@ -1389,8 +1381,6 @@ void FenetreYoan::controleur_game(Event event)
 
 				this->rien_clicked = false;
 
-				this->clear(Color(50, 50, 50));
-				this->renderView();
 
 				//afficher en bas a droite les caracteristiques du perso selectionné
 			}
@@ -1409,7 +1399,7 @@ void FenetreYoan::controleur_game(Event event)
 
 		}
 	}
-	else if (event.mouseButton.button == sf::Mouse::Right) //
+	else if (event.mouseButton.button == sf::Mouse::Right && event.type == event.MouseButtonPressed) //
 	{
 		Color c;
 		if (event.mouseButton.x != NULL && event.mouseButton.y != NULL  && event.mouseButton.x >= 0 && event.mouseButton.x <= 960 && event.mouseButton.y >= 0 && event.mouseButton.y <= 540) {
@@ -1464,9 +1454,7 @@ void FenetreYoan::controleur_game(Event event)
 								}
 								else {
 									this->tablo_text[1].setString("Action Impossible, Ce personnage a déjà attaqué !");
-									this->clear(Color(50, 50, 50));
-									this->renderView();
-									return;
+								
 								}
 
 							}
@@ -1532,8 +1520,7 @@ void FenetreYoan::controleur_game(Event event)
 else {
 	return;
 }
-	this->clear(Color(50, 50, 50));
-	this->renderView();
+this->renderView();
 }
 
 
@@ -1551,8 +1538,7 @@ void FenetreYoan::player_choice() {
 
 
 void FenetreYoan::render() {
-	clock_t t;
-	t = clock();
+	this->clear(Color(50, 50, 50));
 	/* SHADER */
 	sf::Shader shader;
 
@@ -1858,8 +1844,6 @@ void FenetreYoan::render() {
 	this->bm.image = texture.copyToImage();
 	this->display();
 
-	t = clock() - t;
-	printf("It took me %d clicks (%f seconds).\n", t, ((float)t) / CLOCKS_PER_SEC);
 
 }
 
@@ -2028,8 +2012,7 @@ void FenetreYoan::renderTexteView() {
 
 void FenetreYoan::renderView() {
 
-	clock_t t;
-	t = clock();
+	this->clear(Color(50, 50, 50));
 
 	Color *c = new Color(217, 100, 60);
 	Color *c2 = new Color(165, 21, 25);
@@ -2365,7 +2348,4 @@ void FenetreYoan::renderView() {
 	//this->debug->display();
 	this->bm.image = texture.copyToImage();
 	this->display();
-
-	t = clock() - t;
-	printf("It took me %d clicks (%f seconds).\n", t, ((float)t) / CLOCKS_PER_SEC);
 }
