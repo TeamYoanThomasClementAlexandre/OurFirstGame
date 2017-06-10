@@ -1781,30 +1781,30 @@ void FenetreYoan::render() {
 		degat.setString(std::to_string(tab[1]));
 		if (tabb[1]) {
 			if (tab[1] < this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].degat) {
-				degat.setColor(Color(255, 0, 0));
+				degat.setFillColor(Color(255, 0, 0));
 			}
 			else {
-				degat.setColor(Color(0, 255, 0));
+				degat.setFillColor(Color(0, 255, 0));
 			}
 
 		}
 		armor.setString(std::to_string(tab[0]));
 		if (tabb[0]) {
 			if (tab[0] < this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].armure) {
-				armor.setColor(Color(255, 0, 0));
+				armor.setFillColor(Color(255, 0, 0));
 			}
 			else {
-				armor.setColor(Color(0, 255, 0));
+				armor.setFillColor(Color(0, 255, 0));
 			}
 
 		}
 		range.setString(std::to_string(tab[2]));
 		if (tabb[2]) {
 			if (tab[2] < this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].range) {
-				range.setColor(Color(255, 0, 0));
+				range.setFillColor(Color(255, 0, 0));
 			}
 			else {
-				range.setColor(Color(0, 255, 0));
+				range.setFillColor(Color(0, 255, 0));
 			}
 
 		}
@@ -1982,10 +1982,10 @@ void FenetreYoan::renderTexteView() {
 		degat.setString(std::to_string(tab[1]));
 		if (tabb[1]) {
 			if (tab[1] < this->players[this->joueur].p_placer[i].degat) {
-				degat.setColor(Color(255, 0, 0));
+				degat.setFillColor(Color(255, 0, 0));
 			}
 			else {
-				degat.setColor(Color(0, 255, 0));
+				degat.setFillColor(Color(0, 255, 0));
 			}
 
 		}
@@ -1996,10 +1996,10 @@ void FenetreYoan::renderTexteView() {
 		armor.setString(std::to_string(tab[0]));
 		if (tabb[0]) {
 			if (tab[0] < this->players[this->joueur].p_placer[i].armure) {
-				armor.setColor(Color(255, 0, 0));
+				armor.setFillColor(Color(255, 0, 0));
 			}
 			else {
-				armor.setColor(Color(0, 255, 0));
+				armor.setFillColor(Color(0, 255, 0));
 			}
 
 		}
@@ -2010,10 +2010,10 @@ void FenetreYoan::renderTexteView() {
 		range.setString(std::to_string(tab[2]));
 		if (tabb[2]) {
 			if (tab[2] < this->players[this->joueur].p_placer[i].range) {
-				range.setColor(Color(255, 0, 0));
+				range.setFillColor(Color(255, 0, 0));
 			}
 			else {
-				range.setColor(Color(0, 255, 0));
+				range.setFillColor(Color(0, 255, 0));
 			}
 
 		}
@@ -2290,30 +2290,30 @@ void FenetreYoan::renderView() {
 		degat.setString(std::to_string(tab[1]));
 		if (tabb[1]) {
 			if (tab[1] < this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].degat) {
-				degat.setColor(Color(255, 0, 0));
+				degat.setFillColor(Color(255, 0, 0));
 			}
 			else {
-				degat.setColor(Color(0, 255, 0));
+				degat.setFillColor(Color(0, 255, 0));
 			}
 
 		}
 		armor.setString(std::to_string(tab[0]));
 		if (tabb[0]) {
 			if (tab[0] < this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].armure) {
-				armor.setColor(Color(255, 0, 0));
+				armor.setFillColor(Color(255, 0, 0));
 			}
 			else {
-				armor.setColor(Color(0, 255, 0));
+				armor.setFillColor(Color(0, 255, 0));
 			}
 
 		}
 		range.setString(std::to_string(tab[2]));
 		if (tabb[2]) {
 			if (tab[2] < this->players[ennemi_clicked.x].p_placer[ennemi_clicked.y].range) {
-				range.setColor(Color(255, 0, 0));
+				range.setFillColor(Color(255, 0, 0));
 			}
 			else {
-				range.setColor(Color(0, 255, 0));
+				range.setFillColor(Color(0, 255, 0));
 			}
 
 		}
