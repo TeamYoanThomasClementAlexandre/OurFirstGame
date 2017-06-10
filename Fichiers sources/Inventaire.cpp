@@ -20,7 +20,7 @@ Inventaire::Inventaire(float ratioX, float ratioY) {
 			cases[l][c] = new CaseEquip(ratioX*80.f, ratioY*80.f, inventaire[0].position.x + 80.f*(float)l*ratioX, inventaire[0].position.y + c*80.f*ratioY);
 		}		
 	}	
-	viewCarac = CaracEquip::ini(240.f*ratioX, 240.f*ratioY);
+	viewCarac = CaracEquip::ini(240.f*1.3f*ratioX, 240.f*1.3f*ratioY);
 
 }
 
@@ -34,6 +34,7 @@ void Inventaire::update(int classe) {
 	}
 	std::string carac[6];
 	int ligne=0, colonne=0,nb=0;
+
 	for (int i = 0; i < itemInvent.size(); i++) {		
 		carac[0] = itemInvent[i][0];
 		carac[1] = itemInvent[i][1];
@@ -44,30 +45,32 @@ void Inventaire::update(int classe) {
 		if (carac[0] != "" ) {
 			
 			if (classe == 0 && carac[0] != "epee" && carac[0] != "lance" && carac[0] != "marteau") {
-				cases[ligne][colonne]->setEquipement(itemInvent[i][2], carac);
+				cases[colonne][ligne]->setEquipement(itemInvent[i][2], carac);
 				nb++;
 				colonne++;
 			}
 			else if (classe == 1 && carac[0] != "arc" && carac[0] != "lance" && carac[0] != "marteau") {
-				cases[ligne][colonne]->setEquipement(itemInvent[i][2], carac);
+				cases[colonne][ligne]->setEquipement(itemInvent[i][2], carac);
 				nb++;
 				colonne++;
 			}
 			else if (classe == 2 && carac[0] != "epee" && carac[0] != "arc" && carac[0] != "marteau") {
-				cases[ligne][colonne]->setEquipement(itemInvent[i][2], carac);
+				cases[colonne][ligne]->setEquipement(itemInvent[i][2], carac);
 				nb++;
 				colonne++;
 			}
 			else if (classe == 3 && carac[0] != "epee" && carac[0] != "lance" && carac[0] != "arc") {
-				cases[ligne][colonne]->setEquipement(itemInvent[i][2], carac);
+				cases[colonne][ligne]->setEquipement(itemInvent[i][2], carac);
 				nb++;
 				colonne++;
 			}		
 		}
-		if (colonne == this->Largeur)
+		if (colonne == this->Largeur) {
 			ligne++;
+			colonne = 0;
+		}
 	}
-	std::cout << "il y a " << nb << "item" << std::endl;
+	//std::cout << "il y a " << nb << "item" << std::endl;
 }
 
 void Inventaire::setItems(std::vector<std::vector<std::string>> itemInvent) {
@@ -116,7 +119,7 @@ bool Inventaire::onMouse(float x,float y) {
 			width = cases[l][c]->getGlobalBounds().width;
 			if (x <= (left + width) && x >= left && y >= top && y <= (top + height)) {
 				cases[l][c]->setFillColor(sf::Color(242, 146, 22, 255));
-				viewCarac->setPosition(cases[l][c]->getPosition().x- 3.f*cases[l][c]->getGlobalBounds().width, cases[l][c]->getPosition().y- 2* cases[l][c]->getGlobalBounds().height);
+				viewCarac->setPosition(cases[l][c]->getPosition().x- 3.f*1.3f*cases[l][c]->getGlobalBounds().width, cases[l][c]->getPosition().y- 2* cases[l][c]->getGlobalBounds().height);
 				viewCarac->setAttributs(cases[l][c]->getCarac());
 				verif = true;
 				this->caseOnMouse = cases[l][c];
@@ -159,4 +162,9 @@ void Inventaire::retirerItem(std::string nomItem) {
 }
 
 Inventaire::~Inventaire() {
+	for (int l = 0; l < Largeur; l++) {
+		for (int c = 0; c < Hauteur; c++) {
+			delete(cases[l][c]);
+		}
+	}
 }

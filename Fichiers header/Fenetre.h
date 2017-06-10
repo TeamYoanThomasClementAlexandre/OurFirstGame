@@ -24,6 +24,7 @@ public:
 	int affichageMenu();
 	std::string adversaireEnter();
 	sf::Vector2u getTaille();
+	void Fenetre::setTailleFen(sf::Vector2u taille0);
 	
 
 };

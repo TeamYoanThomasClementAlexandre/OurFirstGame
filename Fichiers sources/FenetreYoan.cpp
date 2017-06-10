@@ -706,24 +706,24 @@ int FenetreYoan::ini_first_tour() {
 }
 
 void FenetreYoan::destroyAll() {
-	this->bm.~BlendModee();
-	this->combat.~Combat();
+	/*delete(&this->bm);
+	delete(&this->combat);
 	for (int j = 0; j < 2; j++) {
 		for (int i = 0; i < 4; i++) {
-			this->players[j].p_placer[i].~PersonnageYoan();
-			this->players[j].p[i].~PersonnageYoan();
+			delete(&this->players[j].p_placer[i]);
+			delete(&this->players[j].p[i]);
 		}
 	}
-	this->players[0].~JoueurYoan();
-	this->players[1].~JoueurYoan();
+	delete(&this->players[0]);
+	delete(&this->players[1]);
 
 	for (int j = 0; j < 12; j++) {
 		for (int i = 0; i < 11; i++) {
-			this->map->caseJeu[j][i]->~Case();
+			delete(&this->map->caseJeu[j][i]);
 		}
 	}
-	this->map->~Carte();
-	this->~FenetreYoan();
+	delete(&this->map);
+	delete(this);*/
 
 }
 void FenetreYoan::idle() {

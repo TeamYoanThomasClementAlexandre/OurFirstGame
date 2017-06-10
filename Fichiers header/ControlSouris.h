@@ -13,7 +13,7 @@
 class ControlSouris {
 public:
 	ControlSouris();
-	int gererChoix(GestionTroupes *troupes,sf::RenderWindow &fen, sf::Event evenement);
+	int gererChoix(GestionTroupes *troupes,sf::RenderWindow &fen, sf::Event evenement,string joueur);
 	void gererInventaire(Inventaire *inventaire, GestionTroupes *troupes, sf::RenderWindow &fen, sf::Event evenement);
 	~ControlSouris();
 };

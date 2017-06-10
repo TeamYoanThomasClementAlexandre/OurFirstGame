@@ -26,6 +26,7 @@ public:
 	Inventaire** getInventaire();
 	void setLvlClasses(int* lvl);
 	void setExpClasses(int* exp);
+	std::string** GestionTroupes::getSaveTab();
 
 private:
 	sf::Sprite choix[4];	
@@ -47,6 +48,7 @@ private:
 	CaracEquip* viewCarac;
 	bool affichageView;
 	int caseOnMouse;
+	std::string** saveTab;
 	std::vector<std::vector<std::vector<std::string>>>* equipPerso;	
 };
 

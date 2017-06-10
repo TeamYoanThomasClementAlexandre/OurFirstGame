@@ -42,7 +42,7 @@ GestionTroupes::GestionTroupes(float width,float height)	{
 	//caracteristiques
 	caracteristique = new Carac(ratioX, ratioY);
 	caracteristique->setPosition(choix[0].getPosition().x, 425.f);
-	viewCarac=CaracEquip::ini(240.f*ratioX, 240.f*ratioY);
+	viewCarac=CaracEquip::ini(240.f*1.3f*ratioX, 240.f*1.3f*ratioY);
 	affichageView = false;
 
 	//equipements
@@ -63,7 +63,14 @@ GestionTroupes::GestionTroupes(float width,float height)	{
 	back.setScale(ratioX, ratioY);
 	back.setPosition(30.f*ratioX, 50.f*ratioY);
 
-
+	saveTab = new std::string*[3];
+	for (int i = 0; i < 3; i++)
+		saveTab[i] = new std::string[3];
+	for (int i = 0; i < 3; i++) {
+		for (int i2 = 0; i2 < 3; i2++) {
+			saveTab[i][i2] = "";
+		}
+	}
 
 }
 
@@ -76,7 +83,7 @@ int GestionTroupes::setSelected(float x,float y) {
 	if (x <= (left + width) && x >= left && y >= top && y <= (top + height)) {
 		return 0;
 	}
-
+	int changement=1;
 	for (int i = 0; i < 4; i++) {
 		float height= choix[i].getGlobalBounds().height;
 		float left = choix[i].getGlobalBounds().left;
@@ -84,6 +91,7 @@ int GestionTroupes::setSelected(float x,float y) {
 		float width = choix[i].getGlobalBounds().width;
 		if (x <= (left + width) && x >= left && y >= top && y <= (top + height)) {
 			if (i != choixSelected) {
+				changement = 2;
 				//enlever ancien
 				choix[choixSelected].setTexture(textureChoix[choixSelected], true);
 				//nouveau
@@ -113,7 +121,7 @@ int GestionTroupes::setSelected(float x,float y) {
 			}
 		}
 	}
-	return 1;
+	return changement;
 }
 
 bool GestionTroupes::onMouse(float x, float y) {
@@ -155,8 +163,11 @@ bool GestionTroupes::onMouse(float x, float y) {
 		if (x <= (left + width) && x >= left && y >= top && y <= (top + height)) {
 			verif = true;
 			equip[i]->setFillColor(sf::Color(242, 146, 22, 150));
-			this->caseOnMouse =i;
-			viewCarac->setPosition(equip[i]->getPosition().x - 3 * equip[i]->getGlobalBounds().width, equip[i]->getPosition().y - 2 * equip[i]->getGlobalBounds().height);
+			if(i!=0)
+				this->caseOnMouse =i;
+			else
+				this->caseOnMouse = -1;
+			viewCarac->setPosition(equip[i]->getPosition().x - 3 *1.3f* equip[i]->getGlobalBounds().width, equip[i]->getPosition().y - 2 * equip[i]->getGlobalBounds().height);
 			viewCarac->setAttributs(equip[i]->getCarac());	
 		}
 		else {
@@ -166,7 +177,7 @@ bool GestionTroupes::onMouse(float x, float y) {
 	affichageView = verif;
 	return verif;
 }
-
+//setEquipementOnChar(string nomEquipement, string typeEquipement, string joueur, string classe)
 void GestionTroupes::delEquipementSelected() {	
 	
 	if (this->caseOnMouse != -1 && !equip[caseOnMouse]->isEmpty()) {
@@ -179,6 +190,14 @@ void GestionTroupes::delEquipementSelected() {
 		carac[4] = caracEquip[3];
 		carac[5] = caracEquip[4];
 		carac[6] = caracEquip[5];
+		this->saveTab[caseOnMouse][0]="NULL";
+		this->saveTab[caseOnMouse][1] = carac[0];
+		this->saveTab[caseOnMouse][2]=choixSelected == 0 ? "archer" : choixSelected == 1 ? "epeiste" : choixSelected == 2 ? "lancier" : choixSelected == 3 ? "paladin" : "";
+		/*for (int i = 0; i < 3; i++) {
+			for (int i2 = 0; i2 < 3; i2++) {
+				std::cout << "type " << i <<  "- stats " << i2 << ":" << saveTab[i][i2]<<std::endl;
+			}
+		}*/
 		int stats[4];
 		stats[0] = atoi(carac[3].c_str());
 		stats[1] = atoi(carac[4].c_str());
@@ -195,7 +214,6 @@ void GestionTroupes::delEquipementSelected() {
 				equipPerso[choixSelected][0][i][0] = "";
 			}
 		this->updateItems();
-		std::cout << caseOnMouse << std::endl;
 		this->caseOnMouse = -1;
 	}
 }
@@ -224,8 +242,6 @@ void GestionTroupes::updateItems() {
 				carac[3] = equipPerso[choixSelected][0][i2][4];
 				carac[4] = equipPerso[choixSelected][0][i2][6];
 				carac[5] = equipPerso[choixSelected][0][i2][5];
-				for (int i = 0; i < 7; i++)
-					std::cout << i2 << std::endl;
 				if (carac[0] == "armure")
 					equip[1]->setEquipement(equipPerso[choixSelected][0][i2][2], carac);
 				else if (carac[0] == "arc" || carac[0] == "epee" || carac[0] == "lance" || carac[0] == "marteau")
@@ -248,7 +264,22 @@ void GestionTroupes::setEquipementSelected(CaseEquip* equipement) {
 	carac[4] = caracEquip[3];
 	carac[5] = caracEquip[5];
 	carac[6] = caracEquip[4];
-
+	int type = 0;
+	if (carac[0] == "accessoire")
+		type = 2;
+	else if (carac[0] == "armure")
+		type = 1;
+	else
+		type = 0;
+	this->saveTab[type][0] = carac[1];
+	this->saveTab[type][1] = carac[0];
+	this->saveTab[type][2] = choixSelected == 0 ? "archer" : choixSelected == 1 ? "epeiste" : choixSelected == 2 ? "lancier" : choixSelected == 3 ? "paladin" : "";
+	/*for (int i = 0; i < 3; i++) {
+		for (int i2 = 0; i2 < 3; i2++) {
+			std::cout << "type " << i << "- stats " << i2 << ":" << saveTab[i][i2] << std::endl;
+		}
+	}*/
+	
 	stats[0] = atoi(carac[3].c_str());
 	stats[1] = atoi(carac[4].c_str());
 	stats[2] = atoi(carac[5].c_str());
@@ -332,6 +363,16 @@ void GestionTroupes::draw(sf::RenderWindow &fen) {
 Inventaire** GestionTroupes::getInventaire() {
 	return &this->inventaire;
 }
+
+std::string** GestionTroupes::getSaveTab() {
+	return saveTab;
+}
+
 GestionTroupes::~GestionTroupes() {
+	delete(inventaire);
+	delete(caracteristique);
+	delete(exp);
+	for (int i = 0; i < 3; i++)
+		delete(equip[i]);
 	
 }

@@ -14,6 +14,7 @@ FenetreAlex::FenetreAlex(int** carac, vector<vector<vector<string>>>* equipPerso
 	a->update(0);
 	this->create(sf::VideoMode(width, height), "Ages of Strategies", sf::Style::Titlebar);
 	this->setPosition(sf::Vector2i(0, 0));
+	this->joueur = joueur;
 }
 	void FenetreAlex::game() {		
 		
@@ -22,8 +23,9 @@ FenetreAlex::FenetreAlex(int** carac, vector<vector<vector<string>>>* equipPerso
 		{
 			while (this->pollEvent(event))
 			{
-				if (!control->gererChoix(troupes, *this, event)) {
-					this->close();
+				if (!control->gererChoix(troupes, *this, event,this->joueur)) {
+					delete(this);
+					return;				
 				}
 				
 				control->gererInventaire(*troupes->getInventaire(), troupes, *this, event);
@@ -39,6 +41,9 @@ FenetreAlex::FenetreAlex(int** carac, vector<vector<vector<string>>>* equipPerso
 
 
 FenetreAlex::~FenetreAlex() {
+	delete(this->control);
+	delete(this->troupes);
+	delete(CaracEquip::ini(240.f, 240.f));
 
 }
 

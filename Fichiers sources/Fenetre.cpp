@@ -40,7 +40,6 @@ Fenetre::Fenetre(int tailleFenetreAccueilX0, int tailleFenetreAccueilY0, string 
 	this->tailleFenetreAccueilY = tailleFenetreAccueilY0;
 	this->joueur1 = joueur0;
 	this->create(VideoMode(tailleFenetreAccueilX, tailleFenetreAccueilY), "Ages of Strategies", sf::Style::Titlebar);
-	//this->affichageMenu();
 }
 
 Fenetre::~Fenetre()
@@ -281,6 +280,8 @@ sf::Vector2u Fenetre::newScreen() {
 
 int Fenetre::affichageMenu() {
 	std::string joueur2;
+	sf::Vector2i mouse;
+	sf::Vector2f mouse_world;
 	std::vector<RectanglePerso>choixJeu;
 	sf::Color bleuFonce = sf::Color(0, 163, 253);
 	sf::Color bleuClair = sf::Color(155, 216, 234);
@@ -298,22 +299,17 @@ int Fenetre::affichageMenu() {
 
 	this->setPosition(sf::Vector2i(0, 0));
 
-	taille.x = tailleFenetreAccueilX;
-	taille.y = tailleFenetreAccueilY;
-	int oldTailleX = taille.x;
-	int oldTailleY = taille.y;
+	int oldTailleX = tailleFenetreAccueilX;
+	int oldTailleY = tailleFenetreAccueilY;
 	int i;
 
 
-	//sf::RectangleShape rectangle[3];// tous les carré de choix
-	sf::RectangleShape temp_rectangle[3];// EVITE QUE LES CARR2 PRENNENT le redimensionnement de la fenetre plus els coord
+	
 	sf::RectangleShape terrainComplet(sf::Vector2f(taille.x, taille.y));// designe le carré gérer mes troupes
 	sf::RectangleShape option(sf::Vector2f(option_width_height, option_width_height));// designe le carré option
-	sf::RectangleShape tempOption(sf::Vector2f(option_width_height, option_width_height));
 
-	sf::FloatRect boundRectangle[3]; // coord physique des rectangles
+	
 	sf::FloatRect boundBonjour;
-	sf::FloatRect boundOption;
 	sf::FloatRect newbound;
 	sf::Font font;
 	font.loadFromFile("..//Fichiers externe/arial.ttf");
@@ -343,8 +339,6 @@ int Fenetre::affichageMenu() {
 	choixJeu.push_back(RectanglePerso(124, 390, 243.0f, 48.0f));//troisième
 	for (i = 0; i < 3; i++) {
 		choixJeu[i].dessinRectangle(bleuClair);
-		temp_rectangle[i] = choixJeu[i];
-		boundRectangle[i] = temp_rectangle[i].getGlobalBounds();
 		choix[i].setCharacterSize(20);
 		choix[i].setPosition(choixPosX, choixPosY + i * 90);
 		choix[i].setFont(font);
@@ -353,8 +347,6 @@ int Fenetre::affichageMenu() {
 	choix[1].setString("Afficher l'inventaire"); 
 	choix[2].setString("Quitter");
 	option.setPosition(930, 0);
-	tempOption.setPosition(930, 0);
-	boundOption = option.getGlobalBounds();
 
 
 	nameGame.setCharacterSize(30);
@@ -374,9 +366,11 @@ int Fenetre::affichageMenu() {
 				this->close();
 		}
 		if (event.mouseButton.button == sf::Mouse::Left) {
+			mouse = sf::Mouse::getPosition(*this);
+			mouse_world = this->mapPixelToCoords(mouse);
 			/* si un clique gauche de souris l'évènement se déclenche*/
 			for (i = 0; i < 3; i++) {
-				if (boundRectangle[i].contains(event.mouseButton.x, event.mouseButton.y)) {
+				if (choixJeu[i].getGlobalBounds().contains(mouse_world)) {
 					if (i == 0) {
 						//on lance joué en local
 						return 2;
@@ -390,20 +384,15 @@ int Fenetre::affichageMenu() {
 					}
 				}
 			}
-			if (boundOption.contains(event.mouseButton.x, event.mouseButton.y)) {
+			if (option.getGlobalBounds().contains(mouse_world)) {
 				taille = newScreen();
 				this->clear();
 				this->display();
 				this->setSize(taille);
 				//redéfinition des rectangle joué et affiché
 				for (i = 0; i < 3; i++) {
-					//temp_rectangle[i].setSize(sf::Vector2f(taille.x / (oldTailleX / widthh), taille.y / (oldTailleY / heightt)));
-					temp_rectangle[i] = calcRedimension(choixJeu[i], taille, oldTailleX, oldTailleY);
-					boundRectangle[i] = temp_rectangle[i].getGlobalBounds();
 				}
 				//redéfinition des paramètres 
-				option = calcRedimension(tempOption, taille, oldTailleX, oldTailleY);
-				boundOption = option.getGlobalBounds();
 			}
 		}
 
@@ -418,6 +407,7 @@ int Fenetre::affichageMenu() {
 		this->draw(sprite1);
 		this->draw(bonjour);// on l'affiche après sprite 1 pour qu'on puisse le voir !!
 		this->draw(sprite2);// nameGame
+		this->setSize(taille);
 		this->display();
 	}
 	return 3;
@@ -425,6 +415,10 @@ int Fenetre::affichageMenu() {
 
 sf::Vector2u Fenetre::getTaille() {
 	return taille;
+}
+
+void Fenetre::setTailleFen(sf::Vector2u taille0) {
+	this->taille = taille0;
 }
 
 

@@ -55,4 +55,5 @@ void CaracEquip::draw(sf::RenderWindow &fen) {
 }
 
 CaracEquip::~CaracEquip() {
+	view = NULL ;
 }

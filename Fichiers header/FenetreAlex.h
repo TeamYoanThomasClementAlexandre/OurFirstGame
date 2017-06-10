@@ -14,6 +14,7 @@ class FenetreAlex : public sf::RenderWindow {
 		~FenetreAlex();
 
 	private:
+		string joueur;
 		GestionTroupes *troupes;
 		ControlSouris *control;
 		int** carac;

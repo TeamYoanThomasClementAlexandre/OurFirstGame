@@ -49,4 +49,5 @@ void CaseEquip::draw(sf::RenderWindow &fen) {
 }
 
 CaseEquip::~CaseEquip() {
+	
 }

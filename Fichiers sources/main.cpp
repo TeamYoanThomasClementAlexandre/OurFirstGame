@@ -34,6 +34,8 @@ int main()
 	int choixMenu=5;
 	char commande[100] = "java -cp \"mariadb-client.jar;.\" Main";
 	sf::Vector2u taille;
+	taille.x = 960;
+	taille.y = 540;
 	InteractionBDD* bdd = InteractionBDD::Ini();
 	std::vector<Personnage>tabPersonnage;
 	std::vector<Personnage>tabPersonnage2;
@@ -53,12 +55,15 @@ int main()
 	if (joueur1 != "null") {
 		Fenetre* fen;
 		while (choixMenu!=3) {
-			fen = new Fenetre(960, 540, joueur1);
+			fen = new Fenetre(960, 540, joueur1);	
+			fen->setTailleFen(taille);
 			choixMenu = fen->affichageMenu();
+			
 			taille = fen->getTaille();
-			printf("%d voici le choixMenu", choixMenu);
+			//printf("%d voici le choixMenu", choixMenu);
 			if (choixMenu == 2) { // on appel la fenetre de yoan, il faut récupérer la taille de ma fenetre !!
 				joueur2 = fen->adversaireEnter();
+				fen->close();
 				//on détruit l'objet fenetre
 				delete fen;
 				if (joueur2 != "null") {
@@ -126,6 +131,7 @@ int main()
 			}
 			else if (choixMenu == 1) {// on appel la fenetre d'alex
 				//on détruit l'objet fenetre
+				fen->close();
 				delete fen;
 				//bdd->setEquipementOnChar("lance en fer","armure",joueur1,"Archer");
 				string* armeDropped;
@@ -149,12 +155,10 @@ int main()
 				expClasse[1] = bdd->requeteParCol(joueur1, "Personnages", "experience", "Epeiste");
 				expClasse[2] = bdd->requeteParCol(joueur1, "Personnages", "experience", "Lancier");
 				expClasse[3] = bdd->requeteParCol(joueur1, "Personnages", "experience", "Paladin");
-				FenetreAlex *fenetreAlex = new FenetreAlex(carac, equipPerso, itemInvent, lvlClasse, expClasse, 1920, 1050, joueur1);
-				printf("%d ", taille.x);
-				printf("%d\n", taille.y);
+				FenetreAlex *fenetreAlex = new FenetreAlex(carac, equipPerso, itemInvent, lvlClasse, expClasse, taille.x, taille.y, joueur1);
 				fenetreAlex->game();
-				bdd->getCarac(joueur1, "Archer");
-				armeDropped=bdd->dropEquipement(joueur1);
+				//bdd->getCarac(joueur1, "Archer");
+				//armeDropped=bdd->dropEquipement(joueur1);
 			}
 		}
 	}
